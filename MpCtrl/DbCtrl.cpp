@@ -54,7 +54,7 @@ void CDbCtrl::UnLock(LPCWSTR log)
 	}
 }
 
-
+/*
 DWORD CDbCtrl::Connect(
 	MYSQL *mysql, 
 	const char *host, 
@@ -75,4 +75,4 @@ DWORD CDbCtrl::Connect(
 
 	return mysql_errno(&mysql);
 }
-
+*/
