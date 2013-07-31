@@ -179,39 +179,16 @@ BOOL CMediaPortal_BonDlg::OnInitDialog()
 	//this->log += this->mpLogPath;
 
 
-/*
-	const char user_name[] = "root";       // DBに接続するユーザ名
-	const char passwd[]    = "MediaPortal";   // ユーザのパスワード
-	const char db_name[]   = "mptvdb"; // 接続先DB名
 
-
-	// MySQL構造体は、1 つのデータベース接続へのハンドルを表す。
-	// ほとんどの MySQL 関数で使用される。 
-	MYSQL mysql;
-
-	// SELECTの実行結果格納用
-	MYSQL_RES *results = NULL;
-
-	// 格納レコード型
-	MYSQL_ROW record;
-*/
-
-
-	// MySQL接続ハンドラの初期化
-	mysql_init(&this->mysql);
-
-	// 文字コードを設定しておく
-	mysql_options(&this->mysql, MYSQL_SET_CHARSET_NAME, "utf8");
-	mysql_options(&this->mysql, MYSQL_INIT_COMMAND, "SET NAMES utf8");
-
-	const char db_host[]   = MYSQL_DB_HOST;
-	const char user_name[] = MYSQL_USER_NAME;
-	const char passwd[]    = MYSQL_PASSWD;
-	const char db_name[]   = MYSQL_DB_NAME;
+	const char host[]   = MYSQL_HOST;
+	const char user[]   = MYSQL_USER;
+	const char passwd[] = MYSQL_PASSWD;
+	const char db[]     = MYSQL_NAME;
 	this->results = NULL;
 
-	// MySQLに接続する
-	mysql_real_connect(&this->mysql, db_host, user_name, passwd, db_name, 0, NULL, 0);
+
+
+/*
 	if (mysql_errno(&this->mysql) != 0) {
 		_tprintf(L"エラー発生: %s\n", mysql_error(&this->mysql));
 		return -1;
@@ -243,7 +220,7 @@ BOOL CMediaPortal_BonDlg::OnInitDialog()
 
 	// MySQLへの接続を切断する
 	mysql_close(&this->mysql);
-
+*/
 
 
 

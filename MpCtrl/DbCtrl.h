@@ -3,6 +3,8 @@
 #include <windows.h>
 
 #include "../Common/Util.h"
+#include "my_global.h"
+#include "mysql.h"
 
 
 class CDbCtrl

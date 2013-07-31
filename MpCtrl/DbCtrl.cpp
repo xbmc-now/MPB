@@ -3,6 +3,7 @@
 #include "DbCtrlDef.h"
 #include <process.h>
 
+
 CDbCtrl::CDbCtrl(void)
 {
 	this->lockEvent = _CreateEvent(FALSE, TRUE, NULL);
@@ -59,20 +60,24 @@ void CDbCtrl::GetMpLogPath(CString& szValue)
 	szValue.GetEnvironmentVariable(L"ALLUSERSPROFILE");
 	szValue += L"\\Team MediaPortal\\MediaPortal TV Server\\log\\tv.log";
 }
-DWORD CDbCtrl::GetMpServiceStatus()
+DWORD CDbCtrl::Connect(
+	MYSQL *mysql, 
+	const char *host, 
+	const char *user, 
+	const char *passwd, 
+	const char *db)
 {
-	// サービス制御マネージャを起動する。
-	SC_HANDLE hSCManager = OpenSCManager( NULL, NULL, SC_MANAGER_CONNECT );
-	if( hSCManager == NULL ) return 1; // サービスマネージャが起動ができませんでした。
+	
+	// MySQL接続ハンドラの初期化
+	mysql_init(&mysql);
 
-	SERVICE_STATUS ssSTAT; //  サービス状態構造体
+	// 文字コードを設定しておく
+	mysql_options(&mysql, MYSQL_SET_CHARSET_NAME, "utf8");
+	mysql_options(&mysql, MYSQL_INIT_COMMAND, "SET NAMES utf8");
 
-	// サービスに接続する
-	SC_HANDLE hSVC = OpenService(hSCManager,_T("TVService"),SERVICE_QUERY_STATUS);
-	if (hSVC == NULL) return 2; // サービスに接続ができませんでした。
+	// MySQLに接続する
+	mysql_real_connect(&mysql, host, user, passwd, db, 0, NULL, 0);
 
-	QueryServiceStatus(hSVC,&ssSTAT);
-	if (ssSTAT.dwCurrentState != SERVICE_RUNNING) return 3; // サービスが起動していません
-	return 0;
+	return mysql_errno(&mysql);
 }
 
