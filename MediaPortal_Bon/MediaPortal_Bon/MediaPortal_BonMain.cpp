@@ -1220,7 +1220,7 @@ DWORD CMediaPortal_BonMain::GetMpServiceStatus()
 {
 	return this->mpCtrl.GetMpServiceStatus();
 }
-
+/*
 //Mysqlへ接続する。
 //引数：
 // szValue [OUT]MYSQLポインタ
@@ -1236,3 +1236,4 @@ DWORD CMediaPortal_BonMain::ConnectDb(
 {
 	return this->dbCtrl.Connect(mysql, host, user, passwd, db);
 }
+*/

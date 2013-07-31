@@ -262,6 +262,7 @@ public:
 
 	void GetMpLogPath(CString&);
 	DWORD GetMpServiceStatus();
+/*
 	DWORD ConnectDb(
 		MYSQL *mysql, 
 		const char *host, 
@@ -269,6 +270,7 @@ public:
 		const char *passwd, 
 		const char *db
 	);
+*/
 protected:
 	HWND msgWnd;
 

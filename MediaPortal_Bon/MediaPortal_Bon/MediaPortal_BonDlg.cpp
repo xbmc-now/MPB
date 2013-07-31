@@ -179,7 +179,7 @@ BOOL CMediaPortal_BonDlg::OnInitDialog()
 	//this->log += this->mpLogPath;
 
 
-
+/*
 	const char host[]   = MYSQL_HOST;
 	const char user[]   = MYSQL_USER;
 	const char passwd[] = MYSQL_PASSWD;
@@ -191,7 +191,7 @@ BOOL CMediaPortal_BonDlg::OnInitDialog()
 	} else {
 		this->log += L"DBÚ‘±¬Œ÷"; 
 	}
-/*
+
 	if (mysql_errno(&this->mysql) != 0) {
 		_tprintf(L"ƒGƒ‰[”­¶: %s\n", mysql_error(&this->mysql));
 		return -1;
