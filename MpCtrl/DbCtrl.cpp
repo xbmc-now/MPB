@@ -5,9 +5,10 @@
 
 CDbCtrl::CDbCtrl(void)
 {
-	this->lockEvent = _CreateEvent(FALSE, TRUE, NULL);
-	this->buffLockEvent = _CreateEvent(FALSE, TRUE, NULL);
+	//this->lockEvent = _CreateEvent(FALSE, TRUE, NULL);
+	//this->buffLockEvent = _CreateEvent(FALSE, TRUE, NULL);
 }
+/*
 CDbCtrl::~CDbCtrl(void)
 {
 	if( this->lockEvent != NULL ){
@@ -53,7 +54,7 @@ void CDbCtrl::UnLock(LPCWSTR log)
 		OutputDebugString(log);
 	}
 }
-
+*/
 /*
 DWORD CDbCtrl::Connect(
 	MYSQL *mysql, 

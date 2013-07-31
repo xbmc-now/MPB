@@ -11,7 +11,7 @@ class CDbCtrl
 {
 public:
 	CDbCtrl(void);
-	~CDbCtrl(void);
+	//~CDbCtrl(void);
 /*
 	DWORD CDbCtrl::Connect(
 		MYSQL *mysql, 
@@ -29,8 +29,8 @@ protected:
 
 protected:
 	//PublicAPIîrëºêßå‰óp
-	BOOL Lock(LPCWSTR log = NULL, DWORD timeOut = 15*1000);
-	void UnLock(LPCWSTR log = NULL);
+	//BOOL Lock(LPCWSTR log = NULL, DWORD timeOut = 15*1000);
+	//void UnLock(LPCWSTR log = NULL);
 
 
 };
