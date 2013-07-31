@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "DbCtrl.h"
-#include "DbCtrlDef.h"
 #include <process.h>
 
 
@@ -55,11 +54,7 @@ void CDbCtrl::UnLock(LPCWSTR log)
 	}
 }
 
-void CDbCtrl::GetMpLogPath(CString& szValue)
-{
-	szValue.GetEnvironmentVariable(L"ALLUSERSPROFILE");
-	szValue += L"\\Team MediaPortal\\MediaPortal TV Server\\log\\tv.log";
-}
+
 DWORD CDbCtrl::Connect(
 	MYSQL *mysql, 
 	const char *host, 
