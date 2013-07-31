@@ -183,7 +183,7 @@ BOOL CMediaPortal_BonDlg::OnInitDialog()
 	const char host[]   = MYSQL_HOST;
 	const char user[]   = MYSQL_USER;
 	const char passwd[] = MYSQL_PASSWD;
-	const char db[]     = MYSQL_NAME;
+	const char db[]     = MYSQL_DB;
 	this->results = NULL;
 
 	if (this->main.ConnectDb(&this->mysql, host, user, passwd, db) != 0) {

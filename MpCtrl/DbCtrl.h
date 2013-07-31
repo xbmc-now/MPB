@@ -17,7 +17,7 @@ public:
 		const char *host, 
 		const char *user, 
 		const char *passwd, 
-		const char *db)
+		const char *db);
 
 protected:
 

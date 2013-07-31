@@ -1234,5 +1234,5 @@ DWORD CMediaPortal_BonMain::ConnectDb(
 	const char *db
 )
 {
-	return this->dbCtrl.Connect(&mysql, host, user, passwd, db);
+	return this->dbCtrl.Connect(mysql, host, user, passwd, db);
 }
