@@ -1220,3 +1220,19 @@ DWORD CMediaPortal_BonMain::GetMpServiceStatus()
 {
 	return this->mpCtrl.GetMpServiceStatus();
 }
+
+//Mysqlへ接続する。
+//引数：
+// szValue [OUT]MYSQLポインタ
+//戻り値：
+// エラーコード
+DWORD CMediaPortal_BonMain::ConnectDb(
+	MYSQL *mysql, 
+	const char *host, 
+	const char *user, 
+	const char *passwd, 
+	const char *db
+)
+{
+	return this->dbCtrl.Connect(&mysql, host, user, passwd, db);
+}

@@ -12,7 +12,12 @@ class CDbCtrl
 public:
 	CDbCtrl(void);
 	~CDbCtrl(void);
-	
+	DWORD CDbCtrl::Connect(
+		MYSQL *mysql, 
+		const char *host, 
+		const char *user, 
+		const char *passwd, 
+		const char *db)
 
 protected:
 

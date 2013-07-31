@@ -2,7 +2,8 @@
 
 #include "../../BonCtrl/BonCtrl.h"
 #include "../../MpCtrl/MpCtrl.h"
-#include "../../MpCtrl/MpCtrlDef.h"
+#include "../../MpCtrl/DbCtrl.h"
+#include "../../MpCtrl/DbCtrlDef.h"
 #include "../../Common/PathUtil.h"
 #include "../../Common/TimeUtil.h"
 #include "../../Common/PipeServer.h"
@@ -261,12 +262,19 @@ public:
 
 	void GetMpLogPath(CString&);
 	DWORD GetMpServiceStatus();
-
+	DWORD ConnectDb(
+		MYSQL *mysql, 
+		const char *host, 
+		const char *user, 
+		const char *passwd, 
+		const char *db
+	);
 protected:
 	HWND msgWnd;
 
 	CBonCtrl bonCtrl;
 	CMpCtrl mpCtrl;
+	CDbCtrl dbCtrl;
 	CPipeServer pipeServer;
 
 	vector<wstring> recFolderList;

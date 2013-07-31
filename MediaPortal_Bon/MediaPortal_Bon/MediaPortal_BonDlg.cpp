@@ -186,8 +186,11 @@ BOOL CMediaPortal_BonDlg::OnInitDialog()
 	const char db[]     = MYSQL_NAME;
 	this->results = NULL;
 
-
-
+	if (this->main.ConnectDb(&this->mysql, host, user, passwd, db) != 0) {
+		this->log += L"DBÚ‘±Ž¸”s"; 
+	} else {
+		this->log += L"DBÚ‘±¬Œ÷"; 
+	}
 /*
 	if (mysql_errno(&this->mysql) != 0) {
 		_tprintf(L"ƒGƒ‰[”­¶: %s\n", mysql_error(&this->mysql));
