@@ -1,0 +1,120 @@
+#include "stdafx.h"
+#include "MpCtrl.h"
+#include <process.h>
+
+CMpCtrl::CMpCtrl(void)
+{
+	this->lockEvent = _CreateEvent(FALSE, TRUE, NULL);
+	this->buffLockEvent = _CreateEvent(FALSE, TRUE, NULL);
+}
+CMpCtrl::~CMpCtrl(void)
+{
+	if( this->lockEvent != NULL ){
+		UnLock();
+		CloseHandle(this->lockEvent);
+		this->lockEvent = NULL;
+	}
+	if( this->buffLockEvent != NULL ){
+		CloseHandle(this->buffLockEvent);
+		this->buffLockEvent = NULL;
+	}
+
+}
+
+BOOL CMpCtrl::Lock(LPCWSTR log, DWORD timeOut)
+{
+	if( this->lockEvent == NULL ){
+		return FALSE;
+	}
+	//if( log != NULL ){
+	//	OutputDebugString(log);
+	//}
+	DWORD dwRet = WaitForSingleObject(this->lockEvent, timeOut);
+	if( dwRet == WAIT_ABANDONED || 
+		dwRet == WAIT_FAILED ||
+		dwRet == WAIT_TIMEOUT){
+			if( log != NULL ){
+				_OutputDebugString(L"◆CMpCtrl::Lock FALSE : %s", log);
+			}else{
+				OutputDebugString(L"◆CMpCtrl::Lock FALSE");
+			}
+		return FALSE;
+	}
+	return TRUE;
+}
+
+void CMpCtrl::UnLock(LPCWSTR log)
+{
+	if( this->lockEvent != NULL ){
+		SetEvent(this->lockEvent);
+	}
+	if( log != NULL ){
+		OutputDebugString(log);
+	}
+}
+
+
+void CMpCtrl::GetMpInstallPath(TCHAR *szValue)
+{
+	HKEY  hKey;
+	DWORD dwType = REG_SZ;
+	DWORD dwByte = _MAX_PATH;
+	LONG  rc;
+
+	// 64bitのレジストリを取得
+	rc= RegOpenKeyEx(
+		HKEY_LOCAL_MACHINE, //親キー
+		TEXT("SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\MediaPortal TV Server"), //サブキー
+		0,              //常にゼロ
+		KEY_QUERY_VALUE, //セキュリティマスク
+		&hKey);         //キーのハンドル
+	if (rc!=ERROR_SUCCESS)
+	{
+		// 32bitのレジストリを取得
+		rc= RegOpenKeyEx(
+			HKEY_LOCAL_MACHINE, //親キー
+			TEXT("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\MediaPortal TV Server"), //サブキー
+			0,              //常にゼロ
+			KEY_QUERY_VALUE, //セキュリティマスク
+			&hKey);         //キーのハンドル
+	}
+	if (rc!=ERROR_SUCCESS)
+	{
+		_tcscpy_s(szValue,dwByte,_T("*** RegOpenKeyEx Error"));
+		return;
+	}
+
+	rc= RegQueryValueEx(
+		hKey,            //キーのハンドル
+		TEXT("InstallPath"), //読み取るキーの名前
+		NULL,            //常に NULL
+		&dwType,         //データのタイプ
+		(LPBYTE)szValue, //受け取る領域
+		&dwByte);        //領域のバイト数(受け取ったバイト数)
+	RegCloseKey(hKey);
+	if (rc!=ERROR_SUCCESS) _tcscpy_s(szValue,dwByte,_T("*** RegQueryValueEx Error"));
+	return;
+}
+
+void CMpCtrl::GetMpLogPath(CString& szValue)
+{
+	szValue.GetEnvironmentVariable(L"ALLUSERSPROFILE");
+	szValue += L"\\Team MediaPortal\\MediaPortal TV Server\\log\\tv.log";
+}
+DWORD CMpCtrl::GetMpServiceStatus()
+{
+	// サービス制御マネージャを起動する。
+	SC_HANDLE hSCManager = OpenSCManager( NULL, NULL, SC_MANAGER_CONNECT );
+	if( hSCManager == NULL ) return 1; // サービスマネージャが起動ができませんでした。
+
+	SERVICE_STATUS ssSTAT; //  サービス状態構造体
+
+	// サービスに接続する
+	SC_HANDLE hSVC = OpenService(hSCManager,_T("TVService"),SERVICE_QUERY_STATUS);
+	if (hSVC == NULL) return 2; // サービスに接続ができませんでした。
+
+	QueryServiceStatus(hSVC,&ssSTAT);
+	if (ssSTAT.dwCurrentState != SERVICE_RUNNING) return 3; // サービスが起動していません
+	return 0;
+}
+

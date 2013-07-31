@@ -1,0 +1,145 @@
+// TstOpn.cpp : コンソール アプリケーションのエントリ ポイントを定義します。
+//
+
+#include "stdafx.h"
+#include "TstOpn.h"
+
+
+#ifdef _DEBUG
+#define new DEBUG_NEW
+#endif
+
+
+// 唯一のアプリケーション オブジェクトです。
+
+CWinApp theApp;
+
+using namespace std;
+
+
+int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
+{
+	int nRetCode = 0;
+
+	HMODULE hModule = ::GetModuleHandle(NULL);
+
+	if (hModule != NULL)
+	{
+		// MFC を初期化して、エラーの場合は結果を印刷します。
+		if (!AfxWinInit(hModule, NULL, ::GetCommandLine(), 0))
+		{
+			// TODO: 必要に応じてエラー コードを変更してください。
+			_tprintf(_T("致命的なエラー: MFC の初期化ができませんでした。\n"));
+			nRetCode = 1;
+		}
+		else
+		{
+			// TODO: アプリケーションの動作を記述するコードをここに挿入してください。
+
+			_tsetlocale(LC_ALL, _T("Japanese_Japan.932"));
+
+//------------------------------------------------------------------------------
+			HKEY  hKey;
+			DWORD dwType;
+			TCHAR lpData[256];
+			DWORD dwDataSize;
+			LONG  lRet;
+
+			// レジストリキーの取得
+			lRet = RegOpenKeyEx(
+				HKEY_LOCAL_MACHINE,
+				TEXT("SOFTWARE\\Microsoft\\Internet Explorer"),
+				NULL,
+				KEY_QUERY_VALUE,
+				&hKey
+			);
+
+			// レジストリキーの取得に失敗した場合
+			if (lRet != ERROR_SUCCESS) {
+				fprintf(stderr, "RegOpenKeyEx error\n");
+				return 1;
+			}
+
+
+			dwDataSize = sizeof(lpData)/sizeof(lpData[0]);
+			// レジストリキーの値の取得
+			lRet = RegQueryValueEx(
+				hKey,
+				TEXT("Version"),
+				0,
+				&dwType,
+				(LPBYTE)lpData,
+				&dwDataSize
+			);
+
+			// レジストリキーの値の取得に失敗した場合
+			if (lRet != ERROR_SUCCESS) {
+				RegCloseKey(hKey);
+				fprintf(stderr, "RegQueryValueEx error\n");
+				return 1;
+			}
+
+			// レジストリキーの値の表示
+			_tprintf(TEXT("%s\n"), lpData);
+
+			// レジストリキーの値のタイプ表示
+			switch (dwType) {
+			case REG_NONE: // No value type
+				_tprintf(TEXT("REG_NONE\n")); 
+				break;
+			case REG_SZ: // Unicode nul terminated string
+				_tprintf(TEXT("REG_SZ\n")); 
+				break;
+			case REG_EXPAND_SZ: // Unicode nul terminated string  (with environment variable references)
+				_tprintf(TEXT("REG_EXPAND_SZ\n")); 
+				break;
+			case REG_BINARY: // Free form binary
+				_tprintf(TEXT("REG_BINARY\n")); 
+				break;
+			case REG_DWORD_LITTLE_ENDIAN: // 32-bit number
+				_tprintf(TEXT("REG_DWORD_LITTLE_ENDIAN\n")); 
+				break;
+			case REG_DWORD_BIG_ENDIAN: // 32-bit number
+				_tprintf(TEXT("REG_DWORD_BIG_ENDIAN\n")); 
+				break;
+			case REG_LINK: // Symbolic Link (unicode)
+				_tprintf(TEXT("REG_LINK\n")); 
+				break;
+			case REG_MULTI_SZ: // Multiple Unicode strings
+				_tprintf(TEXT("REG_MULTI_SZ\n")); 
+				break;
+			case REG_RESOURCE_LIST: // Resource list in the resource map
+				_tprintf(TEXT("REG_RESOURCE_LIST\n")); 
+				break;
+			case REG_FULL_RESOURCE_DESCRIPTOR:	// Resource list in the hardware description
+				_tprintf(TEXT("REG_FULL_RESOURCE_DESCRIPTOR\n")); 
+				break;
+			case REG_RESOURCE_REQUIREMENTS_LIST: 
+				_tprintf(TEXT("REG_RESOURCE_REQUIREMENTS_LIST\n")); 
+				break;
+			case REG_QWORD: // 64-bit number
+				_tprintf(TEXT("REG_QWORD\n"));
+				break;
+			default: 
+				_tprintf(TEXT("Unknown\n")); 
+				break;
+			}
+
+			// レジストリキーの解放
+			RegCloseKey(hKey);
+
+
+//------------------------------------------------------------------------------
+			_tprintf(_T("Hello World!!\n"));
+		}
+	}
+	else
+	{
+		// TODO: 必要に応じてエラー コードを変更してください。
+		_tprintf(_T("致命的なエラー: GetModuleHandle が失敗しました\n"));
+		nRetCode = 1;
+	}
+	getchar();
+	return 0;
+	//return nRetCode;
+}

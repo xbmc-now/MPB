@@ -1,0 +1,67 @@
+	DDX_Control(pDX, IDC_COMBO_TUNER, combTuner);
+
+			this->combTuner.EnableWindow(TRUE);
+			this->combTuner.EnableWindow(FALSE);
+			this->combTuner.EnableWindow(TRUE);
+			this->combTuner.EnableWindow(FALSE);
+			this->combTuner.EnableWindow(FALSE);
+			this->combTuner.EnableWindow(FALSE);
+			this->combTuner.EnableWindow(FALSE);
+	this->combTuner.ResetContent();
+
+
+
+	ON_CBN_SELCHANGE(IDC_COMBO_TUNER, &CMediaPortal_BonDlg::OnCbnSelchangeComboTuner)
+
+
+
+
+	int selONID = -1;
+	int selTSID = -1;
+	int selSID = -1;
+	CString bon = L"";
+
+	this->combTuner.GetWindowText(bon);
+	int sel = this->combService.GetCurSel();
+	if( sel != CB_ERR ){
+		DWORD index = (DWORD)this->combService.GetItemData(sel);
+		selONID = this->serviceList[index].originalNetworkID;
+		selTSID = this->serviceList[index].transportStreamID;
+		selSID = this->serviceList[index].serviceID;
+	}
+
+	strAdd.Format(L"%d", selONID );
+	WritePrivateProfileString(L"SET", L"LastONID", strAdd.GetBuffer(0), this->moduleIniPath);
+	strAdd.Format(L"%d", selTSID );
+	WritePrivateProfileString(L"SET", L"LastTSID", strAdd.GetBuffer(0), this->moduleIniPath);
+	strAdd.Format(L"%d", selSID );
+	WritePrivateProfileString(L"SET", L"LastSID", strAdd.GetBuffer(0), this->moduleIniPath);
+
+	WritePrivateProfileString(L"SET", L"LastBon", bon.GetBuffer(0), this->moduleIniPath);
+
+	strAdd.Format(L"%d", this->chkUDP.GetCheck() );
+	WritePrivateProfileString(L"SET", L"ChkUDP", strAdd.GetBuffer(0), this->moduleIniPath);
+	strAdd.Format(L"%d", this->chkTCP.GetCheck() );
+	WritePrivateProfileString(L"SET", L"ChkTCP", strAdd.GetBuffer(0), this->moduleIniPath);
+
+
+void CMediaPortal_BonDlg::OnCbnSelchangeComboTuner()
+{
+	// TODO: ここにコントロール通知ハンドラー コードを追加します。
+	KillTimer(TIMER_STATUS_UPDATE);
+	CString buff=L"";
+	this->combTuner.GetWindowText(buff);
+
+	if( buff.IsEmpty() == false ){
+		SelectBonDriver(buff.GetBuffer(0));
+
+		int sel = this->combService.GetCurSel();
+		if( sel != CB_ERR ){
+			DWORD index = (DWORD)this->combService.GetItemData(sel);
+			SelectService(this->serviceList[index].originalNetworkID, this->serviceList[index].transportStreamID, this->serviceList[index].serviceID, this->serviceList[index].space, this->serviceList[index].ch );
+		}
+	}
+	ChgIconStatus();
+	SetTimer(TIMER_STATUS_UPDATE, 1000, NULL);
+}
+
