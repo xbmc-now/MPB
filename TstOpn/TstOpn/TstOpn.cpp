@@ -45,6 +45,18 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 
 //------------------------------------------------------------------------------
 
+			std::map<CString,CString> data;
+			data["inaba"]="‚¢‚È‚Î";//’l‚ð“ü‚ê‚Ü‚·
+			data["minoru"]="‚Ý‚Ì‚é";
+
+
+
+			std::map<int,CString> data2;
+
+			data2[2]="‚Q‚Å‚·";//’l‚ð“ü‚ê‚Ü‚·
+			data2[3]="‚R‚Å‚·";
+
+
 
 /*
 			// “¯‚¶
