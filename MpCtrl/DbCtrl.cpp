@@ -100,9 +100,20 @@ void CDbCtrl::Close(MYSQL *mysql)
 	mysql_close(mysql);
 }
 
-DWORD CDbCtrl::StoreResult(MYSQL *mysql, MYSQL_RES results)
+DWORD CDbCtrl::StoreResult(MYSQL *mysql, MYSQL_RES **results)
 {
 	// ŒŸõŒ‹‰Êæ“¾
 	*results = mysql_store_result(mysql);
 	return mysql_errno(mysql);
+}
+
+MYSQL_ROW CDbCtrl::FetchRow(MYSQL_RES **results)
+{
+	return mysql_fetch_row(*results);
+}
+
+void CDbCtrl::FreeResult(MYSQL_RES **results)
+{
+	// ŒŸõŒ‹‰ÊŠi”[ƒGƒŠƒA‰ğ•ú
+	mysql_free_result(*results);
 }

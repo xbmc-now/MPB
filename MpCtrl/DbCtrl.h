@@ -29,7 +29,11 @@ public:
 
 	void Close(MYSQL *);
 
-	DWORD StoreResult(MYSQL *, MYSQL_RES);
+	DWORD StoreResult(MYSQL *, MYSQL_RES **);
+
+	MYSQL_ROW FetchRow(MYSQL_RES **);
+
+	void FreeResult(MYSQL_RES **);
 
 protected:
 	HANDLE lockEvent;

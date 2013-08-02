@@ -192,8 +192,18 @@ BOOL CMediaPortal_BonDlg::OnInitDialog()
 			this->log += L"クエリ失敗"; 
 		} else {
 			this->log += L"クエリ成功"; 
-			
-			this->dbCtrl.StoreResult(&this->mysql, this->results);
+
+			if (this->dbCtrl.StoreResult(&this->mysql, &this->results) != 0) {
+				this->log += L"結果取得失敗"; 
+			} else {
+				this->log += L"結果取得成功"; 
+				while (this->record = this->dbCtrl.FetchRow(&this->results)) {
+					this->log += CA2T(this->record[1], CP_UTF8);
+				}
+				this->dbCtrl.FreeResult(&this->results);
+			}
+
+
 		}
 		this->dbCtrl.Close(&this->mysql);
 	}
@@ -209,25 +219,11 @@ BOOL CMediaPortal_BonDlg::OnInitDialog()
 /*
 
 
-	// 検索結果取得
-	this->results = mysql_store_result(&this->mysql);
-	if (results == NULL || mysql_errno(&this->mysql) != 0) {
-		_tprintf(L"エラー発生: %s\n", mysql_error(&this->mysql));
-		return -3;
-	}
-
-
-	// レコードがなくなるまで検索結果を表示する
-	while (this->record = mysql_fetch_row(this->results)) {
-		//this->log += _stprintf(L"%s\n", CW2T(CA2W(this->record[1], CP_UTF8))); 
-		this->log += CW2T(CA2W(this->record[1], CP_UTF8)); 
-	}
 
 	// 検索結果格納エリア解放
 	mysql_free_result(this->results);
 
-	// MySQLへの接続を切断する
-	mysql_close(&this->mysql);
+
 */
 
 
