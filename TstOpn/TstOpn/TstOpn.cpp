@@ -8,7 +8,7 @@
 #include "my_global.h"
 #include "mysql.h"
 #include <string>
-
+#include <map>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -46,8 +46,8 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 //------------------------------------------------------------------------------
 
 			std::map<CString,CString> data;
-			data["inaba"]="‚¢‚È‚Î";//’l‚ð“ü‚ê‚Ü‚·
-			data["minoru"]="‚Ý‚Ì‚é";
+			data[L"inaba"]=L"‚¢‚È‚Î";//’l‚ð“ü‚ê‚Ü‚·
+			data[L"minoru"]=L"‚Ý‚Ì‚é";
 
 
 
@@ -56,7 +56,7 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 			data2[2]="‚Q‚Å‚·";//’l‚ð“ü‚ê‚Ü‚·
 			data2[3]="‚R‚Å‚·";
 
-
+			_tprintf(L"%s",data2[3]);
 
 /*
 			// “¯‚¶
