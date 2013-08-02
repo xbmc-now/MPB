@@ -8,13 +8,14 @@
 #include <stdio.h>
 #include "../Common/Util.h"
 
-#define MUTEX_TIME_SYNC_NAME TEXT("Global\\MediaPortal_Bon_TIME_SYNC")
 
 class CMpCtrl
 {
 public:
 	CMpCtrl(void);
 	~CMpCtrl(void);
+	
+	CDbCtrl dbCtrl;
 	void GetMpLogPath(CString& szValue);
 	DWORD GetMpServiceStatus();
 protected:

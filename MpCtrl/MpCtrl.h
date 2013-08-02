@@ -8,11 +8,13 @@
 #include <stdio.h>
 #include "../Common/Util.h"
 
+
 class CMpCtrl
 {
 public:
 	CMpCtrl(void);
 	~CMpCtrl(void);
+	
 	void GetMpLogPath(CString& szValue);
 	DWORD GetMpServiceStatus();
 protected:

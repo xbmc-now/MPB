@@ -1,7 +1,7 @@
 #pragma once
 
-#define MYSQL_HOST   "localhost"
-#define MYSQL_USER   "root"
-#define MYSQL_PASSWD "MediaPortal"
-#define MYSQL_DB     "mptvdb"
+#define MYSQL_HOST   L"localhost"
+#define MYSQL_USER   L"root"
+#define MYSQL_PASSWD L"MediaPortal"
+#define MYSQL_DB     L"mptvdb"
 

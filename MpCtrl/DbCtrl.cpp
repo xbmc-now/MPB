@@ -5,10 +5,11 @@
 
 CDbCtrl::CDbCtrl(void)
 {
-	//this->lockEvent = _CreateEvent(FALSE, TRUE, NULL);
-	//this->buffLockEvent = _CreateEvent(FALSE, TRUE, NULL);
+	this->lockEvent = _CreateEvent(FALSE, TRUE, NULL);
+	this->buffLockEvent = _CreateEvent(FALSE, TRUE, NULL);
 }
-/*
+
+
 CDbCtrl::~CDbCtrl(void)
 {
 	if( this->lockEvent != NULL ){
@@ -20,11 +21,12 @@ CDbCtrl::~CDbCtrl(void)
 		CloseHandle(this->buffLockEvent);
 		this->buffLockEvent = NULL;
 	}
-
 }
+
 
 BOOL CDbCtrl::Lock(LPCWSTR log, DWORD timeOut)
 {
+
 	if( this->lockEvent == NULL ){
 		return FALSE;
 	}
@@ -43,6 +45,7 @@ BOOL CDbCtrl::Lock(LPCWSTR log, DWORD timeOut)
 		return FALSE;
 	}
 	return TRUE;
+
 }
 
 void CDbCtrl::UnLock(LPCWSTR log)
@@ -54,26 +57,39 @@ void CDbCtrl::UnLock(LPCWSTR log)
 		OutputDebugString(log);
 	}
 }
-*/
-/*
+
+
+
 DWORD CDbCtrl::Connect(
 	MYSQL *mysql, 
-	const char *host, 
-	const char *user, 
-	const char *passwd, 
-	const char *db)
+	CString cshost, 
+	CString csuser, 
+	CString cspasswd, 
+	CString csdb)
 {
 	
+	const char host   = cshost.GetBuffer();
+	const char user   = csuser.GetBuffer();
+	const char passwd = cspasswd.GetBuffer();
+	const char db     = csdb.GetBuffer();
+
 	// MySQL接続ハンドラの初期化
-	mysql_init(&mysql);
+	mysql_init(mysql);
 
 	// 文字コードを設定しておく
-	mysql_options(&mysql, MYSQL_SET_CHARSET_NAME, "utf8");
-	mysql_options(&mysql, MYSQL_INIT_COMMAND, "SET NAMES utf8");
+	mysql_options(mysql, MYSQL_SET_CHARSET_NAME, "utf8");
+	mysql_options(mysql, MYSQL_INIT_COMMAND, "SET NAMES utf8");
 
 	// MySQLに接続する
-	mysql_real_connect(&mysql, host, user, passwd, db, 0, NULL, 0);
+	mysql_real_connect(mysql, host, user, passwd, db, 0, 0, 0);
 
-	return mysql_errno(&mysql);
+	return mysql_errno(mysql);
 }
-*/
+
+
+DWORD CDbCtrl::Query(
+	MYSQL *mysql, 
+	const char *sql)
+{
+	return mysql_query(mysql, sql);
+}

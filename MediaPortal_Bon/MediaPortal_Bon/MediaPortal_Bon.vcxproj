@@ -245,6 +245,8 @@
     <ClInclude Include="..\..\Common\TSPacketUtil.h" />
     <ClInclude Include="..\..\Common\Util.h" />
     <ClInclude Include="..\..\Common\WritePlugInUtil.h" />
+    <ClInclude Include="..\..\MpCtrl\DbCtrl.h" />
+    <ClInclude Include="..\..\MpCtrl\DbCtrlDef.h" />
     <ClInclude Include="..\..\MpCtrl\MpCtrl.h" />
     <ClInclude Include="CmdLineUtil.h" />
     <ClInclude Include="MediaPortal_Bon.h" />
@@ -290,6 +292,7 @@
     <ClCompile Include="..\..\Common\TSPacketUtil.cpp" />
     <ClCompile Include="..\..\Common\Util.cpp" />
     <ClCompile Include="..\..\Common\WritePlugInUtil.cpp" />
+    <ClCompile Include="..\..\MpCtrl\DbCtrl.cpp" />
     <ClCompile Include="..\..\MpCtrl\MpCtrl.cpp" />
     <ClCompile Include="CmdLineUtil.cpp" />
     <ClCompile Include="MediaPortal_Bon.cpp" />

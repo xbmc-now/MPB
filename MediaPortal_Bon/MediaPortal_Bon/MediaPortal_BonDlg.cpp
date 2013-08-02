@@ -6,7 +6,8 @@
 #include "MediaPortal_Bon.h"
 #include "MediaPortal_BonDlg.h"
 #include "afxdialogex.h"
-
+#include "my_global.h"
+#include "mysql.h"
 
 #include "../../Common/TimeUtil.h"
 
@@ -178,6 +179,69 @@ BOOL CMediaPortal_BonDlg::OnInitDialog()
 	this->mpPreLogSz = 0;
 	//this->log += this->mpLogPath;
 
+
+	this->results = NULL;
+
+
+	if (this->dbCtrl.Connect(&this->mysql, MYSQL_HOST, MYSQL_USER, MYSQL_PASSWD, MYSQL_DB) != 0) {
+		this->log += L"DB接続失敗"; 
+	} else {
+		this->log += L"DB接続成功"; 
+		this->dbCtrl.Query(&this->mysql, "SELECT idChannel, displayName FROM channel;");
+		
+	}
+
+
+	//mysql_query(&this->mysql, "SELECT idChannel, displayName FROM channel;");
+	
+	// MySQLへの接続を切断する
+	mysql_close(&this->mysql);
+
+	//this->dbCtrl.Query(mysql, "SELECT idChannel, displayName FROM channel;");
+	//this->dbCtrl.Query(this->mysql, CT2A(L"SELECT idChannel, displayName FROM channel;",CP_UTF8));
+/*
+	// 文字コードを設定しておく
+	//mysql_options(&mysql, MYSQL_SET_CHARSET_NAME, "sjis");
+
+	//mysql_set_character_set(&mysql, "utf8");
+	//
+	//mysql_set_character_set(&mysql, "utf8");
+	//mysql_query(&mysql,"SET NAMES utf8");
+
+	//mysql_options(&mysql, MYSQL_SET_CHARSET_NAME, "utf8");
+	
+	// MySQLに接続する
+	mysql_real_connect(&mysql, NULL, user_name, passwd, db_name, 0, 0, 0);
+	if (mysql_errno(&mysql) != 0) {
+		_tprintf(L"エラー発生: %s\n", mysql_error(&mysql));
+		return -1;
+	}
+
+	// MySQLへの接続を切断する
+	mysql_close(&this->mysql);
+*/
+	//this->log += CW2T(CA2W(host)); 
+
+
+
+	//this->dbCtrl.Query(this->mysql, CT2A(L"SELECT idChannel, displayName FROM channel;",CP_UTF8));
+/*
+
+	if (this->dbCtrl.Connect(this->mysql, host, user, passwd, db) != 0) {
+		this->log += L"DB接続失敗"; 
+	} else {
+		this->log += L"DB接続成功"; 
+	}
+
+
+	mysql_query(&this->mysql, "SELECT idChannel, displayName FROM channel;");
+
+	if (this->dbCtrl.Query(this->mysql, "SELECT idChannel, displayName FROM channel") != 0) {
+		this->log += L"クエリ失敗"; 
+	} else {
+		this->log += L"クエリ成功"; 
+	}
+*/
 
 /*
 	const char host[]   = MYSQL_HOST;

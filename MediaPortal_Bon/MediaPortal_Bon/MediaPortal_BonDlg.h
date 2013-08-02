@@ -10,7 +10,8 @@
 #include "SettingDlg.h"
 #include "my_global.h"
 #include "mysql.h"
-
+#include "../../MpCtrl/DbCtrl.h"
+#include "../../MpCtrl/DbCtrlDef.h"
 
 // CMediaPortal_BonDlg ダイアログ
 class CMediaPortal_BonDlg : public CDialogEx
@@ -89,7 +90,7 @@ protected:
 	MYSQL_RES *results;
 	MYSQL_ROW record;
 
-
+	CDbCtrl dbCtrl;
 
 	DWORD mpServiceStat;
 	CString mpLogPath;

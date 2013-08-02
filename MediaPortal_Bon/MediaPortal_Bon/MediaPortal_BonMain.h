@@ -2,11 +2,12 @@
 
 #include "../../BonCtrl/BonCtrl.h"
 #include "../../MpCtrl/MpCtrl.h"
-#include "../../MpCtrl/DbCtrl.h"
-#include "../../MpCtrl/DbCtrlDef.h"
+//#include "../../MpCtrl/DbCtrl.h"
+//#include "../../MpCtrl/DbCtrlDef.h"
 #include "../../Common/PathUtil.h"
 #include "../../Common/TimeUtil.h"
 #include "../../Common/PipeServer.h"
+
 
 class CMediaPortal_BonMain
 {
@@ -271,12 +272,13 @@ public:
 		const char *db
 	);
 */
+
 protected:
 	HWND msgWnd;
 
 	CBonCtrl bonCtrl;
 	CMpCtrl mpCtrl;
-	CDbCtrl dbCtrl;
+	//CDbCtrl dbCtrl;
 	CPipeServer pipeServer;
 
 	vector<wstring> recFolderList;
