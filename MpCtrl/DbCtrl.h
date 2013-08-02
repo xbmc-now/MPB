@@ -26,7 +26,7 @@ public:
 
 	DWORD CDbCtrl::Query(
 		MYSQL *, 
-		const char *);
+		CString);
 
 protected:
 	HANDLE lockEvent;
