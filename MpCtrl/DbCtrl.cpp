@@ -87,10 +87,22 @@ DWORD CDbCtrl::Connect(
 }
 
 
-DWORD CDbCtrl::Query(
-	MYSQL *mysql, 
-	CString cssql)
+DWORD CDbCtrl::Query(MYSQL *mysql, CString cssql)
 {
+	// CString Å® const char(utf8)
 	CT2CA sql(cssql, CP_UTF8);
-	return mysql_query(mysql, sql);
+	mysql_query(mysql, sql);
+	return mysql_errno(mysql);
+}
+
+void CDbCtrl::Close(MYSQL *mysql)
+{
+	mysql_close(mysql);
+}
+
+DWORD CDbCtrl::StoreResult(MYSQL *mysql, MYSQL_RES results)
+{
+	// åüçıåãâ éÊìæ
+	*results = mysql_store_result(mysql);
+	return mysql_errno(mysql);
 }

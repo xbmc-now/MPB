@@ -24,9 +24,12 @@ public:
 		CString, 
 		CString);
 
-	DWORD CDbCtrl::Query(
-		MYSQL *, 
-		CString);
+	DWORD Query(MYSQL *, CString);
+
+
+	void Close(MYSQL *);
+
+	DWORD StoreResult(MYSQL *, MYSQL_RES);
 
 protected:
 	HANDLE lockEvent;
