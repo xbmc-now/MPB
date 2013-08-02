@@ -67,11 +67,11 @@ DWORD CDbCtrl::Connect(
 	CString cspasswd, 
 	CString csdb)
 {
-	
-	const char host   = cshost.GetBuffer();
-	const char user   = csuser.GetBuffer();
-	const char passwd = cspasswd.GetBuffer();
-	const char db     = csdb.GetBuffer();
+	// CString ¨ const char(utf8)
+	CT2CA host(cshost, CP_UTF8);
+	CT2CA user(csuser, CP_UTF8);
+	CT2CA passwd(cspasswd, CP_UTF8);
+	CT2CA db(csdb, CP_UTF8);
 
 	// MySQLÚ‘±ƒnƒ“ƒhƒ‰‚Ì‰Šú‰»
 	mysql_init(mysql);
@@ -89,7 +89,8 @@ DWORD CDbCtrl::Connect(
 
 DWORD CDbCtrl::Query(
 	MYSQL *mysql, 
-	const char *sql)
+	CString cssql)
 {
+	CT2CA sql(cssql, CP_UTF8);
 	return mysql_query(mysql, sql);
 }

@@ -187,7 +187,7 @@ BOOL CMediaPortal_BonDlg::OnInitDialog()
 		this->log += L"DBÚ‘±Ž¸”s"; 
 	} else {
 		this->log += L"DBÚ‘±¬Œ÷"; 
-		this->dbCtrl.Query(&this->mysql, "SELECT idChannel, displayName FROM channel;");
+		this->dbCtrl.Query(&this->mysql, L"SELECT idChannel, displayName FROM channel;");
 		
 	}
 
