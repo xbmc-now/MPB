@@ -107,6 +107,10 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 			//CT2A tst_mt2autf8(_T("サンプルUTF8"),CP_UTF8);
 			//printf("%s",tst_mt2autf8);
 
+			// TCHAR→const char(utf8)
+			//CT2CA tst_mt2cautf8(_T("サンプルUTF8"),CP_UTF8);
+			//printf("%s",tst_mt2cautf8);
+
 
 //------------------------------------------------------------------------------
 			_tprintf(_T("Hello World!!\n"));
