@@ -58,8 +58,15 @@ void CDbCtrl::UnLock(LPCWSTR log)
 	}
 }
 
-
-
+// データベース接続
+//    戻り値：
+//        エラーコード
+//    引数：
+//        [OUT]：ハンドル
+//        [IN] ：ホスト
+//        [IN] ：ユーザー
+//        [IN] ：パスワード
+//        [IN] ：データベース
 DWORD CDbCtrl::Connect(
 	MYSQL *mysql, 
 	CString cshost, 
@@ -86,7 +93,20 @@ DWORD CDbCtrl::Connect(
 	return mysql_errno(mysql);
 }
 
+// データベース切断
+//    引数：
+//        [OUT]：ハンドル
+void CDbCtrl::Close(MYSQL *mysql)
+{
+	mysql_close(mysql);
+}
 
+// クエリ実行
+//    戻り値：
+//        エラーコード
+//    引数：
+//        [OUT]：ハンドル
+//        [IN] ：SQL
 DWORD CDbCtrl::Query(MYSQL *mysql, CString cssql)
 {
 	// CString → const char(utf8)
@@ -95,11 +115,12 @@ DWORD CDbCtrl::Query(MYSQL *mysql, CString cssql)
 	return mysql_errno(mysql);
 }
 
-void CDbCtrl::Close(MYSQL *mysql)
-{
-	mysql_close(mysql);
-}
-
+// 結果取り出し
+//    戻り値：
+//        エラーコード
+//    引数：
+//        [OUT]：ハンドル
+//        [OUT]：結果セット
 DWORD CDbCtrl::StoreResult(MYSQL *mysql, MYSQL_RES **results)
 {
 	// 検索結果取得
@@ -107,11 +128,19 @@ DWORD CDbCtrl::StoreResult(MYSQL *mysql, MYSQL_RES **results)
 	return mysql_errno(mysql);
 }
 
+// 一行取り出し
+//    戻り値：
+//        MYSQL_ROW
+//    引数：
+//        [OUT]：結果セット
 MYSQL_ROW CDbCtrl::FetchRow(MYSQL_RES **results)
 {
 	return mysql_fetch_row(*results);
 }
 
+// 結果解放
+//    引数：
+//        [OUT]：結果セット
 void CDbCtrl::FreeResult(MYSQL_RES **results)
 {
 	// 検索結果格納エリア解放
