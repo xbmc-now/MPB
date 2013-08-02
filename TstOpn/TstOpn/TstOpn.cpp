@@ -46,8 +46,34 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 //------------------------------------------------------------------------------
 
 			std::map<CString,CString> data;
-			data[L"inaba"]=L"いなば";//値を入れます
-			data[L"minoru"]=L"みのる";
+
+
+			//値を入れます
+			data[L"inaba"]=L"いなば";
+
+			// 要素を追加する
+			data.insert( map<CString,CString>::value_type( L"minoru", L"みのる" ) );
+
+
+			// 要素を出力する
+			map<CString,CString>::iterator it = data.begin();
+			while( it != data.end() )
+			{
+				cout << (*it).first << ":" << (*it).second << endl;
+				++it;
+			}
+
+			// 要素数を出力する
+			cout << "要素数：" << (unsigned int)data.size() << endl;
+
+			// 要素の全削除
+			data.clear();
+
+			// 全削除されているか確認
+			if( data.empty() )
+			{
+				cout << "空です" << endl;
+			}
 
 
 
@@ -55,6 +81,8 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 
 			data2[2]="２です";//値を入れます
 			data2[3]="３です";
+
+
 
 			_tprintf(L"%s",data2[3]);
 
