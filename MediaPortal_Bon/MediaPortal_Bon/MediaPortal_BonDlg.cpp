@@ -181,22 +181,31 @@ BOOL CMediaPortal_BonDlg::OnInitDialog()
 
 
 
-/*
+
 	this->results = NULL;
 	if (this->dbCtrl.Connect(&this->mysql, MYSQL_HOST, MYSQL_USER, MYSQL_PASSWD, MYSQL_DB) != 0) {
-		this->log += L"DB接続失敗"; 
+		this->log += _T("DB接続失敗");
 	} else {
-		this->log += L"DB接続成功"; 
+		this->log += _T("DB接続成功");
 
-		if (this->dbCtrl.Query(&this->mysql, L"SELECT idChannel, displayName FROM channel;") != 0) {
-			this->log += L"クエリ失敗"; 
+		std::map<CString,int> lockTable;
+		lockTable[_T("channel")] = 1;
+		lockTable[_T("history")] = 2;
+		if (this->dbCtrl.LockTable(&this->mysql, lockTable) != 0) {
+			this->log += _T("ロック失敗");
 		} else {
-			this->log += L"クエリ成功"; 
+			this->log += _T("ロック成功");
+		}
+/*
+		if (this->dbCtrl.Query(&this->mysql, _T("SELECT idChannel, displayName FROM channel;")) != 0) {
+			this->log += _T("クエリ失敗");
+		} else {
+			this->log += _T("クエリ成功");
 
 			if (this->dbCtrl.StoreResult(&this->mysql, &this->results) != 0) {
-				this->log += L"結果取得失敗"; 
+				this->log += _T("結果取得失敗");
 			} else {
-				this->log += L"結果取得成功"; 
+				this->log += _T("結果取得成功");
 				while (this->record = this->dbCtrl.FetchRow(&this->results)) {
 					this->log += CA2T(this->record[1], CP_UTF8);
 				}
@@ -205,21 +214,18 @@ BOOL CMediaPortal_BonDlg::OnInitDialog()
 
 
 		}
+*/
+		if (this->dbCtrl.UnlockTable(&this->mysql) != 0) {
+			this->log += _T("アンロック失敗");
+		} else {
+			this->log += _T("アンロック成功");
+		}
 		this->dbCtrl.Close(&this->mysql);
 	}
-*/
+/**/
 
 
-	std::map<CString,CString> data;
 
-
-	//値を入れます
-	data[L"inaba"]=L"いなば";
-
-
-	this->dbCtrl.SetMyName(data);
-
-	this->log += data[L"inaba"];
 
 
 

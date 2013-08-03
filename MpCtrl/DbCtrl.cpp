@@ -57,6 +57,16 @@ void CDbCtrl::UnLock(LPCWSTR log)
 	}
 }
 
+// エラーコード取得
+//    戻り値：
+//        エラーコード
+//    引数：
+//        [OUT]：ハンドル
+DWORD CDbCtrl::ErrNo(MYSQL *mysql)
+{
+	return mysql_errno(mysql);
+}
+
 // データベース接続
 //    戻り値：
 //        エラーコード
@@ -89,7 +99,7 @@ DWORD CDbCtrl::Connect(
 	// MySQLに接続する
 	mysql_real_connect(mysql, host, user, passwd, db, 0, 0, 0);
 
-	return mysql_errno(mysql);
+	return this->ErrNo(mysql);
 }
 
 // データベース切断
@@ -111,7 +121,7 @@ DWORD CDbCtrl::Query(MYSQL *mysql, CString cssql)
 	// CString → const char(utf8)
 	CT2CA sql(cssql, CP_UTF8);
 	mysql_query(mysql, sql);
-	return mysql_errno(mysql);
+	return this->ErrNo(mysql);
 }
 
 // 結果取り出し
@@ -124,7 +134,7 @@ DWORD CDbCtrl::StoreResult(MYSQL *mysql, MYSQL_RES **results)
 {
 	// 検索結果取得
 	*results = mysql_store_result(mysql);
-	return mysql_errno(mysql);
+	return this->ErrNo(mysql);
 }
 
 // 一行取り出し
@@ -146,7 +156,75 @@ void CDbCtrl::FreeResult(MYSQL_RES **results)
 	mysql_free_result(*results);
 }
 
-void CDbCtrl::SetMyName(map<CString, CString> &mapBuff)
+// ロックテーブル
+//    戻り値：
+//        エラーコード
+//    引数：
+//        [OUT]：ハンドル
+//        [OUT]：ロックテーブルハッシュ(テーブル名,1:読み込み 2:書き込み)
+DWORD CDbCtrl::LockTable(MYSQL *mysql, map<CString, int> &tblHash)
 {
-	mapBuff[L"inaba"]=L"私の名前";
+	std::map<int,CString> modeArr;
+	modeArr[1] = _T("READ");
+	modeArr[2] = _T("WRITE");
+
+	CString sql = _T("LOCK TABLES ");
+	map<CString,int>::iterator it = tblHash.begin();
+	while( it != tblHash.end() )
+	{
+		sql += (*it).first + _T(" ") + modeArr[tblHash[(*it).first]];
+		++it;
+		if( it != tblHash.end() ) sql += _T(", ");
+	}
+	this->Query(mysql, sql);
+	return this->ErrNo(mysql);
 }
+
+// アンロックテーブル
+//    戻り値：
+//        エラーコード
+//    引数：
+//        [OUT]：ハンドル
+DWORD CDbCtrl::UnlockTable(MYSQL *mysql)
+{
+	CString sql = _T("UNLOCK TABLES");
+	this->Query(mysql, sql);
+	return this->ErrNo(mysql);
+}
+
+// トランザクション開始
+//    戻り値：
+//        エラーコード
+//    引数：
+//        [OUT]：ハンドル
+DWORD CDbCtrl::Begin(MYSQL *mysql)
+{
+	CString sql = _T("BEGIN");
+	this->Query(mysql, sql);
+	return this->ErrNo(mysql);
+}
+
+// コミット
+//    戻り値：
+//        エラーコード
+//    引数：
+//        [OUT]：ハンドル
+DWORD CDbCtrl::Commit(MYSQL *mysql)
+{
+	CString sql = _T("COMMIT");
+	this->Query(mysql, sql);
+	return this->ErrNo(mysql);
+}
+
+// ロールバック
+//    戻り値：
+//        エラーコード
+//    引数：
+//        [OUT]：ハンドル
+DWORD CDbCtrl::Rollback(MYSQL *mysql)
+{
+	CString sql = _T("ROLLBACK");
+	this->Query(mysql, sql);
+	return this->ErrNo(mysql);
+}
+

@@ -12,6 +12,13 @@ public:
 	CDbCtrl(void);
 	~CDbCtrl(void);
 
+	// エラーコード取得
+	//    戻り値：
+	//        エラーコード
+	//    引数：
+	//        [OUT]：ハンドル
+	DWORD ErrNo(MYSQL *);
+
 	// データベース接続
 	//    戻り値：
 	//        エラーコード
@@ -61,7 +68,41 @@ public:
 	//        [OUT]：結果セット
 	void FreeResult(MYSQL_RES **);
 
-	void SetMyName(map<CString, CString> &);
+	// ロックテーブル
+	//    戻り値：
+	//        エラーコード
+	//    引数：
+	//        [OUT]：ハンドル
+	//        [OUT]：ロックテーブルハッシュ(テーブル名,1:読み込み 2:書き込み)
+	DWORD LockTable(MYSQL *, map<CString, int> &);
+
+	// アンロックテーブル
+	//    戻り値：
+	//        エラーコード
+	//    引数：
+	//        [OUT]：ハンドル
+	DWORD UnlockTable(MYSQL *);
+
+	// トランザクション開始
+	//    戻り値：
+	//        エラーコード
+	//    引数：
+	//        [OUT]：ハンドル
+	DWORD Begin(MYSQL *);
+
+	// コミット
+	//    戻り値：
+	//        エラーコード
+	//    引数：
+	//        [OUT]：ハンドル
+	DWORD Commit(MYSQL *);
+
+	// ロールバック
+	//    戻り値：
+	//        エラーコード
+	//    引数：
+	//        [OUT]：ハンドル
+	DWORD Rollback(MYSQL *);
 
 protected:
 	HANDLE lockEvent;
