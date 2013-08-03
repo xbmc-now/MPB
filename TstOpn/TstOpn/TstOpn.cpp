@@ -45,6 +45,8 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 
 //------------------------------------------------------------------------------
 
+
+
 			std::map<CString,CString> data;
 
 
@@ -54,12 +56,13 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 			// 要素を追加する
 			data.insert( map<CString,CString>::value_type( L"minoru", L"みのる" ) );
 
-
 			// 要素を出力する
 			map<CString,CString>::iterator it = data.begin();
 			while( it != data.end() )
 			{
-				cout << (*it).first << ":" << (*it).second << endl;
+				_tprintf((*it).first)s;
+				_tprintf(data[(*it).first]);
+				//cout << (*it).first << ":" << (*it).second << endl;
 				++it;
 			}
 
@@ -75,7 +78,24 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 				cout << "空です" << endl;
 			}
 
-
+/*
+#include <map>
+#include <string>
+using namespace std;
+ 
+void SetMyName(map<int, string> &mapBuff)
+{
+	mapBuff[5] = "私の名前"
+}
+ 
+void main()
+{
+	map<int, string> mapName;
+ 
+	SetMyName(mapName);
+	printf("%s\n", mapName[5].c_str());
+}
+*/
 
 			std::map<int,CString> data2;
 

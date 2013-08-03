@@ -180,9 +180,9 @@ BOOL CMediaPortal_BonDlg::OnInitDialog()
 	//this->log += this->mpLogPath;
 
 
+
+/*
 	this->results = NULL;
-
-
 	if (this->dbCtrl.Connect(&this->mysql, MYSQL_HOST, MYSQL_USER, MYSQL_PASSWD, MYSQL_DB) != 0) {
 		this->log += L"DBÚ‘±¸”s"; 
 	} else {
@@ -207,24 +207,25 @@ BOOL CMediaPortal_BonDlg::OnInitDialog()
 		}
 		this->dbCtrl.Close(&this->mysql);
 	}
-
-
-
-
-
-
-
-
-
-/*
-
-
-
-	// ŒŸõŒ‹‰ÊŠi”[ƒGƒŠƒA‰ğ•ú
-	mysql_free_result(this->results);
-
-
 */
+
+
+	std::map<CString,CString> data;
+
+
+	//’l‚ğ“ü‚ê‚Ü‚·
+	data[L"inaba"]=L"‚¢‚È‚Î";
+
+
+	this->dbCtrl.SetMyName(data);
+
+	this->log += data[L"inaba"];
+
+
+
+
+
+
 
 
 

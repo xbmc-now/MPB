@@ -12,6 +12,8 @@
 #include "mysql.h"
 #include "../../MpCtrl/DbCtrl.h"
 #include "../../MpCtrl/DbCtrlDef.h"
+#include <map>
+using namespace std;
 
 // CMediaPortal_BonDlg ダイアログ
 class CMediaPortal_BonDlg : public CDialogEx

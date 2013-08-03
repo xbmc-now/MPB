@@ -1,14 +1,10 @@
 
 #include <windows.h>
-#include <winsvc.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <stdio.h>
 #include "../Common/Util.h"
 #include "my_global.h"
 #include "mysql.h"
-
+#include <map>
+using namespace std;
 
 class CDbCtrl
 {
@@ -64,6 +60,8 @@ public:
 	//    引数：
 	//        [OUT]：結果セット
 	void FreeResult(MYSQL_RES **);
+
+	void SetMyName(map<CString, CString> &);
 
 protected:
 	HANDLE lockEvent;
