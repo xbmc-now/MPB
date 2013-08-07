@@ -1,5 +1,5 @@
 #include "StdAfx.h"
-#include "ChSetUtil.h"
+#include "ChSetUtilMp.h"
 
 #include "../Common/EpgTimerUtil.h"
 
