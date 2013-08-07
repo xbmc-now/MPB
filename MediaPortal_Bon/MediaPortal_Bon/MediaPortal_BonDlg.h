@@ -13,6 +13,7 @@
 #include "../../MpCtrl/DbCtrl.h"
 #include "../../MpCtrl/DbCtrlDef.h"
 #include <map>
+#include <regex>
 using namespace std;
 
 // CMediaPortal_BonDlg ダイアログ
@@ -45,7 +46,6 @@ protected:
 	void ChgIconStatus();
 
 	void ReloadBonDriver();
-	void ReloadServiceList(BOOL ini = FALSE);
 	DWORD SelectBonDriver(LPCWSTR fileName, BOOL ini = FALSE);
 	DWORD SelectService(WORD ONID, WORD TSID, WORD SID);
 	DWORD SelectService(WORD ONID, WORD TSID, WORD SID,	DWORD space, DWORD ch);
@@ -101,11 +101,10 @@ protected:
 	CString mpLogStr;
 	fpos_t mpNowLogSz;
 	fpos_t mpPreLogSz;
-
+	CString mpStartTimeShifting;
 
 public:
 	CComboBox combTuner;
-	CComboBox combService;
 	CButton btnChScan;
 	CButton btnSet;
 	CButton btnCancel;
@@ -122,7 +121,6 @@ public:
 	virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnTaskbarCreated(WPARAM, LPARAM);
 	afx_msg void OnCbnSelchangeComboTuner();
-	afx_msg void OnCbnSelchangeComboService();
 	afx_msg void OnBnClickedButtonSet();
 	afx_msg void OnBnClickedButtonChscan();
 	afx_msg void OnBnClickedButtonCancel();

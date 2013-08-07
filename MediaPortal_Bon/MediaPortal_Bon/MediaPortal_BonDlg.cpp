@@ -79,7 +79,6 @@ void CMediaPortal_BonDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_COMBO_TUNER, combTuner);
-	DDX_Control(pDX, IDC_COMBO_SERVICE, combService);
 	DDX_Control(pDX, IDC_BUTTON_CHSCAN, btnChScan);
 	DDX_Control(pDX, IDC_BUTTON_SET, btnSet);
 	DDX_Control(pDX, IDC_BUTTON_CANCEL, btnCancel);
@@ -99,7 +98,6 @@ BEGIN_MESSAGE_MAP(CMediaPortal_BonDlg, CDialogEx)
 	ON_WM_SIZE()
 	ON_REGISTERED_MESSAGE(CMediaPortal_BonDlg::taskbarCreated, OnTaskbarCreated)
 	ON_CBN_SELCHANGE(IDC_COMBO_TUNER, &CMediaPortal_BonDlg::OnCbnSelchangeComboTuner)
-	ON_CBN_SELCHANGE(IDC_COMBO_SERVICE, &CMediaPortal_BonDlg::OnCbnSelchangeComboService)
 	ON_BN_CLICKED(IDC_BUTTON_SET, &CMediaPortal_BonDlg::OnBnClickedButtonSet)
 	ON_BN_CLICKED(IDC_BUTTON_CHSCAN, &CMediaPortal_BonDlg::OnBnClickedButtonChscan)
 	ON_BN_CLICKED(IDC_BUTTON_CANCEL, &CMediaPortal_BonDlg::OnBnClickedButtonCancel)
@@ -245,12 +243,6 @@ BOOL CMediaPortal_BonDlg::OnInitDialog()
 			this->initTSID = -1;
 			this->initSID = -1;
 			Sleep(this->initChgWait);
-		}else{
-			int sel = this->combService.GetCurSel();
-			if( sel != CB_ERR ){
-				DWORD index = (DWORD)this->combService.GetItemData(sel);
-				SelectService(this->serviceList[index].originalNetworkID, this->serviceList[index].transportStreamID, this->serviceList[index].serviceID, this->serviceList[index].space, this->serviceList[index].ch );
-			}
 		}
 	}
 
@@ -403,20 +395,6 @@ void CMediaPortal_BonDlg::OnDestroy()
 	CString bon = L"";
 
 	this->combTuner.GetWindowText(bon);
-	int sel = this->combService.GetCurSel();
-	if( sel != CB_ERR ){
-		DWORD index = (DWORD)this->combService.GetItemData(sel);
-		selONID = this->serviceList[index].originalNetworkID;
-		selTSID = this->serviceList[index].transportStreamID;
-		selSID = this->serviceList[index].serviceID;
-	}
-
-	strAdd.Format(L"%d", selONID );
-	WritePrivateProfileString(L"SET", L"LastONID", strAdd.GetBuffer(0), this->moduleIniPath);
-	strAdd.Format(L"%d", selTSID );
-	WritePrivateProfileString(L"SET", L"LastTSID", strAdd.GetBuffer(0), this->moduleIniPath);
-	strAdd.Format(L"%d", selSID );
-	WritePrivateProfileString(L"SET", L"LastSID", strAdd.GetBuffer(0), this->moduleIniPath);
 
 	WritePrivateProfileString(L"SET", L"LastBon", bon.GetBuffer(0), this->moduleIniPath);
 
@@ -496,7 +474,7 @@ void CMediaPortal_BonDlg::OnTimer(UINT_PTR nIDEvent)
 				DWORD err = 0;
 				FILE *fp;
 				TCHAR str[1024];
-				if(this->mpServiceStat == 0){
+				if(this->mpServiceStat == 0){ // TVServiceサービス起動中
 					
 					if((err = _tfopen_s(&fp,this->mpLogPath, L"r, ccs=UTF-8")) != 0 ) {
 						this->log.Format(L"tv.logオープンエラー\r\n");
@@ -513,13 +491,28 @@ void CMediaPortal_BonDlg::OnTimer(UINT_PTR nIDEvent)
 
 						if(this->mpPreLogSz < this->mpNowLogSz){
 							fsetpos(fp, &this->mpPreLogSz); // シーク
-							this->log = L"";
+							//this->log = L"";
 							//this->log.Format(L"増えた%I64dから%I64d\r\n",this->mpPreLogSz,this->mpNowLogSz);
+
+							std::wregex re(L"[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{6} \[.*\]: Controller: StartTimeShifting (?!started on card:).* ([0-9]+)$");
+							this->mpStartTimeShifting = NULL;
 							while ( fgetws(str, 1024, fp) != NULL ) { // 追加分を表示
-								this->log += str;
-								this->log += L"\r\n";
+								//this->log += str;
+								//this->log += L"\r\n";
+								std::wstring text(str);
+								std::wsmatch m;
+
+								if( std::regex_search(text, m, re) ) this->mpStartTimeShifting = m[2];
 							}
 							this->mpPreLogSz = this->mpNowLogSz; // ファイルサイズを代入
+							if (this->mpStartTimeShifting.IsEmpty()){
+								this->log = L"チャンネル変更";
+								SelectService(this->initONID, this->initTSID, this->initSID);
+								this->initONID = -1;
+								this->initTSID = -1;
+								this->initSID = -1;
+								Sleep(this->initChgWait);
+							}
 						}
 
 						fclose(fp);
@@ -552,12 +545,7 @@ void CMediaPortal_BonDlg::OnTimer(UINT_PTR nIDEvent)
 					KillTimer(TIMER_CHSCAN_STATSU);
 					this->log = L"終了しました\r\n";
 					SetDlgItemText(IDC_EDIT_LOG, this->log);
-					ReloadServiceList();
-					int sel = this->combService.GetCurSel();
-					if( sel != CB_ERR ){
-						DWORD index = (DWORD)this->combService.GetItemData(sel);
-						SelectService(this->serviceList[index].originalNetworkID, this->serviceList[index].transportStreamID, this->serviceList[index].serviceID, this->serviceList[index].space, this->serviceList[index].ch );
-					}
+
 					BtnUpdate(GUI_NORMAL);
 					ChgIconStatus();
 
@@ -595,19 +583,7 @@ void CMediaPortal_BonDlg::OnTimer(UINT_PTR nIDEvent)
 				EPGCAP_SERVICE_INFO info;
 				DWORD status = this->main.GetEpgCapStatus(&info);
 				if( status == ST_WORKING ){
-					int sel = this->combService.GetCurSel();
-					if( sel != CB_ERR ){
-						DWORD index = (DWORD)this->combService.GetItemData(sel);
-						if( info.ONID != this->serviceList[index].originalNetworkID ||
-							info.TSID != this->serviceList[index].transportStreamID ||
-							info.SID != this->serviceList[index].serviceID ){
-						}
-						this->initONID = info.ONID;
-						this->initTSID = info.TSID;
-						this->initSID = info.SID;
-						ReloadServiceList();
-						this->main.SetSID(info.SID);
-					}
+
 
 					this->log = L"EPG取得中\r\n";
 					SetDlgItemText(IDC_EDIT_LOG, this->log);
@@ -631,9 +607,7 @@ void CMediaPortal_BonDlg::OnTimer(UINT_PTR nIDEvent)
 				CString buff=L"";
 				wstring bonFile = L"";
 				this->main.GetOpenBonDriver(&bonFile);
-				CString strBuff2=L"";
-				this->combService.GetWindowText(strBuff2);
-				buff.Format(L"%s ： %s", bonFile.c_str(), strBuff2.GetBuffer(0));
+
 
 				HICON setIcon = this->iconBlue;
 				if( this->main.IsRec() == TRUE ){
@@ -669,9 +643,6 @@ void CMediaPortal_BonDlg::OnSize(UINT nType, int cx, int cy)
 		CString buff=L"";
 		wstring bonFile = L"";
 		this->main.GetOpenBonDriver(&bonFile);
-		CString strBuff2=L"";
-		this->combService.GetWindowText(strBuff2);
-		buff.Format(L"%s ： %s", bonFile.c_str(), strBuff2.GetBuffer(0));
 
 		HICON setIcon = this->iconBlue;
 		if( this->main.IsRec() == TRUE ){
@@ -716,7 +687,6 @@ LRESULT CMediaPortal_BonDlg::WindowProc(UINT message, WPARAM wParam, LPARAM lPar
 			this->initONID = ONID;
 			this->initTSID = TSID;
 			this->initSID = SID;
-			ReloadServiceList();
 			ChgIconStatus();
 		}
 		break;
@@ -809,9 +779,6 @@ void CMediaPortal_BonDlg::ChgIconStatus(){
 		CString buff=L"";
 		wstring bonFile = L"";
 		this->main.GetOpenBonDriver(&bonFile);
-		CString strBuff2=L"";
-		this->combService.GetWindowText(strBuff2);
-		buff.Format(L"%s ： %s", bonFile.c_str(), strBuff2.GetBuffer(0));
 
 		HICON setIcon = this->iconBlue;
 		if( this->main.IsRec() == TRUE ){
@@ -835,9 +802,6 @@ LRESULT CMediaPortal_BonDlg::OnTaskbarCreated(WPARAM, LPARAM)
 		CString buff=L"";
 		wstring bonFile = L"";
 		this->main.GetOpenBonDriver(&bonFile);
-		CString strBuff2=L"";
-		this->combService.GetWindowText(strBuff2);
-		buff.Format(L"%s ： %s", bonFile.c_str(), strBuff2.GetBuffer(0));
 
 		HICON setIcon = this->iconBlue;
 		if( this->main.IsRec() == TRUE ){
@@ -865,49 +829,42 @@ void CMediaPortal_BonDlg::BtnUpdate(DWORD guiMode)
 	switch(guiMode){
 		case GUI_NORMAL:
 			this->combTuner.EnableWindow(TRUE);
-			this->combService.EnableWindow(TRUE);
 			this->btnChScan.EnableWindow(TRUE);
 			this->btnSet.EnableWindow(TRUE);
 			this->btnCancel.EnableWindow(FALSE);
 			break;
 		case GUI_CANCEL_ONLY:
 			this->combTuner.EnableWindow(FALSE);
-			this->combService.EnableWindow(FALSE);
 			this->btnChScan.EnableWindow(FALSE);
 			this->btnSet.EnableWindow(FALSE);
 			this->btnCancel.EnableWindow(TRUE);
 			break;
 		case GUI_OPEN_FAIL:
 			this->combTuner.EnableWindow(TRUE);
-			this->combService.EnableWindow(FALSE);
 			this->btnChScan.EnableWindow(FALSE);
 			this->btnSet.EnableWindow(TRUE);
 			this->btnCancel.EnableWindow(FALSE);
 			break;
 		case GUI_REC:
 			this->combTuner.EnableWindow(FALSE);
-			this->combService.EnableWindow(FALSE);
 			this->btnChScan.EnableWindow(FALSE);
 			this->btnSet.EnableWindow(FALSE);
 			this->btnCancel.EnableWindow(TRUE);
 			break;
 		case GUI_REC_SET_TIME:
 			this->combTuner.EnableWindow(FALSE);
-			this->combService.EnableWindow(FALSE);
 			this->btnChScan.EnableWindow(FALSE);
 			this->btnSet.EnableWindow(FALSE);
 			this->btnCancel.EnableWindow(TRUE);
 			break;
 		case GUI_OTHER_CTRL:
 			this->combTuner.EnableWindow(FALSE);
-			this->combService.EnableWindow(FALSE);
 			this->btnChScan.EnableWindow(FALSE);
 			this->btnSet.EnableWindow(FALSE);
 			this->btnCancel.EnableWindow(TRUE);
 			break;
 		case GUI_REC_STANDBY:
 			this->combTuner.EnableWindow(FALSE);
-			this->combService.EnableWindow(FALSE);
 			this->btnChScan.EnableWindow(FALSE);
 			this->btnSet.EnableWindow(FALSE);
 			this->btnCancel.EnableWindow(FALSE);
@@ -928,27 +885,8 @@ void CMediaPortal_BonDlg::OnCbnSelchangeComboTuner()
 
 	if( buff.IsEmpty() == false ){
 		SelectBonDriver(buff.GetBuffer(0));
-
-		int sel = this->combService.GetCurSel();
-		if( sel != CB_ERR ){
-			DWORD index = (DWORD)this->combService.GetItemData(sel);
-			SelectService(this->serviceList[index].originalNetworkID, this->serviceList[index].transportStreamID, this->serviceList[index].serviceID, this->serviceList[index].space, this->serviceList[index].ch );
-		}
 	}
-	ChgIconStatus();
 	SetTimer(TIMER_STATUS_UPDATE, 1000, NULL);
-}
-
-
-void CMediaPortal_BonDlg::OnCbnSelchangeComboService()
-{
-	// TODO: ここにコントロール通知ハンドラー コードを追加します。
-	int sel = this->combService.GetCurSel();
-	if( sel != CB_ERR ){
-		DWORD index = (DWORD)this->combService.GetItemData(sel);
-		SelectService(this->serviceList[index].originalNetworkID, this->serviceList[index].transportStreamID, this->serviceList[index].serviceID, this->serviceList[index].space, this->serviceList[index].ch );
-	}
-	ChgIconStatus();
 }
 
 
@@ -967,7 +905,6 @@ void CMediaPortal_BonDlg::OnBnClickedButtonSet()
 		this->initONID = ONID;
 		this->initTSID = TSID;
 		this->initSID = SID;
-		ReloadServiceList();
 		
 		this->minTask = GetPrivateProfileInt( L"Set", L"MinTask", 0, this->moduleIniPath );
 	}
@@ -995,40 +932,6 @@ void CMediaPortal_BonDlg::ReloadBonDriver()
 	}
 }
 
-void CMediaPortal_BonDlg::ReloadServiceList(BOOL ini)
-{
-	this->serviceList.clear();
-	this->combService.ResetContent();
-
-	DWORD ret = this->main.GetServiceList(&this->serviceList);
-	if( ret != NO_ERR || this->serviceList.size() == 0 ){
-		this->log += L"チャンネル情報の読み込みに失敗しました\r\n";
-		SetDlgItemText(IDC_EDIT_LOG, this->log);
-	}else{
-		int selectSel = 0;
-		for( size_t i=0; i<this->serviceList.size(); i++ ){
-			if( this->serviceList[i].useViewFlag == TRUE ){
-				int index = this->combService.AddString(this->serviceList[i].serviceName.c_str());
-				this->combService.SetItemData(index, (DWORD)i);
-				if( this->serviceList[i].originalNetworkID == this->initONID &&
-					this->serviceList[i].transportStreamID == this->initTSID &&
-					this->serviceList[i].serviceID == this->initSID ){
-						if( ini == FALSE ){
-							this->initONID = -1;
-							this->initTSID = -1;
-							this->initSID = -1;
-						}
-						selectSel = index;
-				}
-			}
-		}
-		if( this->combService.GetCount() > 0 ){
-			this->combService.SetCurSel(selectSel);
-		}
-
-	}
-
-}
 
 DWORD CMediaPortal_BonDlg::SelectBonDriver(LPCWSTR fileName, BOOL ini)
 {
@@ -1043,7 +946,6 @@ DWORD CMediaPortal_BonDlg::SelectBonDriver(LPCWSTR fileName, BOOL ini)
 		SetDlgItemText(IDC_EDIT_LOG, this->log);
 		BtnUpdate(GUI_NORMAL);
 	}
-	ReloadServiceList(ini);
 	return err;
 }
 
