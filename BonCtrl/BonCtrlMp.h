@@ -10,7 +10,7 @@
 #include "BonDriverUtil.h"
 #include "PacketInit.h"
 #include "TSOut.h"
-#include "ChSetUtil.h"
+#include "ChSetUtilMp.h"
 
 class CBonCtrl
 {

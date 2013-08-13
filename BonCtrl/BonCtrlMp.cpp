@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "BonCtrl.h"
+#include "BonCtrlMp.h"
 #include <process.h>
 
 #include "../Common/ErrDef.h"
