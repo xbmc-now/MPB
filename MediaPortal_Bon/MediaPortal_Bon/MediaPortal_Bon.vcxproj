@@ -206,9 +206,11 @@
   <ItemGroup>
     <ClInclude Include="..\..\BonCtrl\BonCtrl.h" />
     <ClInclude Include="..\..\BonCtrl\BonCtrlDef.h" />
+    <ClInclude Include="..\..\BonCtrl\BonCtrlMp.h" />
     <ClInclude Include="..\..\BonCtrl\BonDriverUtil.h" />
     <ClInclude Include="..\..\BonCtrl\CATUtil.h" />
     <ClInclude Include="..\..\BonCtrl\ChSetUtil.h" />
+    <ClInclude Include="..\..\BonCtrl\ChSetUtilMp.h" />
     <ClInclude Include="..\..\BonCtrl\CreatePATPacket.h" />
     <ClInclude Include="..\..\BonCtrl\CreatePMTPacket.h" />
     <ClInclude Include="..\..\BonCtrl\DropCount.h" />
@@ -232,6 +234,7 @@
     <ClInclude Include="..\..\Common\EpgTimerUtil.h" />
     <ClInclude Include="..\..\Common\ErrDef.h" />
     <ClInclude Include="..\..\Common\ParseChText4.h" />
+    <ClInclude Include="..\..\Common\ParseChText4Mp.h" />
     <ClInclude Include="..\..\Common\ParseChText5.h" />
     <ClInclude Include="..\..\Common\PathUtil.h" />
     <ClInclude Include="..\..\Common\PipeServer.h" />
@@ -262,9 +265,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\BonCtrl\BonCtrl.cpp" />
+    <ClCompile Include="..\..\BonCtrl\BonCtrlMp.cpp" />
     <ClCompile Include="..\..\BonCtrl\BonDriverUtil.cpp" />
     <ClCompile Include="..\..\BonCtrl\CATUtil.cpp" />
     <ClCompile Include="..\..\BonCtrl\ChSetUtil.cpp" />
+    <ClCompile Include="..\..\BonCtrl\ChSetUtilMp.cpp" />
     <ClCompile Include="..\..\BonCtrl\CreatePATPacket.cpp" />
     <ClCompile Include="..\..\BonCtrl\CreatePMTPacket.cpp" />
     <ClCompile Include="..\..\BonCtrl\DropCount.cpp" />
@@ -281,6 +286,7 @@
     <ClCompile Include="..\..\Common\EpgDataCap3Util.cpp" />
     <ClCompile Include="..\..\Common\EpgTimerUtil.cpp" />
     <ClCompile Include="..\..\Common\ParseChText4.cpp" />
+    <ClCompile Include="..\..\Common\ParseChText4Mp.cpp" />
     <ClCompile Include="..\..\Common\ParseChText5.cpp" />
     <ClCompile Include="..\..\Common\PathUtil.cpp" />
     <ClCompile Include="..\..\Common\PipeServer.cpp" />
