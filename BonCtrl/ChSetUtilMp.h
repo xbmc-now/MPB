@@ -5,7 +5,7 @@
 #include "../Common/EpgDataCap3Def.h"
 #include "BonCtrlDef.h"
 
-#include "../Common/ParseChText4.h"
+#include "../Common/ParseChText4Mp.h"
 #include "../Common/ParseChText5.h"
 
 class CChSetUtil

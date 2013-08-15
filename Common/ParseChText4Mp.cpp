@@ -1,7 +1,9 @@
 #include "stdafx.h"
-#include "ParseChText4.h"
+#include "ParseChText4Mp.h"
 #include "StringUtil.h"
 #include "EpgTimerUtil.h"
+
+#include "../MpCtrl/DbCtrl.h"
 
 CParseChText4::CParseChText4(void)
 {
