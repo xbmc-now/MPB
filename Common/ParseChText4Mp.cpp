@@ -14,7 +14,7 @@ CParseChText4::~CParseChText4(void)
 {
 }
 
-BOOL CParseChText4::ParseText(LPCWSTR filePath, wstring bonFile)
+BOOL CParseChText4::ParseText(LPCWSTR filePath)
 {
 	if( filePath == NULL ){
 		return FALSE;

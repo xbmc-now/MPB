@@ -1216,6 +1216,9 @@ UINT WINAPI CBonCtrl::ChScanThread(LPVOID param)
 	wstring chSet4 = sys->bonUtil.GetChSet4Path();
 	wstring chSet5 = sys->bonUtil.GetChSet5Path();
 
+
+
+/*
 	vector<CHK_CH_INFO> chkList;
 	map<DWORD, BON_SPACE_INFO> spaceMap;
 	if( sys->bonUtil.GetOriginalChList(&spaceMap) != NO_ERR ){
@@ -1327,7 +1330,7 @@ UINT WINAPI CBonCtrl::ChScanThread(LPVOID param)
 	}
 
 	sys->chUtil.LoadChSet(chSet4, chSet5);
-
+*/
 	return 0;
 }
 
