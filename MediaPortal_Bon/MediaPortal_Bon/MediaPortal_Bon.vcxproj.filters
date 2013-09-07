@@ -213,6 +213,21 @@
     <ClInclude Include="..\..\MpCtrl\MpCtrl.h">
       <Filter>ヘッダー ファイル\MpCtrl</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\MpCtrl\DbCtrl.h">
+      <Filter>ヘッダー ファイル\MpCtrl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\MpCtrl\DbCtrlDef.h">
+      <Filter>ヘッダー ファイル\MpCtrl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\BonCtrl\BonCtrlMp.h">
+      <Filter>ヘッダー ファイル\BonCtrl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\BonCtrl\ChSetUtilMp.h">
+      <Filter>ヘッダー ファイル\BonCtrl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Common\ParseChText4Mp.h">
+      <Filter>ヘッダー ファイル\Common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MediaPortal_Bon.cpp">
@@ -334,6 +349,18 @@
     </ClCompile>
     <ClCompile Include="..\..\MpCtrl\MpCtrl.cpp">
       <Filter>ソース ファイル\MpCtrl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\MpCtrl\DbCtrl.cpp">
+      <Filter>ソース ファイル\MpCtrl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\BonCtrl\BonCtrlMp.cpp">
+      <Filter>ソース ファイル\BonCtrl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\BonCtrl\ChSetUtilMp.cpp">
+      <Filter>ソース ファイル\BonCtrl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Common\ParseChText4Mp.cpp">
+      <Filter>ソース ファイル\Common</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
