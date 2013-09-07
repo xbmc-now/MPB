@@ -196,7 +196,7 @@ BOOL CParseChText4::DelChService(
 	return TRUE;
 }
 
-BOOL CParseChText4::SaveChText(LPCWSTR filePath, wstring bonFile)
+BOOL CParseChText4::SaveChText(LPCWSTR filePath)
 {
 	wstring loadFilePath = L"";
 	if( filePath == NULL ){
