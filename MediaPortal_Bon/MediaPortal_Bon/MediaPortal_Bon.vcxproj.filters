@@ -129,9 +129,6 @@
     <ClInclude Include="..\..\Common\Util.h">
       <Filter>ヘッダー ファイル\Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\BonCtrl\BonCtrl.h">
-      <Filter>ヘッダー ファイル\BonCtrl</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\BonCtrl\BonCtrlDef.h">
       <Filter>ヘッダー ファイル\BonCtrl</Filter>
     </ClInclude>
@@ -188,9 +185,6 @@
     </ClInclude>
     <ClInclude Include="..\..\BonCtrl\ChSetUtil.h">
       <Filter>ヘッダー ファイル\BonCtrl</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Common\ParseChText4.h">
-      <Filter>ヘッダー ファイル\Common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Common\ParseChText5.h">
       <Filter>ヘッダー ファイル\Common</Filter>
@@ -275,9 +269,6 @@
     <ClCompile Include="..\..\Common\SendCtrlCmd.cpp">
       <Filter>ソース ファイル\Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\BonCtrl\BonCtrl.cpp">
-      <Filter>ソース ファイル\BonCtrl</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\BonCtrl\BonDriverUtil.cpp">
       <Filter>ソース ファイル\BonCtrl</Filter>
     </ClCompile>
@@ -319,12 +310,6 @@
     </ClCompile>
     <ClCompile Include="CmdLineUtil.cpp">
       <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\BonCtrl\ChSetUtil.cpp">
-      <Filter>ソース ファイル\BonCtrl</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Common\ParseChText4.cpp">
-      <Filter>ソース ファイル\Common</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Common\ParseChText5.cpp">
       <Filter>ソース ファイル\Common</Filter>
