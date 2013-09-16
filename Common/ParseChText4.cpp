@@ -207,6 +207,18 @@ BOOL CParseChText4::SaveChText(LPCWSTR filePath)
 		return FALSE;
 	}
 
+/*
+	std::wregex re(L".+\\(.+)\(.+\)\.ChSet4\.txt$");
+	
+	
+	std::wstring text(str);
+	std::wsmatch m;
+
+	if( std::regex_search(text, m, re) ) this->mpStartTimeShifting = m[1];
+*/
+
+
+
 	HANDLE hFile = _CreateFile2( loadFilePath.c_str(), GENERIC_WRITE, FILE_SHARE_READ, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL );
 	if( hFile == INVALID_HANDLE_VALUE ){
 		return FALSE;

@@ -9,6 +9,7 @@
 #endif
 #include <string>
 #include <map>
+#include <regex>
 #include <vector>
 #include <algorithm>
 #ifdef _DEBUG
@@ -17,6 +18,7 @@
 #else
 #include <string>
 #include <map>
+#include <regex>
 #include <vector>
 #include <algorithm>
 #endif
