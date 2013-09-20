@@ -89,6 +89,7 @@ public:
 
 protected:
 	wstring filePath;
+	CString tunerName;
 
 protected:
 	BOOL Parse1Line(string parseLine, CH_DATA4* chInfo );
