@@ -209,13 +209,13 @@ BOOL CParseChText4::SaveChText(LPCWSTR filePath)
 		return FALSE;
 	}
 
-	std::wregex re(L".+\\(.+)\(.+\)\.ChSet4\.txt$");
+	std::wregex re(L"\\\(.+)\(.+\)\.ChSet4\.txt$");
 	this->tunerName = NULL;
-
-	std::wstring text(str);
+/*
+	std::wstring text(loadFilePath);
 	std::wsmatch m;
 	if( std::regex_search(text, m, re) ) this->tunerName = m[1];
-
+*/
 
 
 
