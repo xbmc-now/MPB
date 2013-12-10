@@ -218,6 +218,7 @@ BOOL CParseChText4::SaveChText(LPCWSTR filePath)
 	std::wsmatch m;
 	if( std::regex_search(text, m, re) ) return FALSE;	
 
+
 /*
 	std::wregex re(L".+\\(.+)\(.+\)\.ChSet4\.txt$");
 	
