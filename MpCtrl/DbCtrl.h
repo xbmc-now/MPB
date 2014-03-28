@@ -1,3 +1,4 @@
+#pragma once
 
 #include <windows.h>
 #include "../Common/Util.h"
@@ -62,6 +63,13 @@ public:
 	//    引数：
 	//        [OUT]：結果セット
 	MYSQL_ROW FetchRow(MYSQL_RES **);
+
+	// 行数
+	//    戻り値：
+	//        行数
+	//    引数：
+	//        [OUT]：結果セット
+	DWORD CDbCtrl::NumRows(MYSQL_RES **);
 
 	// 結果解放
 	//    引数：

@@ -6,8 +6,7 @@
 #include "MediaPortal_Bon.h"
 #include "MediaPortal_BonDlg.h"
 #include "afxdialogex.h"
-#include "my_global.h"
-#include "mysql.h"
+
 
 #include "../../Common/TimeUtil.h"
 

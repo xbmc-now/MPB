@@ -2,8 +2,9 @@
 
 #include "../../BonCtrl/BonCtrlMp.h"
 #include "../../MpCtrl/MpCtrl.h"
-//#include "../../MpCtrl/DbCtrl.h"
-//#include "../../MpCtrl/DbCtrlDef.h"
+#include "../../MpCtrl/DbCtrl.h"
+#include "../../MpCtrl/DbCtrlDef.h"
+
 #include "../../Common/PathUtil.h"
 #include "../../Common/TimeUtil.h"
 #include "../../Common/PipeServer.h"
@@ -277,8 +278,8 @@ protected:
 	HWND msgWnd;
 
 	CBonCtrl bonCtrl;
-	CMpCtrl mpCtrl;
-	//CDbCtrl dbCtrl;
+	//CMpCtrl mpCtrl;
+	CDbCtrl dbCtrl;
 	CPipeServer pipeServer;
 
 	vector<wstring> recFolderList;

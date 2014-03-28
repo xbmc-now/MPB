@@ -147,6 +147,16 @@ MYSQL_ROW CDbCtrl::FetchRow(MYSQL_RES **results)
 	return mysql_fetch_row(*results);
 }
 
+// 行数
+//    戻り値：
+//        行数
+//    引数：
+//        [OUT]：結果セット
+DWORD CDbCtrl::NumRows(MYSQL_RES **results)
+{
+	return mysql_num_rows(*results);
+}
+
 // 結果解放
 //    引数：
 //        [OUT]：結果セット

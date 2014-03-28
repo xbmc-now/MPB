@@ -4,6 +4,12 @@
 #include "StructDef.h"
 #include <regex>
 using namespace std;
+
+#include "my_global.h"
+#include "mysql.h"
+#include "../MpCtrl/DbCtrl.h"
+#include "../MpCtrl/DbCtrlDef.h"
+
 ////////////////////////////////////////////////////////////////////////////
 //チャンネル情報ファイルの「ChSet4.txt」の読み込みと保存処理を行うためのクラス
 //排他制御などは行っていないため、複数スレッドからのアクセスは上位層で排他制
@@ -90,8 +96,12 @@ public:
 
 protected:
 	wstring filePath;
-	CString tunerName;
+	wstring tunerName;
 
+	MYSQL mysql;
+	MYSQL_RES *results;
+	MYSQL_ROW record;
+	CDbCtrl dbCtrl;
 protected:
 	BOOL Parse1Line(string parseLine, CH_DATA4* chInfo );
 };

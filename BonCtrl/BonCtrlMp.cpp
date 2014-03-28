@@ -1106,8 +1106,12 @@ BOOL CBonCtrl::IsRec()
 // エラーコード
 DWORD CBonCtrl::StartChScan()
 {
-	if( Lock(L"StartChScan") == FALSE ) return ERR_FALSE;
+	if( this->mpCtrl.GetMpServiceStatus() != 0 ) return ERR_FALSE;
 
+	//if (this->dbCtrl.Connect(&this->mysql, MYSQL_HOST, MYSQL_USER, MYSQL_PASSWD, MYSQL_DB) != 0) return ERR_FALSE;
+	//this->results = NULL;
+
+	if( Lock(L"StartChScan") == FALSE ) return ERR_FALSE;
 	if( this->tsOut.IsRec() == TRUE ){
 		UnLock();
 		return ERR_FALSE;
@@ -1116,6 +1120,8 @@ DWORD CBonCtrl::StartChScan()
 		UnLock();
 		return ERR_FALSE;
 	}
+
+
 
 	if( ::WaitForSingleObject(this->chScanThread, 0) == WAIT_OBJECT_0 ){
 		CloseHandle(this->chScanThread);
@@ -1216,9 +1222,6 @@ UINT WINAPI CBonCtrl::ChScanThread(LPVOID param)
 	wstring chSet4 = sys->bonUtil.GetChSet4Path();
 	wstring chSet5 = sys->bonUtil.GetChSet5Path();
 
-
-
-/*
 	vector<CHK_CH_INFO> chkList;
 	map<DWORD, BON_SPACE_INFO> spaceMap;
 	if( sys->bonUtil.GetOriginalChList(&spaceMap) != NO_ERR ){
@@ -1330,7 +1333,7 @@ UINT WINAPI CBonCtrl::ChScanThread(LPVOID param)
 	}
 
 	sys->chUtil.LoadChSet(chSet4, chSet5);
-*/
+
 	return 0;
 }
 
@@ -1859,4 +1862,24 @@ BOOL CBonCtrl::GetViewStatusInfo(
 
 	UnLock();
 	return ret;
+}
+
+
+
+//MediaPortalのログパスを取得する
+//引数：
+// szValue [OUT]MediaPortalのログパス
+void CBonCtrl::GetMpLogPath(
+	CString& szValue
+	)
+{
+	return this->mpCtrl.GetMpLogPath(szValue);
+}
+
+//MediaPortal TVServiceのサービス状態を取得する
+//戻り値：
+// エラーコード
+DWORD CBonCtrl::GetMpServiceStatus()
+{
+	return this->mpCtrl.GetMpServiceStatus();
 }

@@ -7,10 +7,18 @@
 #include "../Common/EpgTimerUtil.h"
 #include "../Common/StringUtil.h"
 
+
+
 #include "BonDriverUtil.h"
 #include "PacketInit.h"
 #include "TSOut.h"
 #include "ChSetUtilMp.h"
+
+//#include "my_global.h"
+//#include "mysql.h"
+//#include "../MpCtrl/DbCtrl.h"
+//#include "../MpCtrl/DbCtrlDef.h"
+#include "../MpCtrl/MpCtrl.h"
 
 class CBonCtrl
 {
@@ -487,11 +495,17 @@ public:
 		ULONGLONG* scramble
 		);
 
+	void GetMpLogPath(CString&);
+	DWORD GetMpServiceStatus();
+
 protected:
 	CBonDriverUtil bonUtil;
 	CPacketInit packetInit;
 	CTSOut tsOut;
 	CChSetUtil chUtil;
+
+	CMpCtrl mpCtrl;
+	//CDbCtrl dbCtrl;
 
 	HANDLE lockEvent;
 

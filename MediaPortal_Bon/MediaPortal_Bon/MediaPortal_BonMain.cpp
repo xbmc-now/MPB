@@ -1210,7 +1210,7 @@ void CMediaPortal_BonMain::GetMpLogPath(
 	CString& szValue
 	)
 {
-	return this->mpCtrl.GetMpLogPath(szValue);
+	return this->bonCtrl.GetMpLogPath(szValue);
 }
 
 //MediaPortal TVServiceのサービス状態を取得する
@@ -1218,7 +1218,7 @@ void CMediaPortal_BonMain::GetMpLogPath(
 // エラーコード
 DWORD CMediaPortal_BonMain::GetMpServiceStatus()
 {
-	return this->mpCtrl.GetMpServiceStatus();
+	return this->bonCtrl.GetMpServiceStatus();
 }
 /*
 //Mysqlへ接続する。
