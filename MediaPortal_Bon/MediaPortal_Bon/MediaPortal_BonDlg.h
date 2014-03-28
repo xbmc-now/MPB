@@ -8,13 +8,15 @@
 #include "MediaPortal_BonDef.h"
 #include "MediaPortal_BonMain.h"
 #include "SettingDlg.h"
+
+#include <map>
+#include <regex>
+using namespace std;
+
 #include "my_global.h"
 #include "mysql.h"
 #include "../../MpCtrl/DbCtrl.h"
 #include "../../MpCtrl/DbCtrlDef.h"
-#include <map>
-#include <regex>
-using namespace std;
 
 // CMediaPortal_BonDlg ダイアログ
 class CMediaPortal_BonDlg : public CDialogEx
