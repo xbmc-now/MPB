@@ -327,6 +327,41 @@ typedef struct _CH_DATA5{
 	}
 } CH_DATA5;
 
+//チューナー毎サービス情報
+typedef struct _CH_DATAMP{
+	wstring bonName;				//Bonドライバー名
+	int space;						//チューナー空間
+	int ch;							//物理チャンネル
+	WORD originalNetworkID;			//ONID
+	WORD transportStreamID;			//TSID
+	WORD serviceID;					//サービスID
+	WORD serviceType;				//サービスタイプ
+	BOOL partialFlag;				//部分受信サービス（ワンセグ）かどうか
+	BOOL useViewFlag;				//一覧表示に使用するかどうか
+	wstring serviceName;			//サービス名
+	wstring chName;					//チャンネル名
+	wstring networkName;			//ts_name or network_name
+	BYTE remoconID;					//リモコンID
+	//=オペレーターの処理
+	_CH_DATAMP(void){
+		bonName = L"";
+		space = 0;
+		ch = 0;
+		originalNetworkID = 0;
+		transportStreamID = 0;
+		serviceID = 0;
+		serviceType = 0;
+		partialFlag = FALSE;
+		useViewFlag = TRUE;
+		serviceName = L"";
+		chName = L"";
+		networkName = L"";
+		remoconID = 0;
+	};
+	~_CH_DATAMP(void){
+	}
+} CH_DATAMP;
+
 typedef struct _REGIST_TCP_INFO{
 	wstring ip;
 	DWORD port;

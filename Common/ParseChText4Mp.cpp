@@ -266,6 +266,7 @@ BOOL CParseChText4::SaveChText(LPCWSTR filePath)
 	if (this->dbCtrl.Connect(&this->mysql, MYSQL_HOST, MYSQL_USER, MYSQL_PASSWD, MYSQL_DB) != 0) {
 		return FALSE;
 	}
+
 	this->results = NULL;
 	CString sql = L"";
 	wstring wsql = L"";
@@ -527,7 +528,11 @@ BOOL CParseChText4::SaveChText(LPCWSTR filePath)
 	this->dbCtrl.Close(&this->mysql);
 	return TRUE;
 
-	ESC: this->dbCtrl.Rollback(&this->mysql);
+	ESC: 
+	wstring err = L"";
+	Format(err, L"ERROR SQL:%s", sql);
+	AfxMessageBox(err.c_str(), NULL, MB_OK);
+	this->dbCtrl.Rollback(&this->mysql);
 	this->dbCtrl.UnlockTable(&this->mysql);
 	this->dbCtrl.Close(&this->mysql);
 	return FALSE;

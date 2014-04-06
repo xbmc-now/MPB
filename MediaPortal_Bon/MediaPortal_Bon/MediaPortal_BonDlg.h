@@ -83,6 +83,7 @@ protected:
 
 	map<int, wstring> bonList;
 	vector<CH_DATA4> serviceList;
+	vector<CH_DATAMP> mpServiceList;
 
 	// 生成された、メッセージ割り当て関数
 	virtual BOOL OnInitDialog();
@@ -103,7 +104,7 @@ protected:
 	CString mpLogStr;
 	fpos_t mpNowLogSz;
 	fpos_t mpPreLogSz;
-	CString mpStartTimeShifting;
+	wstring mpStartTimeShifting;
 
 public:
 	CComboBox combTuner;
