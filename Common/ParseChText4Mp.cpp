@@ -205,7 +205,7 @@ BOOL CParseChText4::SaveChText(LPCWSTR filePath)
 		loadTunerName = this->tunerName;
 	}else{
 		loadFilePath = filePath;
-		wregex re(L".+\\(.+)\(.+\)\.ChSet4\.txt$");
+		wregex re(L".+\\\\(.+)\\(.+\\)\\.ChSet4\\.txt$");
 		wstring text(filePath);
 		wsmatch m;
 		if( regex_search(text, m, re) ) loadTunerName = m[1];
@@ -276,6 +276,10 @@ BOOL CParseChText4::SaveChText(LPCWSTR filePath)
 
 	map<CString, int> lockTable;
 	lockTable[L"channelgroup"] = 2;
+	lockTable[L"tuningdetail"] = 2;
+	lockTable[L"groupmap"    ] = 2;
+	lockTable[L"channel"     ] = 2;
+	lockTable[L"channelmap"  ] = 2;
 	if (this->dbCtrl.LockTable(&this->mysql, lockTable) != 0) goto ESC;
 
 
@@ -336,6 +340,9 @@ BOOL CParseChText4::SaveChText(LPCWSTR filePath)
 	sql.Format(_T("UPDATE tuningdetail SET provider = '@_%s' WHERE provider = '%s';"), loadTunerName.c_str(), loadTunerName.c_str());
 	if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
 
+	//sql.Format(_T("iterator = '%d' '%d';"), sortList.begin(), sortList.end());
+	//AfxMessageBox(sql, NULL, MB_OK);
+
 	int tmpCh;  // 登録用チャンネル
 	for( itr = sortList.begin(); itr != sortList.end(); itr++ ){
 
@@ -355,6 +362,8 @@ BOOL CParseChText4::SaveChText(LPCWSTR filePath)
 			);
 		if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
 		this->dbCtrl.StoreResult(&this->mysql, &this->results);
+
+		//AfxMessageBox(loadTunerName.c_str(), NULL, MB_OK);
 
 		if(this->dbCtrl.NumRows(&this->results)){ // 既存のチャンネルは退避する
 			this->record = this->dbCtrl.FetchRow(&this->results);
@@ -482,6 +491,9 @@ BOOL CParseChText4::SaveChText(LPCWSTR filePath)
 				itr->second.transportStreamID,
 				itr->second.serviceID
 			);
+			if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
+
+			AfxMessageBox(sql, NULL, MB_OK);
 
 			// グループがあるか
 			sql.Format(_T("SELECT idChannel FROM groupmap WHERE idGroup = %d AND idChannel = %d;"), itr->second.space, tmpCh);
@@ -512,15 +524,15 @@ BOOL CParseChText4::SaveChText(LPCWSTR filePath)
 	if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
 
 	// ついでにチューナーのないチャンネルを削除する
-	sql  = L"DELETE A FROM channel A LEFT JOIN tuningdetail B ON A.idChannel = B.idChannel WHERE B.idChannel IS NULL;";
+	sql  = L"DELETE channel FROM channel LEFT JOIN tuningdetail ON channel.idChannel = tuningdetail.idChannel WHERE tuningdetail.idChannel IS NULL;";
 	if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
 
 	// ついでにチャンネルのないグループを削除する。
-	sql  = L"DELETE A FROM groupmap A LEFT JOIN channel B ON A.idChannel = B.idChannel WHERE B.idChannel IS NULL;";
+	sql  = L"DELETE groupmap FROM groupmap LEFT JOIN channel ON groupmap.idChannel = channel.idChannel WHERE channel.idChannel IS NULL;";
 	if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
 
 	// ついでにチャンネルのないチャンネルマップも削除する
-	sql  = L"DELETE A FROM channelmap A LEFT JOIN channel B ON A.idChannel = B.idChannel WHERE B.idChannel IS NULL;";
+	sql  = L"DELETE channelmap FROM channelmap LEFT JOIN channel ON channelmap.idChannel = channel.idChannel WHERE channel.idChannel IS NULL;";
 	if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
 
 	this->dbCtrl.Commit(&this->mysql);
