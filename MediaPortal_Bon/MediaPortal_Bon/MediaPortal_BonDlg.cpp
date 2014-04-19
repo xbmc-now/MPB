@@ -184,8 +184,15 @@ BOOL CMediaPortal_BonDlg::OnInitDialog()
 		this->log += _T("DBÚ‘±Ž¸”s");
 	} else {
 		this->log += _T("DBÚ‘±¬Œ÷");
-
 /*
+		CString sql = L"";
+		sql  = L"UPDATE tuningdetail SET provider = '@_test' WHERE provider = 'test';";
+		if (this->dbCtrl.Query(&this->mysql, sql) != 0){
+			wstring err = L"";
+			Format(err, L"ERROR SQL:%s", sql);
+			AfxMessageBox(err.c_str(), NULL, MB_OK);
+		}
+
 		if (this->dbCtrl.Query(&this->mysql, _T("SELECT idChannel, displayName FROM channel;")) != 0) {
 			this->log += _T("ƒNƒGƒŠŽ¸”s");
 		} else {
@@ -206,7 +213,7 @@ BOOL CMediaPortal_BonDlg::OnInitDialog()
 */
 		this->dbCtrl.Close(&this->mysql);
 	}
-/**/
+
 
 
 
@@ -533,11 +540,11 @@ void CMediaPortal_BonDlg::OnTimer(UINT_PTR nIDEvent)
 
 									size_t i=0;
 									while (this->record = this->dbCtrl.FetchRow(&this->results)) {
-										this->mpServiceList[i].bonName           = CA2T(this->record[1], CP_UTF8);
-										this->mpServiceList[i].originalNetworkID = atoi(this->record[2]);
-										this->mpServiceList[i].transportStreamID = atoi(this->record[3]);
-										this->mpServiceList[i].serviceID         = atoi(this->record[4]);
-										this->mpServiceList[i].ch                = atoi(this->record[5]);
+										this->mpServiceList[i].bonName           = CA2T(this->record[0], CP_UTF8);
+										this->mpServiceList[i].originalNetworkID = atoi(this->record[1]);
+										this->mpServiceList[i].transportStreamID = atoi(this->record[2]);
+										this->mpServiceList[i].serviceID         = atoi(this->record[3]);
+										this->mpServiceList[i].ch                = atoi(this->record[4]);
 										i++;
 									}
 
@@ -570,6 +577,7 @@ void CMediaPortal_BonDlg::OnTimer(UINT_PTR nIDEvent)
 
 					}
 				}
+
 				SetDlgItemText(IDC_EDIT_LOG, this->log);
 
 
