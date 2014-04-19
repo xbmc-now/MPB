@@ -295,7 +295,7 @@ BOOL CParseChText4::SaveChText(LPCWSTR filePath)
 	if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
 	this->dbCtrl.StoreResult(&this->mysql, &this->results);
 	this->record = this->dbCtrl.FetchRow(&this->results);
-	maxNum = atoi(this->record[1]);
+	maxNum = atoi(this->record[0]);
 	this->dbCtrl.FreeResult(&this->results);
 
 	switch(chkNum){
@@ -322,7 +322,7 @@ BOOL CParseChText4::SaveChText(LPCWSTR filePath)
 			if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
 			this->dbCtrl.StoreResult(&this->mysql, &this->results);
 			this->record = this->dbCtrl.FetchRow(&this->results);
-			maxNum = atoi(this->record[1]);
+			maxNum = atoi(this->record[0]);
 			this->dbCtrl.FreeResult(&this->results);
 
 			sql.Format(_T("INSERT INTO channelgroup VALUES(%d,'地上波・BS',0);"), maxNum + 1);
@@ -367,7 +367,7 @@ BOOL CParseChText4::SaveChText(LPCWSTR filePath)
 
 		if(this->dbCtrl.NumRows(&this->results)){ // 既存のチャンネルは退避する
 			this->record = this->dbCtrl.FetchRow(&this->results);
-			tmpCh = atoi(this->record[1]);
+			tmpCh = atoi(this->record[0]);
 			this->dbCtrl.FreeResult(&this->results);
 
 			wsql  = L"";
@@ -459,7 +459,7 @@ BOOL CParseChText4::SaveChText(LPCWSTR filePath)
 				this->dbCtrl.StoreResult(&this->mysql, &this->results);
 			}
 			this->record = this->dbCtrl.FetchRow(&this->results);
-			maxNum = atoi(this->record[1]);
+			maxNum = atoi(this->record[0]);
 			tmpCh  = maxNum + 1;
 			this->dbCtrl.FreeResult(&this->results);
 
@@ -484,7 +484,7 @@ BOOL CParseChText4::SaveChText(LPCWSTR filePath)
 			if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
 			this->dbCtrl.StoreResult(&this->mysql, &this->results);
 			this->record = this->dbCtrl.FetchRow(&this->results);
-			maxTuNum = atoi(this->record[1]);
+			maxTuNum = atoi(this->record[0]);
 			this->dbCtrl.FreeResult(&this->results);
 
 			// チャンネル詳細登録

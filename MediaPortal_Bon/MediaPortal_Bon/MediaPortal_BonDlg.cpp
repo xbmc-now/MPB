@@ -462,7 +462,7 @@ void CMediaPortal_BonDlg::OnTimer(UINT_PTR nIDEvent)
 
 				SetDlgItemText(IDC_EDIT_STATUS, this->statusLog);
 				editStatus.LineScroll(iLine);
-/*
+
 				// tv.logŠÄŽ‹
 				DWORD err = 0;
 				FILE *fp;
@@ -540,11 +540,11 @@ void CMediaPortal_BonDlg::OnTimer(UINT_PTR nIDEvent)
 
 									size_t i=0;
 									while (this->record = this->dbCtrl.FetchRow(&this->results)) {
-										this->mpServiceList[i].bonName           = CA2T(this->record[1], CP_UTF8);
-										this->mpServiceList[i].originalNetworkID = atoi(this->record[2]);
-										this->mpServiceList[i].transportStreamID = atoi(this->record[3]);
-										this->mpServiceList[i].serviceID         = atoi(this->record[4]);
-										this->mpServiceList[i].ch                = atoi(this->record[5]);
+										this->mpServiceList[i].bonName           = CA2T(this->record[0], CP_UTF8);
+										this->mpServiceList[i].originalNetworkID = atoi(this->record[1]);
+										this->mpServiceList[i].transportStreamID = atoi(this->record[2]);
+										this->mpServiceList[i].serviceID         = atoi(this->record[3]);
+										this->mpServiceList[i].ch                = atoi(this->record[4]);
 										i++;
 									}
 
@@ -577,7 +577,7 @@ void CMediaPortal_BonDlg::OnTimer(UINT_PTR nIDEvent)
 
 					}
 				}
-*/
+
 				SetDlgItemText(IDC_EDIT_LOG, this->log);
 
 
