@@ -489,7 +489,7 @@ void CMediaPortal_BonDlg::OnTimer(UINT_PTR nIDEvent)
 							//this->log = L"";
 							//this->log.Format(L"‘‚¦‚½%I64d‚©‚ç%I64d\r\n",this->mpPreLogSz,this->mpNowLogSz);
 
-							wregex re(L"[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\x2e[0-9]{6} \x5b.*\x5d: Controller: StartTimeShifting (?!started on card:).* ([0-9]+)$");
+							wregex re(L"[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{6} \\[.*\\]: Controller: StartTimeShifting (?!started on card:).* ([0-9]+)$");
 							//this->mpStartTimeShifting = L"";
 
 							while ( fgetws(str, 1024, fp) != NULL ) { // ’Ç‰Á•ª‚ð•\Ž¦
