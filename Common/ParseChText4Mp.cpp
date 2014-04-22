@@ -410,9 +410,10 @@ BOOL CParseChText4::SaveChText(LPCWSTR filePath)
 			this->dbCtrl.StoreResult(&this->mysql, &this->results);
 			if(!this->dbCtrl.NumRows(&this->results)){
 				// ƒ`ƒƒƒ“ƒlƒ‹‚Ì“o˜^‚ðs‚¤B
-				sql.Format(_T("INSERT INTO channel VALUES(%d,0,1,0,'2000-01-01 00:00:00',0,'2000-01-01 00:00:00',0,1,'','%s',0);"), 
+				sql.Format(_T("INSERT INTO channel VALUES(%d,0,1,0,'2000-01-01 00:00:00',0,'2000-01-01 00:00:00',0,1,'','%s',0,%d);"), 
 					tmpCh, 
-					itr->second.networkName.c_str()
+					itr->second.networkName.c_str(),
+					itr->second.ch
 				);
 				if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
 			}
@@ -468,9 +469,10 @@ BOOL CParseChText4::SaveChText(LPCWSTR filePath)
 			this->dbCtrl.StoreResult(&this->mysql, &this->results);
 			if(!this->dbCtrl.NumRows(&this->results)){
 				// ƒ`ƒƒƒ“ƒlƒ‹‚Ì“o˜^‚ðs‚¤B
-				sql.Format(_T("INSERT INTO channel VALUES(%d,0,1,0,'2000-01-01 00:00:00',0,'2000-01-01 00:00:00',0,1,'','%s',0);"), 
+				sql.Format(_T("INSERT INTO channel VALUES(%d,0,1,0,'2000-01-01 00:00:00',0,'2000-01-01 00:00:00',0,1,'','%s',0,%d);"), 
 					tmpCh, 
-					itr->second.networkName.c_str()
+					itr->second.networkName.c_str(),
+					itr->second.networkName.ch
 				);
 				if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
 			}
