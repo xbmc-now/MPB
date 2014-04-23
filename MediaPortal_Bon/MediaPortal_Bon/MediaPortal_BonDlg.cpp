@@ -237,6 +237,7 @@ BOOL CMediaPortal_BonDlg::OnInitDialog()
 			this->initSID = -1;
 			Sleep(this->initChgWait);
 		}
+		this->main.SendUDP(TRUE);
 	}
 
 	//ウインドウの復元
