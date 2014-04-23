@@ -520,7 +520,10 @@ void CMediaPortal_BonDlg::OnTimer(UINT_PTR nIDEvent)
 								// groupmap‚©‚çidGroup‚ð“¾‚é
 								sql.Format(_T("SELECT idGroup FROM groupmap WHERE idChannel = %s AND  idGroup < 2;"), 
 									this->mpStartTimeShifting);
-								if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
+								if (this->dbCtrl.Query(&this->mysql, sql) != 0){ 
+									this->dbCtrl.Close(&this->mysql);
+									goto ESC;
+								}
 								
 								this->dbCtrl.StoreResult(&this->mysql, &this->results);
 								chkNum = this->dbCtrl.NumRows(&this->results);
@@ -568,6 +571,7 @@ void CMediaPortal_BonDlg::OnTimer(UINT_PTR nIDEvent)
 
 
 									this->dbCtrl.FreeResult(&this->results);
+									this->dbCtrl.Close(&this->mysql);
 								}
 								ESC:;
 							}
