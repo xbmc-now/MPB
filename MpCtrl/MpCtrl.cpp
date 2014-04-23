@@ -56,7 +56,7 @@ void CMpCtrl::UnLock(LPCWSTR log)
 void CMpCtrl::GetMpLogPath(CString& szValue)
 {
 	szValue.GetEnvironmentVariable(_T("ALLUSERSPROFILE"));
-	szValue += _T("\\Team MediaPortal\\MediaPortal TV Server\\log\\tv.log");
+	szValue += _T("\\Team MediaPortal\\MediaPortal TV Server\\log\\TVService.log");
 }
 DWORD CMpCtrl::GetMpServiceStatus()
 {

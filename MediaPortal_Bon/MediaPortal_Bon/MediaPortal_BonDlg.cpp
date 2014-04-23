@@ -471,7 +471,7 @@ void CMediaPortal_BonDlg::OnTimer(UINT_PTR nIDEvent)
 				if(this->mpServiceStat == 0){ // TVServiceサービス起動中
 
 					if((err = _tfopen_s(&fp,this->mpLogPath, L"r, ccs=UTF-8")) != 0 ) {
-						this->log.Format(L"tv.logオープンエラー\r\n");
+						this->log.Format(L"TVService.logオープンエラー\r\n");
 					} else {
 
 						fseek(fp,0,SEEK_END); 
