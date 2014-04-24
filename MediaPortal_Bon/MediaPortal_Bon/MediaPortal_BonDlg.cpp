@@ -464,7 +464,8 @@ void CMediaPortal_BonDlg::OnTimer(UINT_PTR nIDEvent)
 				SetDlgItemText(IDC_EDIT_STATUS, this->statusLog);
 				editStatus.LineScroll(iLine);
 
-				// tv.log監視
+				//--------------------------------------------------------------
+				// TVService.log監視
 				DWORD err = 0;
 				FILE *fp;
 				//wstring str[1024];
@@ -479,9 +480,7 @@ void CMediaPortal_BonDlg::OnTimer(UINT_PTR nIDEvent)
 						fseek(fp,0,SEEK_END); 
 						fgetpos(fp,&this->mpNowLogSz); // 現在ファイルサイズ取得
 
-						if(this->mpPreLogSz == 0 ){ // 初期ファイルサイズ取得
-							this->mpPreLogSz = this->mpNowLogSz;
-						}
+						if(this->mpPreLogSz == 0 ) this->mpPreLogSz = this->mpNowLogSz; // 初期ファイルサイズ取得
 
 						// 現在のファイルサイズが前回よりも小さい場合は前回をゼロにする。
 						if(this->mpPreLogSz > this->mpNowLogSz) this->mpPreLogSz = 0;
@@ -491,7 +490,6 @@ void CMediaPortal_BonDlg::OnTimer(UINT_PTR nIDEvent)
 							//this->log = L"";
 							//this->log.Format(L"増えた%I64dから%I64d\r\n",this->mpPreLogSz,this->mpNowLogSz);
 
-							//wregex re(L"[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{6} \\[.*\\]: Controller: StartTimeShifting (?!started on card:).* ([0-9]+)$");
 							wregex re(L"\\[[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\\,[0-9]{3}\\] \\[.{7}\\] \\[.{9}\\] \\[.{5}\\] - Controller: StartTimeShifting (?!started on card:|failed:).* ([0-9]+)$");
 
 							this->mpStartTimeShifting = L"";
@@ -516,83 +514,70 @@ void CMediaPortal_BonDlg::OnTimer(UINT_PTR nIDEvent)
 								int chkNum = 0;
 
 								// MediaPortal TV Serverのデータベース接続
-								if (this->dbCtrl.Connect(&this->mysql, MYSQL_HOST, MYSQL_USER, MYSQL_PASSWD, MYSQL_DB) != 0){
-									this->log += _T("DB接続失敗");
-									goto ESC;
-								};
+								if (this->dbCtrl.Connect(&this->mysql, MYSQL_HOST, MYSQL_USER, MYSQL_PASSWD, MYSQL_DB) == 0){
 
-
-
-								// groupmapからidGroupを得る
-								sql.Format(_T("SELECT idGroup FROM groupmap WHERE idChannel = %s AND  idGroup < 2;"), 
-									this->mpStartTimeShifting.c_str());
-								if (this->dbCtrl.Query(&this->mysql, sql) != 0){ 
-									this->dbCtrl.Close(&this->mysql);
-									goto ESC;
-								}
-								
-								this->dbCtrl.StoreResult(&this->mysql, &this->results);
-								chkNum = this->dbCtrl.NumRows(&this->results);
-								this->dbCtrl.FreeResult(&this->results);
-
-								if(chkNum){
-									
-									this->mpServiceList.clear();
-									// チャンネルの詳細情報を得る
-									sql.Format(_T("SELECT provider, networkId, transportId, serviceId, channelNumber FROM tuningdetail WHERE idChannel = %s;"), 
+									// groupmapからidGroupを得る
+									sql.Format(_T("SELECT idGroup FROM groupmap WHERE idChannel = %s AND  idGroup < 2;"), 
 										this->mpStartTimeShifting.c_str());
-
+									if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
 									this->dbCtrl.StoreResult(&this->mysql, &this->results);
 									chkNum = this->dbCtrl.NumRows(&this->results);
+									this->dbCtrl.FreeResult(&this->results);
 
-									// 現在開いているBonDriver
-									wstring bonFile = L"";
-									this->main.GetOpenBonDriver(&bonFile);
+									if(chkNum){
+										this->mpServiceList.clear();
+										// チャンネルの詳細情報を得る
+										sql.Format(_T("SELECT provider, networkId, transportId, serviceId, channelNumber FROM tuningdetail WHERE idChannel = %s;"), 
+											this->mpStartTimeShifting.c_str());
+										if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
+										this->dbCtrl.StoreResult(&this->mysql, &this->results);
+										chkNum = this->dbCtrl.NumRows(&this->results);
 
-									size_t i=0;
-									while (this->record = this->dbCtrl.FetchRow(&this->results)) {
-										this->mpServiceList[i].bonName           = CA2T(this->record[0], CP_UTF8);
-										this->mpServiceList[i].originalNetworkID = atoi(this->record[1]);
-										this->mpServiceList[i].transportStreamID = atoi(this->record[2]);
-										this->mpServiceList[i].serviceID         = atoi(this->record[3]);
-										this->mpServiceList[i].ch                = atoi(this->record[4]);
-										i++;
+										// 現在開いているBonDriver
+										wstring bonFile = L"";
+										this->main.GetOpenBonDriver(&bonFile);
+
+										size_t i=0;
+										while (this->record = this->dbCtrl.FetchRow(&this->results)) {
+											this->mpServiceList[i].bonName           = CA2T(this->record[0], CP_UTF8);
+											this->mpServiceList[i].originalNetworkID = atoi(this->record[1]);
+											this->mpServiceList[i].transportStreamID = atoi(this->record[2]);
+											this->mpServiceList[i].serviceID         = atoi(this->record[3]);
+											this->mpServiceList[i].ch                = atoi(this->record[4]);
+											i++;
+										}
+
+										// BonDriverが同じか
+										if(bonFile != this->mpServiceList[0].bonName){
+											this->iniBonDriver = this->mpServiceList[0].bonName.c_str();
+											ReloadBonDriver();
+											ChgIconStatus();
+										}
+
+										// チャンネル変更
+										this->log = L"チャンネル変更";
+										SelectService(
+											this->mpServiceList[0].originalNetworkID, 
+											this->mpServiceList[0].transportStreamID, 
+											this->mpServiceList[0].serviceID
+										);
+										this->initONID = -1;
+										this->initTSID = -1;
+										this->initSID = -1;
+										Sleep(this->initChgWait);
 									}
-
-									if(bonFile != this->mpServiceList[0].bonName){
-										this->iniBonDriver = this->mpServiceList[0].bonName.c_str();
-										ReloadBonDriver();
-										ChgIconStatus();
-									}
-
-									this->log = L"チャンネル変更";
-									SelectService(
-										this->mpServiceList[0].originalNetworkID, 
-										this->mpServiceList[0].transportStreamID, 
-										this->mpServiceList[0].serviceID
-									);
-									this->initONID = -1;
-									this->initTSID = -1;
-									this->initSID = -1;
-									Sleep(this->initChgWait);
-
-
+									ESC:
 									this->dbCtrl.FreeResult(&this->results);
 									this->dbCtrl.Close(&this->mysql);
 								}
-								ESC:;
 							}
-
 						}
-
 						fclose(fp);
-
 					}
 				}
+				//--------------------------------------------------------------
 
 				SetDlgItemText(IDC_EDIT_LOG, this->log);
-
-
 				SetTimer(TIMER_STATUS_UPDATE, 1000, NULL);
 			}
 			break;
