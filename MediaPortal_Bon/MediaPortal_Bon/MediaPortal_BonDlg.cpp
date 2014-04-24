@@ -237,7 +237,7 @@ BOOL CMediaPortal_BonDlg::OnInitDialog()
 			this->initSID = -1;
 			Sleep(this->initChgWait);
 		}
-		this->main.SendUDP(TRUE);
+		//this->main.SendUDP(TRUE);
 	}
 
 	//ウインドウの復元
@@ -468,7 +468,8 @@ void CMediaPortal_BonDlg::OnTimer(UINT_PTR nIDEvent)
 				DWORD err = 0;
 				FILE *fp;
 				//wstring str[1024];
-				WCHAR *str = L"";
+				TCHAR str[1024];
+				//WCHAR *str = L"";
 				if(this->mpServiceStat == 0){ // TVServiceサービス起動中
 
 					if((err = _tfopen_s(&fp,this->mpLogPath, L"r, ccs=UTF-8")) != 0 ) {
@@ -490,10 +491,12 @@ void CMediaPortal_BonDlg::OnTimer(UINT_PTR nIDEvent)
 							//this->log = L"";
 							//this->log.Format(L"増えた%I64dから%I64d\r\n",this->mpPreLogSz,this->mpNowLogSz);
 
-							wregex re(L"[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{6} \\[.*\\]: Controller: StartTimeShifting (?!started on card:).* ([0-9]+)$");
-							//this->mpStartTimeShifting = L"";
+							//wregex re(L"[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{6} \\[.*\\]: Controller: StartTimeShifting (?!started on card:).* ([0-9]+)$");
+							wregex re(L"\\[[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\\,[0-9]{3}\\] \\[.{7}\\] \\[.{9}\\] \\[.{5}\\] - Controller: StartTimeShifting (?!started on card:|failed:).* ([0-9]+)$");
 
-							while ( fgetws(str, 1024, fp) != NULL ) { // 追加分を表示
+							this->mpStartTimeShifting = L"";
+
+							while ( _fgetts(str, 1024, fp) != NULL ) { // 追加分を表示
 								//this->log += str;
 								//this->log += L"\r\n";
 								wstring text(str);
@@ -503,6 +506,9 @@ void CMediaPortal_BonDlg::OnTimer(UINT_PTR nIDEvent)
 							this->mpPreLogSz = this->mpNowLogSz; // ファイルサイズを代入
 
 							if (this->mpStartTimeShifting != L""){
+								//this->log = L"";
+								//this->log += text;
+								this->log.Format(L"チャンネルヒット%s\r\n",this->mpStartTimeShifting.c_str());
 
 								this->results = NULL;
 								CString sql = L"";
@@ -519,7 +525,7 @@ void CMediaPortal_BonDlg::OnTimer(UINT_PTR nIDEvent)
 
 								// groupmapからidGroupを得る
 								sql.Format(_T("SELECT idGroup FROM groupmap WHERE idChannel = %s AND  idGroup < 2;"), 
-									this->mpStartTimeShifting);
+									this->mpStartTimeShifting.c_str());
 								if (this->dbCtrl.Query(&this->mysql, sql) != 0){ 
 									this->dbCtrl.Close(&this->mysql);
 									goto ESC;
@@ -534,7 +540,8 @@ void CMediaPortal_BonDlg::OnTimer(UINT_PTR nIDEvent)
 									this->mpServiceList.clear();
 									// チャンネルの詳細情報を得る
 									sql.Format(_T("SELECT provider, networkId, transportId, serviceId, channelNumber FROM tuningdetail WHERE idChannel = %s;"), 
-										this->mpStartTimeShifting);
+										this->mpStartTimeShifting.c_str());
+
 									this->dbCtrl.StoreResult(&this->mysql, &this->results);
 									chkNum = this->dbCtrl.NumRows(&this->results);
 
