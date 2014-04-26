@@ -237,7 +237,7 @@ BOOL CMediaPortal_BonDlg::OnInitDialog()
 			this->initSID = -1;
 			Sleep(this->initChgWait);
 		}
-		//this->main.SendUDP(TRUE);
+		this->main.SendUDP(TRUE);
 	}
 
 	//ウインドウの復元
@@ -537,16 +537,18 @@ void CMediaPortal_BonDlg::OnTimer(UINT_PTR nIDEvent)
 										wstring bonFile = L"";
 										this->main.GetOpenBonDriver(&bonFile);
 
-										size_t i=0;
 										while (this->record = this->dbCtrl.FetchRow(&this->results)) {
+											CH_DATAMP item;
 											this->log = L"";
-											//this->log += CA2T(this->record[0], CP_UTF8);
-											//this->mpServiceList[i].bonName           = CA2T(this->record[0], CP_UTF8);
-											//this->mpServiceList[i].originalNetworkID = atoi(this->record[1]);
-											//this->mpServiceList[i].transportStreamID = atoi(this->record[2]);
-											//this->mpServiceList[i].serviceID         = atoi(this->record[3]);
-											//this->mpServiceList[i].ch                = atoi(this->record[4]);
-											i++;
+											this->log += CA2T(this->record[0], CP_UTF8);
+											this->log += this->record[1];
+											item.bonName           = CA2T(this->record[0], CP_UTF8);
+											item.originalNetworkID = atoi(this->record[1]);
+											item.transportStreamID = atoi(this->record[2]);
+											item.serviceID         = atoi(this->record[3]);
+											item.ch                = atoi(this->record[4]);
+											this->mpServiceList.push_back(item);
+											//goto ESC;
 										}
 
 										// BonDriverが同じか
@@ -557,7 +559,6 @@ void CMediaPortal_BonDlg::OnTimer(UINT_PTR nIDEvent)
 										}
 
 										// チャンネル変更
-										this->log = L"チャンネル変更";
 										SelectService(
 											this->mpServiceList[0].originalNetworkID, 
 											this->mpServiceList[0].transportStreamID, 
@@ -566,6 +567,7 @@ void CMediaPortal_BonDlg::OnTimer(UINT_PTR nIDEvent)
 										this->initONID = -1;
 										this->initTSID = -1;
 										this->initSID = -1;
+										this->log = L"チャンネル変更";
 										Sleep(this->initChgWait);
 									}
 									ESC:

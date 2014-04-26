@@ -97,7 +97,7 @@ void CSetDlgBasic::SaveIni()
 	val.Format(L"%d",ip);
 	WritePrivateProfileString( L"SET_UDP", key.GetBuffer(0), val.GetBuffer(0), appIniPath );
 	key.Format(L"Port%d",i);
-	val.Format(L"%d",port);
+	val.Format(L"%d",udpPort);
 	WritePrivateProfileString( L"SET_UDP", key.GetBuffer(0), val.GetBuffer(0), appIniPath );
 	key.Format(L"BroadCast%d",i);
 	val.Format(L"%d",0);

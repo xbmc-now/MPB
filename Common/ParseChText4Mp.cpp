@@ -488,7 +488,7 @@ BOOL CParseChText4::SaveChText(LPCWSTR filePath)
 			this->dbCtrl.FreeResult(&this->results);
 
 			// チャンネル詳細登録
-			sql.Format(L"INSERT INTO tuningdetail VALUES(%d,%d,'%s','%s',7,%d,0,31,0,1,%d,%d,%d,496,0,0,0,0,0,0,8,-1,-1,0,0,0,-1,-1,-1,-1,'udp://@:5432',0,0,0);",
+			sql.Format(L"INSERT INTO tuningdetail VALUES(%d,%d,'%s','%s',7,%d,0,31,0,1,%d,%d,%d,496,0,0,0,0,1,0,8,-1,-1,0,0,0,-1,-1,-1,-1,'udp://127.0.0.1:5432',0,0,0);",
 				maxTuNum + 1,
 				tmpCh,
 				itr->second.networkName.c_str(),
@@ -520,12 +520,12 @@ BOOL CParseChText4::SaveChText(LPCWSTR filePath)
 			this->dbCtrl.FreeResult(&this->results);
 			
 			// チャンネルマップがあるか
-			sql.Format(_T("SELECT idChannelMap FROM channelmap WHERE idChannel = %d AND idCard = 1;"), tmpCh);
+			sql.Format(_T("SELECT idChannelMap FROM channelmap WHERE idChannel = %d AND idCard = 2;"), tmpCh);
 			if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
 			this->dbCtrl.StoreResult(&this->mysql, &this->results);
 			if(!this->dbCtrl.NumRows(&this->results)){
 				// チャンネルマップの登録を行う。
-				sql.Format(_T("INSERT INTO channelmap VALUES(0,%d,1,0);"), tmpCh);
+				sql.Format(_T("INSERT INTO channelmap VALUES(0,%d,2,0);"), tmpCh);
 				if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
 			}
 			this->dbCtrl.FreeResult(&this->results);
