@@ -55,7 +55,7 @@ BOOL CSetDlgBasic::OnInitDialog()
 	settingFolderPath = path.c_str();
 
 	udpIP.SetAddress( GetPrivateProfileInt( L"SET", L"UDPIP", 2130706433, appIniPath ));
-	udpPort = GetPrivateProfileInt( L"SET", L"UDPPort", 1234, appIniPath );
+	udpPort = GetPrivateProfileInt( L"SET", L"UDPPort", 5432, appIniPath );
 	udpWaitSec = GetPrivateProfileInt( L"SET", L"UDPWait", 4, appIniPath );
 	udpWaitPacket = GetPrivateProfileInt( L"SET", L"UDPPacket", 128, appIniPath );
 
@@ -87,6 +87,21 @@ void CSetDlgBasic::SaveIni()
 	WritePrivateProfileString(L"SET", L"UDPWait", val.GetBuffer(0), appIniPath);
 	val.Format( L"%d", udpWaitPacket );
 	WritePrivateProfileString(L"SET", L"UDPPacket", val.GetBuffer(0), appIniPath);
+
+	val.Format( L"%d", 1 );
+	WritePrivateProfileString(L"SET_UDP", L"Count", val.GetBuffer(0), appIniPath);
+
+	int i = 0;
+	CString key = L"";
+	key.Format(L"IP%d",i);
+	val.Format(L"%d",ip);
+	WritePrivateProfileString( L"SET_UDP", key.GetBuffer(0), val.GetBuffer(0), appIniPath );
+	key.Format(L"Port%d",i);
+	val.Format(L"%d",port);
+	WritePrivateProfileString( L"SET_UDP", key.GetBuffer(0), val.GetBuffer(0), appIniPath );
+	key.Format(L"BroadCast%d",i);
+	val.Format(L"%d",0);
+	WritePrivateProfileString( L"SET_UDP", key.GetBuffer(0), val.GetBuffer(0), appIniPath );
 
 	val.Format(L"%d",btnAllService.GetCheck());
 	WritePrivateProfileString( L"SET", L"AllService", val.GetBuffer(0), appIniPath );
