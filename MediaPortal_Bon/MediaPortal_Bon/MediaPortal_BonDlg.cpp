@@ -176,57 +176,13 @@ BOOL CMediaPortal_BonDlg::OnInitDialog()
 	this->mpPreLogSz = 0;
 	//this->log += this->mpLogPath;
 
-
-
-
 	this->results = NULL;
 	if (this->dbCtrl.Connect(&this->mysql, MYSQL_HOST, MYSQL_USER, MYSQL_PASSWD, MYSQL_DB) != 0) {
 		this->log += _T("DB接続失敗");
 	} else {
 		this->log += _T("DB接続成功");
-/*
-		CString sql = L"";
-		sql  = L"UPDATE tuningdetail SET provider = '@_test' WHERE provider = 'test';";
-		if (this->dbCtrl.Query(&this->mysql, sql) != 0){
-			wstring err = L"";
-			Format(err, L"ERROR SQL:%s", sql);
-			AfxMessageBox(err.c_str(), NULL, MB_OK);
-		}
-
-		if (this->dbCtrl.Query(&this->mysql, _T("SELECT idChannel, displayName FROM channel;")) != 0) {
-			this->log += _T("クエリ失敗");
-		} else {
-			this->log += _T("クエリ成功");
-
-			if (this->dbCtrl.StoreResult(&this->mysql, &this->results) != 0) {
-				this->log += _T("結果取得失敗");
-			} else {
-				this->log += _T("結果取得成功");
-				while (this->record = this->dbCtrl.FetchRow(&this->results)) {
-					this->log += CA2T(this->record[1], CP_UTF8);
-				}
-				this->dbCtrl.FreeResult(&this->results);
-			}
-
-
-		}
-*/
 		this->dbCtrl.Close(&this->mysql);
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 	if( err == NO_ERR ){
 		//チャンネル変更
@@ -237,7 +193,7 @@ BOOL CMediaPortal_BonDlg::OnInitDialog()
 			this->initSID = -1;
 			Sleep(this->initChgWait);
 		}
-		this->main.SendUDP(TRUE);
+		//this->main.SendUDP(TRUE);
 	}
 
 	//ウインドウの復元
