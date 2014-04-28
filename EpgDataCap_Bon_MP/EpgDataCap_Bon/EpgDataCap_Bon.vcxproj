@@ -92,10 +92,12 @@
       <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <ExceptionHandling>Async</ExceptionHandling>
+      <AdditionalIncludeDirectories>..\..\mysql-connector-c\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>..\..\mysql-connector-c\lib\libmysql.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -202,8 +204,8 @@
     <None Include="res\EpgDataCap_Bon_Vista_vio_rev2.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\BonCtrl\BonCtrl.h" />
     <ClInclude Include="..\..\BonCtrl\BonCtrlDef.h" />
+    <ClInclude Include="..\..\BonCtrl\BonCtrlMp.h" />
     <ClInclude Include="..\..\BonCtrl\BonDriverUtil.h" />
     <ClInclude Include="..\..\BonCtrl\CATUtil.h" />
     <ClInclude Include="..\..\BonCtrl\ChSetUtil.h" />
@@ -243,6 +245,9 @@
     <ClInclude Include="..\..\Common\TSPacketUtil.h" />
     <ClInclude Include="..\..\Common\Util.h" />
     <ClInclude Include="..\..\Common\WritePlugInUtil.h" />
+    <ClInclude Include="..\..\MpCtrl\DbCtrl.h" />
+    <ClInclude Include="..\..\MpCtrl\DbCtrlDef.h" />
+    <ClInclude Include="..\..\MpCtrl\MpCtrl.h" />
     <ClInclude Include="CmdLineUtil.h" />
     <ClInclude Include="EpgDataCap_Bon.h" />
     <ClInclude Include="EpgDataCap_BonDef.h" />
@@ -260,7 +265,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\BonCtrl\BonCtrl.cpp" />
+    <ClCompile Include="..\..\BonCtrl\BonCtrlMp.cpp" />
     <ClCompile Include="..\..\BonCtrl\BonDriverUtil.cpp" />
     <ClCompile Include="..\..\BonCtrl\CATUtil.cpp" />
     <ClCompile Include="..\..\BonCtrl\ChSetUtil.cpp" />
@@ -291,6 +296,8 @@
     <ClCompile Include="..\..\Common\TSPacketUtil.cpp" />
     <ClCompile Include="..\..\Common\Util.cpp" />
     <ClCompile Include="..\..\Common\WritePlugInUtil.cpp" />
+    <ClCompile Include="..\..\MpCtrl\DbCtrl.cpp" />
+    <ClCompile Include="..\..\MpCtrl\MpCtrl.cpp" />
     <ClCompile Include="CmdLineUtil.cpp" />
     <ClCompile Include="EpgDataCap_Bon.cpp" />
     <ClCompile Include="EpgDataCap_BonDlg.cpp" />

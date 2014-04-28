@@ -187,6 +187,37 @@ BOOL CEpgDataCap_BonDlg::OnInitDialog()
 		}
 	}
 
+	// MediaPortal TV Server
+	if((this->mpServiceStat = this->main.GetMpServiceStatus()) != 0 ) {
+		switch(this->mpServiceStat){
+			case 1:
+				this->log.Format(L"サービスマネージャが起動ができませんでした。\r\n");
+				break;
+			case 2:
+				this->log.Format(L"MediaPortal TV Serverがインストールされていません。\r\n");
+				break;
+			case 3:
+				this->log.Format(L"TVServiceサービスが起動していません\r\n");
+				break;
+			default:
+				break;
+		}
+	}
+
+	// MediaPortalログパス取得
+	this->main.GetMpLogPath(this->mpLogPath);
+	this->mpNowLogSz = 0;
+	this->mpPreLogSz = 0;
+	//this->log += this->mpLogPath;
+
+	this->results = NULL;
+	if (this->dbCtrl.Connect(&this->mysql, MYSQL_HOST, MYSQL_USER, MYSQL_PASSWD, MYSQL_DB) != 0) {
+		this->log += _T("DB接続失敗");
+	} else {
+		this->log += _T("DB接続成功");
+		this->dbCtrl.Close(&this->mysql);
+	}
+/**/
 	if( err == NO_ERR ){
 		//チャンネル変更
 		if( this->initONID != -1 && this->initTSID != -1 && this->initSID != -1 ){
@@ -461,6 +492,123 @@ void CEpgDataCap_BonDlg::OnTimer(UINT_PTR nIDEvent)
 
 				SetDlgItemText(IDC_EDIT_STATUS, this->statusLog);
 				editStatus.LineScroll(iLine);
+
+				//--------------------------------------------------------------
+				// TVService.log監視
+				DWORD err = 0;
+				FILE *fp;
+				//wstring str[1024];
+				TCHAR str[1024];
+				//WCHAR *str = L"";
+				if(this->mpServiceStat == 0){ // TVServiceサービス起動中
+
+					if((err = _tfopen_s(&fp,this->mpLogPath, L"r, ccs=UTF-8")) != 0 ) {
+						this->log.Format(L"TVService.logオープンエラー\r\n");
+					} else {
+
+						fseek(fp,0,SEEK_END); 
+						fgetpos(fp,&this->mpNowLogSz); // 現在ファイルサイズ取得
+
+						if(this->mpPreLogSz == 0 ) this->mpPreLogSz = this->mpNowLogSz; // 初期ファイルサイズ取得
+
+						// 現在のファイルサイズが前回よりも小さい場合は前回をゼロにする。
+						if(this->mpPreLogSz > this->mpNowLogSz) this->mpPreLogSz = 0;
+
+						if(this->mpPreLogSz < this->mpNowLogSz){
+							fsetpos(fp, &this->mpPreLogSz); // シーク
+							//this->log = L"";
+							//this->log.Format(L"増えた%I64dから%I64d\r\n",this->mpPreLogSz,this->mpNowLogSz);
+
+							wregex re(L"\\[[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\\,[0-9]{3}\\] \\[.{7}\\] \\[.{9}\\] \\[.{5}\\] - Controller: StartTimeShifting (?!started on card:|failed:).* ([0-9]+)$");
+
+							this->mpStartTimeShifting = L"";
+
+							while ( _fgetts(str, 1024, fp) != NULL ) { // 追加分を表示
+								//this->log += str;
+								//this->log += L"\r\n";
+								wstring text(str);
+								wsmatch m;
+								if( regex_search(text, m, re) ) this->mpStartTimeShifting = m[1];
+							}
+							this->mpPreLogSz = this->mpNowLogSz; // ファイルサイズを代入
+
+							if (this->mpStartTimeShifting != L""){
+								//this->log = L"";
+								//this->log += text;
+								this->log.Format(L"チャンネルヒット%s\r\n",this->mpStartTimeShifting.c_str());
+
+								this->results = NULL;
+								CString sql = L"";
+								wstring wsql = L"";
+								int chkNum = 0;
+
+								// MediaPortal TV Serverのデータベース接続
+								if (this->dbCtrl.Connect(&this->mysql, MYSQL_HOST, MYSQL_USER, MYSQL_PASSWD, MYSQL_DB) == 0){
+
+									// groupmapからidGroupを得る
+									sql.Format(_T("SELECT idGroup FROM groupmap WHERE idChannel = %s AND  idGroup < 2;"), 
+										this->mpStartTimeShifting.c_str());
+									if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
+									this->dbCtrl.StoreResult(&this->mysql, &this->results);
+									chkNum = this->dbCtrl.NumRows(&this->results);
+									this->dbCtrl.FreeResult(&this->results);
+
+									if(chkNum){
+										this->mpServiceList.clear();
+										// チャンネルの詳細情報を得る
+										sql.Format(_T("SELECT provider, networkId, transportId, serviceId, channelNumber FROM tuningdetail WHERE idChannel = %s;"), 
+											this->mpStartTimeShifting.c_str());
+										if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
+										this->dbCtrl.StoreResult(&this->mysql, &this->results);
+										chkNum = this->dbCtrl.NumRows(&this->results);
+
+										// 現在開いているBonDriver
+										wstring bonFile = L"";
+										this->main.GetOpenBonDriver(&bonFile);
+
+										while (this->record = this->dbCtrl.FetchRow(&this->results)) {
+											CH_DATAMP item;
+											this->log = L"";
+											this->log += CA2T(this->record[0], CP_UTF8);
+											this->log += this->record[1];
+											item.bonName           = CA2T(this->record[0], CP_UTF8);
+											item.originalNetworkID = atoi(this->record[1]);
+											item.transportStreamID = atoi(this->record[2]);
+											item.serviceID         = atoi(this->record[3]);
+											item.ch                = atoi(this->record[4]);
+											this->mpServiceList.push_back(item);
+											//goto ESC;
+										}
+
+										// BonDriverが同じか
+										if(bonFile != this->mpServiceList[0].bonName){
+											this->iniBonDriver = this->mpServiceList[0].bonName.c_str();
+											ReloadBonDriver();
+											ChgIconStatus();
+										}
+
+										// チャンネル変更
+										SelectService(
+											this->mpServiceList[0].originalNetworkID, 
+											this->mpServiceList[0].transportStreamID, 
+											this->mpServiceList[0].serviceID
+										);
+										this->initONID = -1;
+										this->initTSID = -1;
+										this->initSID = -1;
+										this->log = L"チャンネル変更";
+										Sleep(this->initChgWait);
+									}
+									ESC:
+									this->dbCtrl.FreeResult(&this->results);
+									this->dbCtrl.Close(&this->mysql);
+								}
+							}
+						}
+						fclose(fp);
+					}
+				}
+				//--------------------------------------------------------------
 
 				CString info = L"";
 				this->main.GetEpgInfo(this->btnPgNext.GetCheck(), &info);

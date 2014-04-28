@@ -9,6 +9,15 @@
 #include "EpgDataCap_BonMain.h"
 #include "SettingDlg.h"
 
+#include <map>
+#include <regex>
+using namespace std;
+
+#include "my_global.h"
+#include "mysql.h"
+#include "../../MpCtrl/DbCtrl.h"
+#include "../../MpCtrl/DbCtrlDef.h"
+/**/
 // CEpgDataCap_BonDlg ダイアログ
 class CEpgDataCap_BonDlg : public CDialogEx
 {
@@ -81,11 +90,30 @@ protected:
 	map<int, wstring> bonList;
 	vector<CH_DATA4> serviceList;
 
+
 	// 生成された、メッセージ割り当て関数
 	virtual BOOL OnInitDialog();
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
+
+	vector<CH_DATAMP> mpServiceList;
+
+	MYSQL mysql;
+	MYSQL_RES *results;
+	MYSQL_ROW record;
+
+	CDbCtrl dbCtrl;
+
+	DWORD mpServiceStat;
+	CString mpLogPath;
+	CFileFind mpLogFind;
+
+	CString mpLogStr;
+	fpos_t mpNowLogSz;
+	fpos_t mpPreLogSz;
+	wstring mpStartTimeShifting;
+/**/
 public:
 	CComboBox combTuner;
 	CComboBox combService;

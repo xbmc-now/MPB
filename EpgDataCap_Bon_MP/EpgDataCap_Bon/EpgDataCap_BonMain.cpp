@@ -1201,3 +1201,39 @@ int CALLBACK CEpgDataCap_BonMain::CtrlCmdCallback(void* param, CMD_STREAM* cmdPa
 
 	return 0;
 }
+
+//MediaPortalのログパスを取得する
+//引数：
+// szValue [OUT]MediaPortalのログパス
+void CEpgDataCap_BonMain::GetMpLogPath(
+	CString& szValue
+	)
+{
+	return this->bonCtrl.GetMpLogPath(szValue);
+}
+
+//MediaPortal TVServiceのサービス状態を取得する
+//戻り値：
+// エラーコード
+DWORD CEpgDataCap_BonMain::GetMpServiceStatus()
+{
+	return this->bonCtrl.GetMpServiceStatus();
+}
+
+/*
+//Mysqlへ接続する。
+//引数：
+// szValue [OUT]MYSQLポインタ
+//戻り値：
+// エラーコード
+DWORD CMediaPortal_BonMain::ConnectDb(
+	MYSQL *mysql, 
+	const char *host, 
+	const char *user, 
+	const char *passwd, 
+	const char *db
+)
+{
+	return this->dbCtrl.Connect(mysql, host, user, passwd, db);
+}
+*/

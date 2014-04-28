@@ -25,6 +25,12 @@
     <Filter Include="ヘッダー ファイル\BonCtrl">
       <UniqueIdentifier>{b15813d6-be3a-4e31-bd3b-52dbfbe81836}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\MpCtrl">
+      <UniqueIdentifier>{9fb0a80f-b6a9-4270-a8da-32cbb271e2a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\MpCtrl">
+      <UniqueIdentifier>{42dc8e1e-f5ff-467a-a6bf-03cbbb166e01}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="ReadMe.txt" />
@@ -129,9 +135,6 @@
     <ClInclude Include="..\..\Common\Util.h">
       <Filter>ヘッダー ファイル\Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\BonCtrl\BonCtrl.h">
-      <Filter>ヘッダー ファイル\BonCtrl</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\BonCtrl\BonCtrlDef.h">
       <Filter>ヘッダー ファイル\BonCtrl</Filter>
     </ClInclude>
@@ -189,9 +192,6 @@
     <ClInclude Include="..\..\BonCtrl\ChSetUtil.h">
       <Filter>ヘッダー ファイル\BonCtrl</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\ParseChText4.h">
-      <Filter>ヘッダー ファイル\Common</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Common\ParseChText5.h">
       <Filter>ヘッダー ファイル\Common</Filter>
     </ClInclude>
@@ -215,6 +215,21 @@
     </ClInclude>
     <ClInclude Include="..\..\Common\CtrlCmdUtil2.h">
       <Filter>ヘッダー ファイル\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Common\ParseChText4.h">
+      <Filter>ヘッダー ファイル\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\BonCtrl\BonCtrlMp.h">
+      <Filter>ヘッダー ファイル\BonCtrl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\MpCtrl\MpCtrl.h">
+      <Filter>ヘッダー ファイル\MpCtrl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\MpCtrl\DbCtrl.h">
+      <Filter>ヘッダー ファイル\MpCtrl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\MpCtrl\DbCtrlDef.h">
+      <Filter>ヘッダー ファイル\MpCtrl</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -272,9 +287,6 @@
     <ClCompile Include="..\..\Common\SendCtrlCmd.cpp">
       <Filter>ソース ファイル\Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\BonCtrl\BonCtrl.cpp">
-      <Filter>ソース ファイル\BonCtrl</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\BonCtrl\BonDriverUtil.cpp">
       <Filter>ソース ファイル\BonCtrl</Filter>
     </ClCompile>
@@ -320,9 +332,6 @@
     <ClCompile Include="..\..\BonCtrl\ChSetUtil.cpp">
       <Filter>ソース ファイル\BonCtrl</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\ParseChText4.cpp">
-      <Filter>ソース ファイル\Common</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Common\ParseChText5.cpp">
       <Filter>ソース ファイル\Common</Filter>
     </ClCompile>
@@ -346,6 +355,18 @@
     </ClCompile>
     <ClCompile Include="..\..\Common\CtrlCmdUtil2.cpp">
       <Filter>ソース ファイル\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Common\ParseChText4.cpp">
+      <Filter>ソース ファイル\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\BonCtrl\BonCtrlMp.cpp">
+      <Filter>ソース ファイル\BonCtrl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\MpCtrl\DbCtrl.cpp">
+      <Filter>ソース ファイル\MpCtrl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\MpCtrl\MpCtrl.cpp">
+      <Filter>ソース ファイル\MpCtrl</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

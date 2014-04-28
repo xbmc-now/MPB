@@ -1,6 +1,15 @@
 #pragma once
 
-#include "../../BonCtrl/BonCtrl.h"
+#include "../../BonCtrl/BonCtrlMp.h"
+//#include "../../BonCtrl/BonCtrl.h"
+/*
+#include "../../BonCtrl/BonCtrlMp.h"
+*/
+
+#include "../../MpCtrl/MpCtrl.h"
+#include "../../MpCtrl/DbCtrl.h"
+#include "../../MpCtrl/DbCtrlDef.h"
+
 #include "../../Common/PathUtil.h"
 #include "../../Common/TimeUtil.h"
 #include "../../Common/PipeServer.h"
@@ -257,11 +266,15 @@ public:
 		vector<NW_SEND_INFO>* sendTcpList
 		);
 
+	void GetMpLogPath(CString&);
+	DWORD GetMpServiceStatus();
 protected:
 	HWND msgWnd;
 
 	CBonCtrl bonCtrl;
 	CPipeServer pipeServer;
+
+	CDbCtrl dbCtrl;
 
 	vector<wstring> recFolderList;
 

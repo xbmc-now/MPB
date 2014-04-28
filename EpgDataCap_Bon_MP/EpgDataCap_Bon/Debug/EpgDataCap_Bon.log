@@ -1,24 +1,79 @@
-﻿2014/04/28 16:19:40 にビルドを開始しました。
-     1>ノード 2 上のプロジェクト "G:\git\MPB\EpgDataCap_Bon\EpgDataCap_Bon\EpgDataCap_Bon.vcxproj" (build ターゲット)。
+﻿2014/04/28 19:43:22 にビルドを開始しました。
+     1>ノード 2 上のプロジェクト "G:\git\MPB\EpgDataCap_Bon_MP\EpgDataCap_Bon\EpgDataCap_Bon.vcxproj" (build ターゲット)。
      1>InitializeBuildStatus:
          "AlwaysCreate" が指定されたため "Debug\EpgDataCap_Bon.unsuccessfulbuild" を作成しています。
        ClCompile:
          すべての出力が最新のものです。
-         すべての出力が最新のものです。
+         C:\Program Files\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /I"..\..\mysql-connector-c\include" /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D _UNICODE /D UNICODE /D _AFXDLL /Gm /EHa /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"StdAfx.h" /Fp"Debug\EpgDataCap_Bon.pch" /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt EpgDataCap_Bon.cpp EpgDataCap_BonDlg.cpp EpgDataCap_BonMain.cpp
+         EpgDataCap_Bon.cpp
+         コードを生成中...
+         コンパイル中...
+         EpgDataCap_BonMain.cpp
+         EpgDataCap_BonDlg.cpp
+         コードを生成中...
        ResourceCompile:
          すべての出力が最新のものです。
        ManifestResourceCompile:
          すべての出力が最新のものです。
        Link:
-         すべての出力が最新のものです。
+         C:\Program Files\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"G:\git\MPB\EpgDataCap_Bon_MP\..\x86\Debug\EpgDataCap_Bon.exe" /INCREMENTAL /NOLOGO "..\..\mysql-connector-c\lib\libmysql.lib" /MANIFEST /ManifestFile:"Debug\EpgDataCap_Bon.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"G:\git\MPB\x86\Debug\EpgDataCap_Bon.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /ENTRY:"wWinMainCRTStartup" /DYNAMICBASE /NXCOMPAT /IMPLIB:"G:\git\MPB\EpgDataCap_Bon_MP\..\x86\Debug\EpgDataCap_Bon.lib" /MACHINE:X86 Debug\EpgDataCap_Bon.res
+         Debug\EpgDataCap_Bon.exe.embed.manifest.res
+         Debug\BonCtrlMp.obj
+         Debug\BonDriverUtil.obj
+         Debug\CATUtil.obj
+         Debug\ChSetUtil.obj
+         Debug\CreatePATPacket.obj
+         Debug\CreatePMTPacket.obj
+         Debug\DropCount.obj
+         Debug\OneServiceUtil.obj
+         Debug\PacketInit.obj
+         Debug\PMTUtil.obj
+         Debug\ScrambleDecoderUtil.obj
+         Debug\SendTCP.obj
+         Debug\SendUDP.obj
+         Debug\TSOut.obj
+         Debug\WriteTSFile.obj
+         Debug\CtrlCmdUtil.obj
+         Debug\CtrlCmdUtil2.obj
+         Debug\EpgDataCap3Util.obj
+         Debug\EpgTimerUtil.obj
+         Debug\ParseChText4.obj
+         Debug\ParseChText5.obj
+         Debug\PathUtil.obj
+         Debug\PipeServer.obj
+         Debug\SendCtrlCmd.obj
+         Debug\SendTSTCPDllUtil.obj
+         Debug\StringUtil.obj
+         Debug\TimeUtil.obj
+         Debug\TSBuffUtil.obj
+         Debug\TSPacketUtil.obj
+         Debug\Util.obj
+         Debug\WritePlugInUtil.obj
+         Debug\DbCtrl.obj
+         Debug\MpCtrl.obj
+         Debug\CmdLineUtil.obj
+         Debug\EpgDataCap_Bon.obj
+         Debug\EpgDataCap_BonDlg.obj
+         Debug\EpgDataCap_BonMain.obj
+         Debug\SetDlgApp.obj
+         Debug\SetDlgAppBtn.obj
+         Debug\SetDlgBasic.obj
+         Debug\SetDlgEpg.obj
+         Debug\SetDlgNetwork.obj
+         Debug\SetDlgService.obj
+         Debug\SettingDlg.obj
+         Debug\stdafx.obj
        Manifest:
          C:\Program Files\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /out:"Debug\EpgDataCap_Bon.exe.embed.manifest" /manifest Debug\EpgDataCap_Bon.exe.intermediate.manifest "C:\Program Files\Microsoft Visual Studio 10.0\VC\Include\Manifest\dpiaware.manifest"
          すべての出力が最新のものです。
+       LinkEmbedManifest:
+         すべての出力が最新のものです。
+         EpgDataCap_Bon.vcxproj -> G:\git\MPB\EpgDataCap_Bon_MP\..\x86\Debug\EpgDataCap_Bon.exe
        FinalizeBuildStatus:
          ファイル "Debug\EpgDataCap_Bon.unsuccessfulbuild" を削除しています。
          "Debug\EpgDataCap_Bon.lastbuildstate" のタッチ タスクを実行しています。
-     1>プロジェクト "G:\git\MPB\EpgDataCap_Bon\EpgDataCap_Bon\EpgDataCap_Bon.vcxproj" (build ターゲット) のビルドが完了しました。
+     1>プロジェクト "G:\git\MPB\EpgDataCap_Bon_MP\EpgDataCap_Bon\EpgDataCap_Bon.vcxproj" (build ターゲット) のビルドが完了しました。
 
 ビルドに成功しました。
 
-経過時間 00:00:01.35
+経過時間 00:00:13.12
