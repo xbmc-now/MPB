@@ -1,5 +1,6 @@
 #ifndef __PARSE_CH_TEXT_4_H__
 #define __PARSE_CH_TEXT_4_H__
+#pragma once
 
 #include "StructDef.h"
 #include <regex>

@@ -3,7 +3,7 @@
 #include "StringUtil.h"
 #include "EpgTimerUtil.h"
 
-//#include "../MpCtrl/DbCtrl.h"
+#include "../MpCtrl/DbCtrl.h"
 
 CParseChText4::CParseChText4(void)
 {
