@@ -509,6 +509,7 @@ void CMediaPortal_BonDlg::OnTimer(UINT_PTR nIDEvent)
 
 										// BonDriver‚ª“¯‚¶‚©
 										if(bonFile != this->mpServiceList[0].bonName){
+											SelectBonDriver(this->mpServiceList[0].bonName);
 											this->iniBonDriver = this->mpServiceList[0].bonName.c_str();
 											ReloadBonDriver();
 											ChgIconStatus();
