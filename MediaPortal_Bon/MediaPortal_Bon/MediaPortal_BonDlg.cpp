@@ -193,7 +193,7 @@ BOOL CMediaPortal_BonDlg::OnInitDialog()
 			this->initSID = -1;
 			Sleep(this->initChgWait);
 		}
-		//this->main.SendUDP(TRUE);
+		this->main.SendUDP(TRUE);
 	}
 
 	//ウインドウの復元
@@ -898,10 +898,12 @@ void CMediaPortal_BonDlg::OnCbnSelchangeComboTuner()
 	// TODO: ここにコントロール通知ハンドラー コードを追加します。
 	KillTimer(TIMER_STATUS_UPDATE);
 	CString buff=L"";
-	this->combTuner.GetWindowText(buff);
+	//this->combTuner.GetWindowText(buff);
+	this->combTuner.GetLBText(this->combTuner.GetCurSel(), buff);
 
 	if( buff.IsEmpty() == false ){
 		SelectBonDriver(buff.GetBuffer(0));
+		//AfxMessageBox(buff.GetBuffer(0), NULL, MB_OK);
 	}
 	SetTimer(TIMER_STATUS_UPDATE, 1000, NULL);
 }
