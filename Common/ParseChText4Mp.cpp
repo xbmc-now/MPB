@@ -208,7 +208,10 @@ BOOL CParseChText4::SaveChText(LPCWSTR filePath)
 		wregex re(L".+\\\\(.+)\\(.+\\)\\.ChSet4\\.txt$");
 		wstring text(filePath);
 		wsmatch m;
-		if( regex_search(text, m, re) ) loadTunerName = m[1];
+		if( regex_search(text, m, re) ){ 
+			loadTunerName = m[1];
+			loadTunerName += L".dll";
+		}
 	}
 
 	if( loadFilePath.size() == 0 ){
