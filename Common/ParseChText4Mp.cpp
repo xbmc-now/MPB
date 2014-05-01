@@ -566,3 +566,28 @@ BOOL CParseChText4::SaveChText(LPCWSTR filePath)
 	return FALSE;
 }
 
+BOOL CParseChText4::SaveUdpMp(LPCWSTR filePath)
+{
+	/*
+	wstring ipString;
+	//DWORD ip;
+	DWORD port;
+	//ip = GetPrivateProfileInt(L"SET_UDP", L"IP0", 2130706433, filePath);
+	ipString = inet_ntoa((struct in_addr){.s_addr = inet_addr(GetPrivateProfileInt(L"SET_UDP", L"IP0", 2130706433, filePath))});
+	port = GetPrivateProfileInt( L"SET_UDP", L"Port0", 3456, filePath );
+	
+	// MediaPortal TV Serverのデータベースへ登録
+	if (this->dbCtrl.Connect(&this->mysql, MYSQL_HOST, MYSQL_USER, MYSQL_PASSWD, MYSQL_DB) != 0) {
+		return FALSE;
+	}
+
+	this->results = NULL;
+	CString sql = L"";
+	wstring wsql = L"";
+
+	sql.Format(_T("UPDATE tuningdetail SET idGroup = 'udp://%s:%d' WHERE idGroup = ;"), ipString, port);
+	if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
+
+	this->dbCtrl.Close(&this->mysql);
+	*/
+}

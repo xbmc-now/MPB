@@ -95,6 +95,15 @@ public:
 		return *this;
 	};
 
+	//UDPの送信先を変更する
+	//戻り値：
+	// TRUE（成功）、FALSE（失敗）
+	//引数：
+	// file_path				[IN]iniのフルパス
+	BOOL SaveUdpMp(
+		LPCWSTR filePath = NULL
+		);
+
 protected:
 	wstring filePath;
 	wstring tunerName;
