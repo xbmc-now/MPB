@@ -55,7 +55,7 @@ BOOL CSetDlgBasic::OnInitDialog()
 	settingFolderPath = path.c_str();
 
 	udpIP.SetAddress( GetPrivateProfileInt( L"SET", L"UDPIP", 2130706433, appIniPath ));
-	udpPort = GetPrivateProfileInt( L"SET", L"UDPPort", 5432, appIniPath );
+	udpPort = GetPrivateProfileInt( L"SET", L"UDPPort", 3456, appIniPath );
 	udpWaitSec = GetPrivateProfileInt( L"SET", L"UDPWait", 4, appIniPath );
 	udpWaitPacket = GetPrivateProfileInt( L"SET", L"UDPPacket", 128, appIniPath );
 
