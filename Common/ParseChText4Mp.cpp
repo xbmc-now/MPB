@@ -588,9 +588,27 @@ BOOL CParseChText4::SaveUdpMp(LPCWSTR filePath)
 	CString sql = L"";
 	wstring wsql = L"";
 
-	sql.Format(_T("UPDATE tuningdetail SET idGroup = 'udp://%s:%d' WHERE idGroup = ;"), ipString, port);
+	this->dbCtrl.Begin(&this->mysql);
+
+	map<CString, int> lockTable;
+	lockTable[L"tuningdetail"] = 2;
+	if (this->dbCtrl.LockTable(&this->mysql, lockTable) != 0) goto ESC;
+
+	sql.Format(_T("UPDATE tuningdetail SET url = 'udp://%s:%d' WHERE idGroup IN(0,1);"), ipString, port);
 	if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
 
+	this->dbCtrl.Commit(&this->mysql);
+	this->dbCtrl.UnlockTable(&this->mysql);
 	this->dbCtrl.Close(&this->mysql);
+	return TRUE;
+
+	ESC: 
+	wstring err = L"";
+	Format(err, L"ERROR SQL:%s", sql);
+	AfxMessageBox(err.c_str(), NULL, MB_OK);
+	this->dbCtrl.Rollback(&this->mysql);
+	this->dbCtrl.UnlockTable(&this->mysql);
+	this->dbCtrl.Close(&this->mysql);
+	return FALSE;
 	*/
 }
