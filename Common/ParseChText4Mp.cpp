@@ -2,6 +2,7 @@
 #include "ParseChText4Mp.h"
 #include "StringUtil.h"
 #include "EpgTimerUtil.h"
+#include "PathUtil.h"
 
 #include "../MpCtrl/DbCtrl.h"
 
@@ -265,6 +266,21 @@ BOOL CParseChText4::SaveChText(LPCWSTR filePath)
 
 	CloseHandle(hFile);
 
+	wstring appIniPath = L"";
+	GetModuleIniPath(appIniPath);
+
+	wstring ipString;
+	DWORD ip;
+	DWORD port;
+
+	ip = GetPrivateProfileInt(L"SET_UDP", L"IP0", 2130706433, appIniPath.c_str());
+	Format(ipString, L"%d.%d.%d.%d", 
+	(ip&0xFF000000)>>24, 
+	(ip&0x00FF0000)>>16, 
+	(ip&0x0000FF00)>>8, 
+	(ip&0x000000FF) );
+	port = GetPrivateProfileInt( L"SET_UDP", L"Port0", 3456, appIniPath.c_str() );
+
 	// MediaPortal TV Serverのデータベースへ登録
 	if (this->dbCtrl.Connect(&this->mysql, MYSQL_HOST, MYSQL_USER, MYSQL_PASSWD, MYSQL_DB) != 0) {
 		return FALSE;
@@ -494,7 +510,7 @@ BOOL CParseChText4::SaveChText(LPCWSTR filePath)
 			this->dbCtrl.FreeResult(&this->results);
 
 			// チャンネル詳細登録
-			sql.Format(L"INSERT INTO tuningdetail VALUES(%d,%d,'%s','%s',7,%d,0,31,0,1,%d,%d,%d,496,0,0,0,0,1,0,8,-1,-1,0,0,0,-1,-1,-1,-1,'udp://127.0.0.1:5432',0,0,0);",
+			sql.Format(L"INSERT INTO tuningdetail VALUES(%d,%d,'%s','%s',7,%d,0,31,0,1,%d,%d,%d,496,0,0,0,0,1,0,8,-1,-1,0,0,0,-1,-1,-1,-1,'udp://%s:%d',0,0,0);",
 				maxTuNum + 1,
 				tmpCh,
 				itr->second.serviceName.c_str(),
@@ -502,7 +518,9 @@ BOOL CParseChText4::SaveChText(LPCWSTR filePath)
 				itr->second.ch,
 				itr->second.originalNetworkID,
 				itr->second.transportStreamID,
-				itr->second.serviceID
+				itr->second.serviceID,
+				ipString.c_str(),
+				port
 			);
 			if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
 
@@ -569,15 +587,15 @@ BOOL CParseChText4::SaveChText(LPCWSTR filePath)
 	return FALSE;
 }
 
-BOOL CParseChText4::SaveUdpMp(LPCWSTR filePath)
+BOOL CParseChText4::SaveUdpMp()
 {
-	/*
+	
+	wstring appIniPath = L"";
+	GetModuleIniPath(appIniPath);
+
 	wstring ipString;
-	//DWORD ip;
+	DWORD ip;
 	DWORD port;
-	//ip = GetPrivateProfileInt(L"SET_UDP", L"IP0", 2130706433, filePath);
-	ipString = inet_ntoa((struct in_addr){.s_addr = inet_addr(GetPrivateProfileInt(L"SET_UDP", L"IP0", 2130706433, filePath))});
-	port = GetPrivateProfileInt( L"SET_UDP", L"Port0", 3456, filePath );
 	
 	// MediaPortal TV Serverのデータベースへ登録
 	if (this->dbCtrl.Connect(&this->mysql, MYSQL_HOST, MYSQL_USER, MYSQL_PASSWD, MYSQL_DB) != 0) {
@@ -592,9 +610,18 @@ BOOL CParseChText4::SaveUdpMp(LPCWSTR filePath)
 
 	map<CString, int> lockTable;
 	lockTable[L"tuningdetail"] = 2;
+	lockTable[L"groupmap"] = 2;
 	if (this->dbCtrl.LockTable(&this->mysql, lockTable) != 0) goto ESC;
 
-	sql.Format(_T("UPDATE tuningdetail SET url = 'udp://%s:%d' WHERE idGroup IN(0,1);"), ipString, port);
+	ip = GetPrivateProfileInt(L"SET_UDP", L"IP0", 2130706433, appIniPath.c_str());
+	Format(ipString, L"%d.%d.%d.%d", 
+	(ip&0xFF000000)>>24, 
+	(ip&0x00FF0000)>>16, 
+	(ip&0x0000FF00)>>8, 
+	(ip&0x000000FF) );
+	port = GetPrivateProfileInt( L"SET_UDP", L"Port0", 3456, appIniPath.c_str() );
+
+	sql.Format(_T("UPDATE tuningdetail LEFT JOIN groupmap ON tuningdetail.idChannel = groupmap.idChannel SET tuningdetail.url= 'udp://%s:%d' WHERE groupmap.idGroup IN(0,1);"), ipString.c_str(), port);
 	if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
 
 	this->dbCtrl.Commit(&this->mysql);
@@ -610,5 +637,5 @@ BOOL CParseChText4::SaveUdpMp(LPCWSTR filePath)
 	this->dbCtrl.UnlockTable(&this->mysql);
 	this->dbCtrl.Close(&this->mysql);
 	return FALSE;
-	*/
+
 }

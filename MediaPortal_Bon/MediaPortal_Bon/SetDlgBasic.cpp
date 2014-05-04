@@ -112,6 +112,8 @@ void CSetDlgBasic::SaveIni()
 	val.Format(L"%d",btnTaskMin.GetCheck());
 	WritePrivateProfileString( L"SET", L"MinTask", val.GetBuffer(0), appIniPath );
 
+	chSet.SaveUdpMp();
+
 	UpdateData(FALSE);
 }
 

@@ -1,15 +1,17 @@
-﻿2014/04/28 19:43:22 にビルドを開始しました。
+﻿2014/05/01 15:25:23 にビルドを開始しました。
      1>ノード 2 上のプロジェクト "G:\git\MPB\EpgDataCap_Bon_MP\EpgDataCap_Bon\EpgDataCap_Bon.vcxproj" (build ターゲット)。
      1>InitializeBuildStatus:
          "AlwaysCreate" が指定されたため "Debug\EpgDataCap_Bon.unsuccessfulbuild" を作成しています。
        ClCompile:
          すべての出力が最新のものです。
-         C:\Program Files\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /I"..\..\mysql-connector-c\include" /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D _UNICODE /D UNICODE /D _AFXDLL /Gm /EHa /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"StdAfx.h" /Fp"Debug\EpgDataCap_Bon.pch" /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt EpgDataCap_Bon.cpp EpgDataCap_BonDlg.cpp EpgDataCap_BonMain.cpp
-         EpgDataCap_Bon.cpp
+         C:\Program Files\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /I"..\..\mysql-connector-c\include" /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D _UNICODE /D UNICODE /D _AFXDLL /Gm /EHa /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"StdAfx.h" /Fp"Debug\EpgDataCap_Bon.pch" /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt ..\..\BonCtrl\BonCtrlMp.cpp ..\..\MpCtrl\MpCtrl.cpp EpgDataCap_Bon.cpp EpgDataCap_BonDlg.cpp EpgDataCap_BonMain.cpp
+         MpCtrl.cpp
+         BonCtrlMp.cpp
          コードを生成中...
          コンパイル中...
          EpgDataCap_BonMain.cpp
          EpgDataCap_BonDlg.cpp
+         EpgDataCap_Bon.cpp
          コードを生成中...
        ResourceCompile:
          すべての出力が最新のものです。
@@ -76,4 +78,4 @@
 
 ビルドに成功しました。
 
-経過時間 00:00:13.12
+経過時間 00:00:25.86

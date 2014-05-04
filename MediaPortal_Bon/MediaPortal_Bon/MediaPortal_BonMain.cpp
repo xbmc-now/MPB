@@ -337,7 +337,7 @@ BOOL CMediaPortal_BonMain::SendUDP(
 		wstring appIniPath = L"";
 		GetModuleIniPath(appIniPath);
 
-		int udpCount = GetPrivateProfileInt( L"SET_UDP", L"Count", 0, appIniPath.c_str() );
+		int udpCount = GetPrivateProfileInt( L"SET_UDP", L"Count", 1, appIniPath.c_str() );
 		for( int i = 0; i < udpCount; i++ ){
 			NW_SEND_INFO item;
 
@@ -345,7 +345,7 @@ BOOL CMediaPortal_BonMain::SendUDP(
 			key.Format(L"IP%d",i);
 			item.ip = GetPrivateProfileInt( L"SET_UDP", key.GetBuffer(0), 2130706433, appIniPath.c_str() );
 			key.Format(L"Port%d",i);
-			item.port = GetPrivateProfileInt( L"SET_UDP", key.GetBuffer(0), 1234, appIniPath.c_str() );
+			item.port = GetPrivateProfileInt( L"SET_UDP", key.GetBuffer(0), 3456, appIniPath.c_str() );
 			Format(item.ipString, L"%d.%d.%d.%d",
 				(item.ip&0xFF000000)>>24,
 				(item.ip&0x00FF0000)>>16,
