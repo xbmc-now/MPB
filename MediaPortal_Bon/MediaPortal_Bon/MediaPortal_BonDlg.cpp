@@ -483,7 +483,7 @@ void CMediaPortal_BonDlg::OnTimer(UINT_PTR nIDEvent)
 									if(chkNum){
 										this->mpServiceList.clear();
 										// チャンネルの詳細情報を得る
-										sql.Format(_T("SELECT provider, networkId, transportId, serviceId, channelNumber FROM tuningdetail WHERE idChannel = %s;"), 
+										sql.Format(_T("SELECT tuningdetail.provider, tuningdetail.networkId, tuningdetail.transportId, tuningdetail.serviceId, groupmap.idGroup, tuningdetail.channelNumber FROM tuningdetail LEFT JOIN groupmap ON tuningdetail.idChannel = groupmap.idChannel WHERE groupmap.idGroup IN(0,1) AND tuningdetail.idChannel = %s;"), 
 											this->mpStartTimeShifting.c_str());
 										if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
 										this->dbCtrl.StoreResult(&this->mysql, &this->results);
@@ -502,7 +502,8 @@ void CMediaPortal_BonDlg::OnTimer(UINT_PTR nIDEvent)
 											item.originalNetworkID = atoi(this->record[1]);
 											item.transportStreamID = atoi(this->record[2]);
 											item.serviceID         = atoi(this->record[3]);
-											item.ch                = atoi(this->record[4]);
+											item.space             = atoi(this->record[4]);
+											item.ch                = atoi(this->record[5]);
 											this->mpServiceList.push_back(item);
 											//goto ESC;
 										}
@@ -515,9 +516,37 @@ void CMediaPortal_BonDlg::OnTimer(UINT_PTR nIDEvent)
 											ReloadBonDriver();
 											ChgIconStatus();
 											SetTimer(TIMER_STATUS_UPDATE, 3000, NULL);
+
+											SelectService(
+												this->mpServiceList[0].originalNetworkID, 
+												this->mpServiceList[0].transportStreamID, 
+												this->mpServiceList[0].serviceID,
+												this->mpServiceList[0].space,
+												this->mpServiceList[0].ch
+											);
+
+										} else {
+											SelectService(
+												this->mpServiceList[0].originalNetworkID, 
+												this->mpServiceList[0].transportStreamID, 
+												this->mpServiceList[0].serviceID
+											);
+											this->initONID = -1;
+											this->initTSID = -1;
+											this->initSID = -1;
+
 										}
 
 										// チャンネル変更
+/*
+										SelectService(
+											this->mpServiceList[0].originalNetworkID, 
+											this->mpServiceList[0].transportStreamID, 
+											this->mpServiceList[0].serviceID,
+											this->mpServiceList[0].space,
+											this->mpServiceList[0].ch
+										);
+
 										SelectService(
 											this->mpServiceList[0].originalNetworkID, 
 											this->mpServiceList[0].transportStreamID, 
@@ -526,6 +555,7 @@ void CMediaPortal_BonDlg::OnTimer(UINT_PTR nIDEvent)
 										this->initONID = -1;
 										this->initTSID = -1;
 										this->initSID = -1;
+*/
 										this->log = L"チャンネル変更";
 										Sleep(this->initChgWait);
 									}
