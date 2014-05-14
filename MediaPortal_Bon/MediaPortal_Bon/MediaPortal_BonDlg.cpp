@@ -517,36 +517,9 @@ void CMediaPortal_BonDlg::OnTimer(UINT_PTR nIDEvent)
 											ChgIconStatus();
 											SetTimer(TIMER_STATUS_UPDATE, 3000, NULL);
 
-											SelectService(
-												this->mpServiceList[0].originalNetworkID, 
-												this->mpServiceList[0].transportStreamID, 
-												this->mpServiceList[0].serviceID,
-												this->mpServiceList[0].space,
-												this->mpServiceList[0].ch
-											);
-
-										} else {
-											SelectService(
-												this->mpServiceList[0].originalNetworkID, 
-												this->mpServiceList[0].transportStreamID, 
-												this->mpServiceList[0].serviceID
-											);
-											this->initONID = -1;
-											this->initTSID = -1;
-											this->initSID = -1;
-
 										}
 
 										// チャンネル変更
-/*
-										SelectService(
-											this->mpServiceList[0].originalNetworkID, 
-											this->mpServiceList[0].transportStreamID, 
-											this->mpServiceList[0].serviceID,
-											this->mpServiceList[0].space,
-											this->mpServiceList[0].ch
-										);
-
 										SelectService(
 											this->mpServiceList[0].originalNetworkID, 
 											this->mpServiceList[0].transportStreamID, 
@@ -555,7 +528,7 @@ void CMediaPortal_BonDlg::OnTimer(UINT_PTR nIDEvent)
 										this->initONID = -1;
 										this->initTSID = -1;
 										this->initSID = -1;
-*/
+
 										this->log = L"チャンネル変更";
 										Sleep(this->initChgWait);
 									}
