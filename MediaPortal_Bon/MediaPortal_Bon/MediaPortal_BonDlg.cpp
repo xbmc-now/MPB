@@ -81,6 +81,7 @@ void CMediaPortal_BonDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON_CHSCAN, btnChScan);
 	DDX_Control(pDX, IDC_BUTTON_SET, btnSet);
 	DDX_Control(pDX, IDC_BUTTON_CANCEL, btnCancel);
+	DDX_Control(pDX, IDC_BUTTON_RESET, btnReset);
 	DDX_Text(pDX, IDC_EDIT_LOG, log);
 	DDX_Text(pDX, IDC_EDIT_STATUS, statusLog);
 	DDX_Control(pDX, IDC_EDIT_STATUS, editStatus);
@@ -179,9 +180,11 @@ BOOL CMediaPortal_BonDlg::OnInitDialog()
 	this->results = NULL;
 	if (this->dbCtrl.Connect(&this->mysql, MYSQL_HOST, MYSQL_USER, MYSQL_PASSWD, MYSQL_DB) != 0) {
 		this->log += _T("DB接続失敗");
+		BtnUpdate(GUI_DB_FAIL);
 	} else {
 		this->log += _T("DB接続成功");
 		this->dbCtrl.Close(&this->mysql);
+		BtnUpdate(GUI_NORMAL);
 	}
 
 	if( err == NO_ERR ){
@@ -855,18 +858,21 @@ void CMediaPortal_BonDlg::BtnUpdate(DWORD guiMode)
 			this->btnChScan.EnableWindow(TRUE);
 			this->btnSet.EnableWindow(TRUE);
 			this->btnCancel.EnableWindow(FALSE);
+			this->btnReset.EnableWindow(TRUE);
 			break;
 		case GUI_CANCEL_ONLY:
 			this->combTuner.EnableWindow(FALSE);
 			this->btnChScan.EnableWindow(FALSE);
 			this->btnSet.EnableWindow(FALSE);
 			this->btnCancel.EnableWindow(TRUE);
+			this->btnReset.EnableWindow(FALSE);
 			break;
 		case GUI_OPEN_FAIL:
 			this->combTuner.EnableWindow(TRUE);
 			this->btnChScan.EnableWindow(FALSE);
 			this->btnSet.EnableWindow(TRUE);
 			this->btnCancel.EnableWindow(FALSE);
+			this->btnReset.EnableWindow(TRUE);
 			break;
 		case GUI_REC:
 			this->combTuner.EnableWindow(FALSE);
@@ -879,18 +885,28 @@ void CMediaPortal_BonDlg::BtnUpdate(DWORD guiMode)
 			this->btnChScan.EnableWindow(FALSE);
 			this->btnSet.EnableWindow(FALSE);
 			this->btnCancel.EnableWindow(TRUE);
+			this->btnReset.EnableWindow(FALSE);
 			break;
 		case GUI_OTHER_CTRL:
 			this->combTuner.EnableWindow(FALSE);
 			this->btnChScan.EnableWindow(FALSE);
 			this->btnSet.EnableWindow(FALSE);
 			this->btnCancel.EnableWindow(TRUE);
+			this->btnReset.EnableWindow(FALSE);
 			break;
 		case GUI_REC_STANDBY:
 			this->combTuner.EnableWindow(FALSE);
 			this->btnChScan.EnableWindow(FALSE);
 			this->btnSet.EnableWindow(FALSE);
 			this->btnCancel.EnableWindow(FALSE);
+			this->btnReset.EnableWindow(FALSE);
+			break;
+		case GUI_DB_FAIL:
+			this->combTuner.EnableWindow(TRUE);
+			this->btnChScan.EnableWindow(FALSE);
+			this->btnSet.EnableWindow(TRUE);
+			this->btnCancel.EnableWindow(FALSE);
+			this->btnReset.EnableWindow(FALSE);
 			break;
 		default:
 			break;
@@ -1048,6 +1064,21 @@ void CMediaPortal_BonDlg::OnBnClickedButtonCancel()
 
 	BtnUpdate(GUI_NORMAL);
 	ChgIconStatus();
+}
+
+void CMediaPortal_BonDlg::OnBnClickedButtonReset()
+{
+	if( AfxMessageBox( L"MediaPortalのチャンネルを削除しますか", MB_YESNO ) == IDNO ){
+		return ;
+	}
+
+	// MediaPortal TV Serverのデータベース接続
+	if (this->dbCtrl.Connect(&this->mysql, MYSQL_HOST, MYSQL_USER, MYSQL_PASSWD, MYSQL_DB) == 0){
+
+
+
+
+
 }
 
 BOOL CMediaPortal_BonDlg::OnQueryEndSession()

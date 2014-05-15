@@ -10,6 +10,7 @@
 #define GUI_REC_SET_TIME	5
 #define GUI_OTHER_CTRL	6
 #define GUI_REC_STANDBY	7
+#define GUI_DB_FAIL	8
 
 //内部タイマー
 #define TIMER_STATUS_UPDATE		1000

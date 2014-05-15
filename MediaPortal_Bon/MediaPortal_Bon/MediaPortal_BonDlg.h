@@ -111,6 +111,7 @@ public:
 	CButton btnChScan;
 	CButton btnSet;
 	CButton btnCancel;
+	CButton btnReset;
 	CString log;
 	CString statusLog;
 	CString pgInfo;
