@@ -98,11 +98,7 @@ public:
 	//UDPの送信先を変更する
 	//戻り値：
 	// TRUE（成功）、FALSE（失敗）
-	//引数：
-	// file_path				[IN]iniのフルパス
-	BOOL SaveUdpMp(
-		LPCWSTR filePath = NULL
-		);
+	BOOL SaveUdpMp();
 
 protected:
 	wstring filePath;

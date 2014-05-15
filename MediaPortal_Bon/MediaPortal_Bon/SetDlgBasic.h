@@ -1,6 +1,7 @@
 #pragma once
 #include "afxwin.h"
 
+#include "../../Common/ParseChText4Mp.h"
 
 // CSetDlgBasic ダイアログ
 
@@ -25,6 +26,7 @@ public:
 protected:
 	CString commonIniPath;
 	CString appIniPath;
+	CParseChText4 chSet;
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV サポート

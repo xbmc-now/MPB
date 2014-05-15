@@ -139,7 +139,7 @@ BOOL CMediaPortal_BonDlg::OnInitDialog()
 	DWORD err = NO_ERR;
 	if( this->iniBonDriver.IsEmpty() == false ){
 		err = SelectBonDriver(this->iniBonDriver.GetBuffer(0), TRUE);
-		this->log.Format(L"BonDriverのオープンを選択しました。IsEmptyfalse\r\n%s\r\n", this->iniBonDriver.GetBuffer(0));
+		this->log.Format(L"BonDriverのオープンを選択しました。\r\n%s\r\n", this->iniBonDriver.GetBuffer(0));
 		Sleep(this->initOpenWait);
 	}else{
 		map<int, wstring>::iterator itr;
@@ -483,7 +483,7 @@ void CMediaPortal_BonDlg::OnTimer(UINT_PTR nIDEvent)
 									if(chkNum){
 										this->mpServiceList.clear();
 										// チャンネルの詳細情報を得る
-										sql.Format(_T("SELECT provider, networkId, transportId, serviceId, channelNumber FROM tuningdetail WHERE idChannel = %s;"), 
+										sql.Format(_T("SELECT tuningdetail.provider, tuningdetail.networkId, tuningdetail.transportId, tuningdetail.serviceId, groupmap.idGroup, tuningdetail.channelNumber FROM tuningdetail LEFT JOIN groupmap ON tuningdetail.idChannel = groupmap.idChannel WHERE groupmap.idGroup IN(0,1) AND tuningdetail.idChannel = %s;"), 
 											this->mpStartTimeShifting.c_str());
 										if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
 										this->dbCtrl.StoreResult(&this->mysql, &this->results);
@@ -502,17 +502,21 @@ void CMediaPortal_BonDlg::OnTimer(UINT_PTR nIDEvent)
 											item.originalNetworkID = atoi(this->record[1]);
 											item.transportStreamID = atoi(this->record[2]);
 											item.serviceID         = atoi(this->record[3]);
-											item.ch                = atoi(this->record[4]);
+											item.space             = atoi(this->record[4]);
+											item.ch                = atoi(this->record[5]);
 											this->mpServiceList.push_back(item);
 											//goto ESC;
 										}
 
 										// BonDriverが同じか
 										if(bonFile != this->mpServiceList[0].bonName.c_str()){
+											KillTimer(TIMER_STATUS_UPDATE);
 											SelectBonDriver(this->mpServiceList[0].bonName.c_str());
 											this->iniBonDriver = this->mpServiceList[0].bonName.c_str();
 											ReloadBonDriver();
 											ChgIconStatus();
+											SetTimer(TIMER_STATUS_UPDATE, 3000, NULL);
+
 										}
 
 										// チャンネル変更
@@ -524,6 +528,7 @@ void CMediaPortal_BonDlg::OnTimer(UINT_PTR nIDEvent)
 										this->initONID = -1;
 										this->initTSID = -1;
 										this->initSID = -1;
+
 										this->log = L"チャンネル変更";
 										Sleep(this->initChgWait);
 									}
@@ -926,6 +931,34 @@ void CMediaPortal_BonDlg::OnBnClickedButtonSet()
 		this->initTSID = TSID;
 		this->initSID = SID;
 		
+
+		wstring ipString;
+		DWORD ip;
+		DWORD port;
+
+		ip = GetPrivateProfileInt(L"SET_UDP", L"IP0", 2130706433, moduleIniPath);
+		Format(ipString, L"%d.%d.%d.%d", 
+		(ip&0xFF000000)>>24, 
+		(ip&0x00FF0000)>>16, 
+		(ip&0x0000FF00)>>8, 
+		(ip&0x000000FF) );
+		port = GetPrivateProfileInt( L"SET_UDP", L"Port0", 3456, moduleIniPath );
+
+		float signal = 0;
+		DWORD space = 0;
+		DWORD ch = 0;
+		ULONGLONG drop = 0;
+		ULONGLONG scramble = 0;
+		vector<NW_SEND_INFO> udpSendList;
+		vector<NW_SEND_INFO> tcpSendList;
+
+		BOOL ret = this->main.GetViewStatusInfo(&signal, &space, &ch, &drop, &scramble, &udpSendList, &tcpSendList);
+
+		if( udpSendList[0].ipString.c_str() != ipString || udpSendList[0].port != port ){
+			this->main.SendUDP(FALSE);
+			this->main.SendUDP(TRUE);
+		}
+
 		this->minTask = GetPrivateProfileInt( L"Set", L"MinTask", 0, this->moduleIniPath );
 	}
 }

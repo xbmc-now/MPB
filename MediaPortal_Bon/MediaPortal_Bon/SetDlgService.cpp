@@ -214,7 +214,10 @@ void CSetDlgService::SaveIni()
 	map<wstring, CH_SET_INFO*>::iterator itr;
 	for( itr = chList.begin(); itr != chList.end(); itr++ ){
 		itr->second->chSet.SaveChText();
+		itr->second->chSet.SaveUdpMp();
 	}
+
+	
 
 	UpdateData(FALSE);
 }

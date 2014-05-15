@@ -2,6 +2,7 @@
 #include "ParseChText4Mp.h"
 #include "StringUtil.h"
 #include "EpgTimerUtil.h"
+#include "PathUtil.h"
 
 #include "../MpCtrl/DbCtrl.h"
 
@@ -265,6 +266,21 @@ BOOL CParseChText4::SaveChText(LPCWSTR filePath)
 
 	CloseHandle(hFile);
 
+	wstring appIniPath = L"";
+	GetModuleIniPath(appIniPath);
+
+	wstring ipString;
+	DWORD ip;
+	DWORD port;
+
+	ip = GetPrivateProfileInt(L"SET_UDP", L"IP0", 2130706433, appIniPath.c_str());
+	Format(ipString, L"%d.%d.%d.%d", 
+	(ip&0xFF000000)>>24, 
+	(ip&0x00FF0000)>>16, 
+	(ip&0x0000FF00)>>8, 
+	(ip&0x000000FF) );
+	port = GetPrivateProfileInt( L"SET_UDP", L"Port0", 3456, appIniPath.c_str() );
+
 	// MediaPortal TV Serverのデータベースへ登録
 	if (this->dbCtrl.Connect(&this->mysql, MYSQL_HOST, MYSQL_USER, MYSQL_PASSWD, MYSQL_DB) != 0) {
 		return FALSE;
@@ -348,33 +364,9 @@ BOOL CParseChText4::SaveChText(LPCWSTR filePath)
 
 	int tmpCh;  // 登録用チャンネル
 	for( itr = sortList.begin(); itr != sortList.end(); itr++ ){
-
-		wsql  = L"";
-		wsql += L"SELECT idChannel FROM tuningdetail WHERE ";
-		wsql += L"provider = '@_%s' AND ";
-		wsql += L"channelNumber = %d AND ";
-		wsql += L"networkId     = %d AND ";
-		wsql += L"transportId   = %d AND ";
-		wsql += L"serviceId     = %d;";
-		sql.Format(wsql.c_str(),
-			loadTunerName.c_str(),
-			itr->second.ch,
-			itr->second.originalNetworkID,
-			itr->second.transportStreamID,
-			itr->second.serviceID
-			);
-		if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
-		this->dbCtrl.StoreResult(&this->mysql, &this->results);
-
-		//AfxMessageBox(loadTunerName.c_str(), NULL, MB_OK);
-
-		if(this->dbCtrl.NumRows(&this->results)){ // 既存のチャンネルは退避する
-			this->record = this->dbCtrl.FetchRow(&this->results);
-			tmpCh = atoi(this->record[0]);
-			this->dbCtrl.FreeResult(&this->results);
-
+		if(itr->second.useViewFlag){
 			wsql  = L"";
-			wsql += L"UPDATE tuningdetail SET provider = '%s' WHERE ";
+			wsql += L"SELECT idChannel FROM tuningdetail WHERE ";
 			wsql += L"provider = '@_%s' AND ";
 			wsql += L"channelNumber = %d AND ";
 			wsql += L"networkId     = %d AND ";
@@ -382,159 +374,186 @@ BOOL CParseChText4::SaveChText(LPCWSTR filePath)
 			wsql += L"serviceId     = %d;";
 			sql.Format(wsql.c_str(),
 				loadTunerName.c_str(),
-				loadTunerName.c_str(),
 				itr->second.ch,
 				itr->second.originalNetworkID,
 				itr->second.transportStreamID,
 				itr->second.serviceID
 				);
 			if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
-
-			// 既存のチャンネル登録があってもgroupmap.idGroupが適切な値（0:地上波・BS, 1:CS）になっているかを調べる。
-			sql.Format(_T("SELECT idMap FROM groupmap WHERE idChannel = %d AND idGroup = %d;"), tmpCh, itr->second.ch);
-			if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
 			this->dbCtrl.StoreResult(&this->mysql, &this->results);
-			if(!this->dbCtrl.NumRows(&this->results)){
+
+			//AfxMessageBox(loadTunerName.c_str(), NULL, MB_OK);
+
+			if(this->dbCtrl.NumRows(&this->results)){ // 既存のチャンネルは退避する
+				this->record = this->dbCtrl.FetchRow(&this->results);
+				tmpCh = atoi(this->record[0]);
 				this->dbCtrl.FreeResult(&this->results);
-				sql  = L"SELECT SortOrder FROM groupmap;";
+
+				wsql  = L"";
+				wsql += L"UPDATE tuningdetail SET provider = '%s' WHERE ";
+				wsql += L"provider = '@_%s' AND ";
+				wsql += L"channelNumber = %d AND ";
+				wsql += L"networkId     = %d AND ";
+				wsql += L"transportId   = %d AND ";
+				wsql += L"serviceId     = %d;";
+				sql.Format(wsql.c_str(),
+					loadTunerName.c_str(),
+					loadTunerName.c_str(),
+					itr->second.ch,
+					itr->second.originalNetworkID,
+					itr->second.transportStreamID,
+					itr->second.serviceID
+					);
+				if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
+
+				// 既存のチャンネル登録があってもgroupmap.idGroupが適切な値（0:地上波・BS, 1:CS）になっているかを調べる。
+				sql.Format(_T("SELECT idMap FROM groupmap WHERE idChannel = %d AND idGroup = %d;"), tmpCh, itr->second.ch);
 				if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
 				this->dbCtrl.StoreResult(&this->mysql, &this->results);
-				maxNum = this->dbCtrl.NumRows(&this->results);
+				if(!this->dbCtrl.NumRows(&this->results)){
+					this->dbCtrl.FreeResult(&this->results);
+					sql  = L"SELECT SortOrder FROM groupmap;";
+					if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
+					this->dbCtrl.StoreResult(&this->mysql, &this->results);
+					maxNum = this->dbCtrl.NumRows(&this->results);
 
-				// groupmap.idGroupに適切な値（0:地上波・BS, 1:CS）の登録を行う。
-				sql.Format(_T("INSERT INTO groupmap VALUES(0, %d, %d, %d);"), itr->second.ch, tmpCh, maxNum);
-				if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
-			}
-			this->dbCtrl.FreeResult(&this->results);
-
-			// チャンネル概要があるか
-			sql.Format(_T("SELECT displayName FROM channel WHERE idChannel = %d;"), tmpCh);
-			if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
-			this->dbCtrl.StoreResult(&this->mysql, &this->results);
-			if(!this->dbCtrl.NumRows(&this->results)){
-				// チャンネルの登録を行う。
-				sql.Format(_T("INSERT INTO channel VALUES(%d,0,1,0,'2000-01-01 00:00:00',0,'2000-01-01 00:00:00',0,1,'','%s',0,%d);"), 
-					tmpCh, 
-					itr->second.serviceName.c_str(),
-					itr->second.ch
-				);
-				if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
-			}
-			this->dbCtrl.FreeResult(&this->results);
-
-			// チャンネルマップがあるか
-			sql.Format(_T("SELECT idChannelMap FROM channelmap WHERE idChannel = %d AND idCard = 1;"), tmpCh);
-			if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
-			this->dbCtrl.StoreResult(&this->mysql, &this->results);
-			if(!this->dbCtrl.NumRows(&this->results)){
-				// チャンネルマップの登録を行う。
-				sql.Format(_T("INSERT INTO channelmap VALUES(0,%d,1,0);"), tmpCh);
-				if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
-			}
-			this->dbCtrl.FreeResult(&this->results);
-
-		} else { // チャンネルを新規登録
-			this->dbCtrl.FreeResult(&this->results);
-
-			// BONドライバーが違っても同じチャンネルがあるかどうか
-			wsql  = L"";
-			wsql += L"SELECT idChannel FROM tuningdetail WHERE ";
-			wsql += L"provider <> '@_%s' AND ";
-			wsql += L"channelNumber = %d AND ";
-			wsql += L"networkId     = %d AND ";
-			wsql += L"transportId   = %d AND ";
-			wsql += L"serviceId     = %d;";
-			sql.Format(wsql.c_str(),
-				loadTunerName.c_str(),
-				itr->second.ch,
-				itr->second.originalNetworkID,
-				itr->second.transportStreamID,
-				itr->second.serviceID
-				);
-			if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
-			this->dbCtrl.StoreResult(&this->mysql, &this->results);
-			
-			// 同じチャンネルがある場合はそのチャンネルを使う
-			// ない場合はチャンネル概要の次番号を得る。
-			if(!this->dbCtrl.NumRows(&this->results)){
-				sql  = L"SELECT MAX(idChannel) FROM channel;";
-				if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
-				this->dbCtrl.StoreResult(&this->mysql, &this->results);
-			}
-			this->record = this->dbCtrl.FetchRow(&this->results);
-			//if(CA2T(this->record[0], CP_UTF8) == L"") maxNum = 0;
-			if(this->record[0] == 0x00000000) maxNum = 0;
-			else maxNum = atoi(this->record[0]);
-			tmpCh  = maxNum + 1;
-			this->dbCtrl.FreeResult(&this->results);
-
-			// チャンネル概要があるか
-			sql.Format(_T("SELECT displayName FROM channel WHERE idChannel = %d;"), tmpCh);
-			if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
-			this->dbCtrl.StoreResult(&this->mysql, &this->results);
-			if(!this->dbCtrl.NumRows(&this->results)){
-				// チャンネルの登録を行う。
-				sql.Format(_T("INSERT INTO channel VALUES(%d,0,1,0,'2000-01-01 00:00:00',0,'2000-01-01 00:00:00',0,1,'','%s',0,%d);"), 
-					tmpCh, 
-					itr->second.serviceName.c_str(),
-					itr->second.ch
-				);
-				if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
-			}
-			this->dbCtrl.FreeResult(&this->results);
-
-			// チャンネル詳細の次番号を得る。
-			int maxTuNum;
-			sql  = L"SELECT MAX(idTuning) FROM tuningdetail;";
-			if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
-			this->dbCtrl.StoreResult(&this->mysql, &this->results);
-			this->record = this->dbCtrl.FetchRow(&this->results);
-			if(this->record[0] == 0x00000000) maxTuNum = 0;
-			else maxTuNum = atoi(this->record[0]);
-			this->dbCtrl.FreeResult(&this->results);
-
-			// チャンネル詳細登録
-			sql.Format(L"INSERT INTO tuningdetail VALUES(%d,%d,'%s','%s',7,%d,0,31,0,1,%d,%d,%d,496,0,0,0,0,1,0,8,-1,-1,0,0,0,-1,-1,-1,-1,'udp://127.0.0.1:5432',0,0,0);",
-				maxTuNum + 1,
-				tmpCh,
-				itr->second.serviceName.c_str(),
-				loadTunerName.c_str(),
-				itr->second.ch,
-				itr->second.originalNetworkID,
-				itr->second.transportStreamID,
-				itr->second.serviceID
-			);
-			if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
-
-			//AfxMessageBox(sql, NULL, MB_OK);
-
-			// グループがあるか
-			sql.Format(_T("SELECT idChannel FROM groupmap WHERE idGroup = %d AND idChannel = %d;"), itr->second.space, tmpCh);
-			if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
-			this->dbCtrl.StoreResult(&this->mysql, &this->results);
-			if(!this->dbCtrl.NumRows(&this->results)){
+					// groupmap.idGroupに適切な値（0:地上波・BS, 1:CS）の登録を行う。
+					sql.Format(_T("INSERT INTO groupmap VALUES(0, %d, %d, %d);"), itr->second.ch, tmpCh, maxNum);
+					if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
+				}
 				this->dbCtrl.FreeResult(&this->results);
-				sql  = L"SELECT SortOrder FROM groupmap;";
+
+				// チャンネル概要があるか
+				sql.Format(_T("SELECT displayName FROM channel WHERE idChannel = %d;"), tmpCh);
 				if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
 				this->dbCtrl.StoreResult(&this->mysql, &this->results);
-				maxNum = this->dbCtrl.NumRows(&this->results);
+				if(!this->dbCtrl.NumRows(&this->results)){
+					// チャンネルの登録を行う。
+					sql.Format(_T("INSERT INTO channel VALUES(%d,0,1,0,'2000-01-01 00:00:00',0,'2000-01-01 00:00:00',0,1,'','%s',0,%d);"), 
+						tmpCh, 
+						itr->second.serviceName.c_str(),
+						itr->second.ch
+					);
+					if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
+				}
+				this->dbCtrl.FreeResult(&this->results);
 
-				// グループの登録を行う。
-				sql.Format(_T("INSERT INTO groupmap VALUES(0, %d, %d, %d);"), itr->second.space, tmpCh, maxNum);
+				// チャンネルマップがあるか
+				sql.Format(_T("SELECT idChannelMap FROM channelmap WHERE idChannel = %d AND idCard = 1;"), tmpCh);
 				if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
-			}
-			this->dbCtrl.FreeResult(&this->results);
-			
-			// チャンネルマップがあるか
-			sql.Format(_T("SELECT idChannelMap FROM channelmap WHERE idChannel = %d AND idCard = 2;"), tmpCh);
-			if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
-			this->dbCtrl.StoreResult(&this->mysql, &this->results);
-			if(!this->dbCtrl.NumRows(&this->results)){
-				// チャンネルマップの登録を行う。
-				sql.Format(_T("INSERT INTO channelmap VALUES(0,%d,2,0);"), tmpCh);
+				this->dbCtrl.StoreResult(&this->mysql, &this->results);
+				if(!this->dbCtrl.NumRows(&this->results)){
+					// チャンネルマップの登録を行う。
+					sql.Format(_T("INSERT INTO channelmap VALUES(0,%d,1,0);"), tmpCh);
+					if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
+				}
+				this->dbCtrl.FreeResult(&this->results);
+
+			} else { // チャンネルを新規登録
+				this->dbCtrl.FreeResult(&this->results);
+
+				// BONドライバーが違っても同じチャンネルがあるかどうか
+				wsql  = L"";
+				wsql += L"SELECT idChannel FROM tuningdetail WHERE ";
+				wsql += L"provider <> '@_%s' AND ";
+				wsql += L"channelNumber = %d AND ";
+				wsql += L"networkId     = %d AND ";
+				wsql += L"transportId   = %d AND ";
+				wsql += L"serviceId     = %d;";
+				sql.Format(wsql.c_str(),
+					loadTunerName.c_str(),
+					itr->second.ch,
+					itr->second.originalNetworkID,
+					itr->second.transportStreamID,
+					itr->second.serviceID
+					);
 				if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
+				this->dbCtrl.StoreResult(&this->mysql, &this->results);
+				
+				// 同じチャンネルがある場合はそのチャンネルを使う
+				// ない場合はチャンネル概要の次番号を得る。
+				if(!this->dbCtrl.NumRows(&this->results)){
+					sql  = L"SELECT MAX(idChannel) FROM channel;";
+					if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
+					this->dbCtrl.StoreResult(&this->mysql, &this->results);
+				}
+				this->record = this->dbCtrl.FetchRow(&this->results);
+				//if(CA2T(this->record[0], CP_UTF8) == L"") maxNum = 0;
+				if(this->record[0] == 0x00000000) maxNum = 0;
+				else maxNum = atoi(this->record[0]);
+				tmpCh  = maxNum + 1;
+				this->dbCtrl.FreeResult(&this->results);
+
+				// チャンネル概要があるか
+				sql.Format(_T("SELECT displayName FROM channel WHERE idChannel = %d;"), tmpCh);
+				if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
+				this->dbCtrl.StoreResult(&this->mysql, &this->results);
+				if(!this->dbCtrl.NumRows(&this->results)){
+					// チャンネルの登録を行う。
+					sql.Format(_T("INSERT INTO channel VALUES(%d,0,1,0,'2000-01-01 00:00:00',0,'2000-01-01 00:00:00',0,1,'','%s',0,%d);"), 
+						tmpCh, 
+						itr->second.serviceName.c_str(),
+						itr->second.ch
+					);
+					if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
+				}
+				this->dbCtrl.FreeResult(&this->results);
+
+				// チャンネル詳細の次番号を得る。
+				int maxTuNum;
+				sql  = L"SELECT MAX(idTuning) FROM tuningdetail;";
+				if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
+				this->dbCtrl.StoreResult(&this->mysql, &this->results);
+				this->record = this->dbCtrl.FetchRow(&this->results);
+				if(this->record[0] == 0x00000000) maxTuNum = 0;
+				else maxTuNum = atoi(this->record[0]);
+				this->dbCtrl.FreeResult(&this->results);
+
+				// チャンネル詳細登録
+				sql.Format(L"INSERT INTO tuningdetail VALUES(%d,%d,'%s','%s',7,%d,0,31,0,1,%d,%d,%d,496,0,0,0,0,1,0,8,-1,-1,0,0,0,-1,-1,-1,-1,'udp://%s:%d',0,0,0);",
+					maxTuNum + 1,
+					tmpCh,
+					itr->second.serviceName.c_str(),
+					loadTunerName.c_str(),
+					itr->second.ch,
+					itr->second.originalNetworkID,
+					itr->second.transportStreamID,
+					itr->second.serviceID,
+					ipString.c_str(),
+					port
+				);
+				if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
+
+				//AfxMessageBox(sql, NULL, MB_OK);
+
+				// グループがあるか
+				sql.Format(_T("SELECT idChannel FROM groupmap WHERE idGroup = %d AND idChannel = %d;"), itr->second.space, tmpCh);
+				if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
+				this->dbCtrl.StoreResult(&this->mysql, &this->results);
+				if(!this->dbCtrl.NumRows(&this->results)){
+					this->dbCtrl.FreeResult(&this->results);
+					sql  = L"SELECT SortOrder FROM groupmap;";
+					if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
+					this->dbCtrl.StoreResult(&this->mysql, &this->results);
+					maxNum = this->dbCtrl.NumRows(&this->results);
+
+					// グループの登録を行う。
+					sql.Format(_T("INSERT INTO groupmap VALUES(0, %d, %d, %d);"), itr->second.space, tmpCh, maxNum);
+					if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
+				}
+				this->dbCtrl.FreeResult(&this->results);
+				
+				// チャンネルマップがあるか
+				sql.Format(_T("SELECT idChannelMap FROM channelmap WHERE idChannel = %d AND idCard = 2;"), tmpCh);
+				if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
+				this->dbCtrl.StoreResult(&this->mysql, &this->results);
+				if(!this->dbCtrl.NumRows(&this->results)){
+					// チャンネルマップの登録を行う。
+					sql.Format(_T("INSERT INTO channelmap VALUES(0,%d,2,0);"), tmpCh);
+					if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
+				}
+				this->dbCtrl.FreeResult(&this->results);
 			}
-			this->dbCtrl.FreeResult(&this->results);
 		}
 	}
 
@@ -569,15 +588,15 @@ BOOL CParseChText4::SaveChText(LPCWSTR filePath)
 	return FALSE;
 }
 
-BOOL CParseChText4::SaveUdpMp(LPCWSTR filePath)
+BOOL CParseChText4::SaveUdpMp()
 {
-	/*
+	
+	wstring appIniPath = L"";
+	GetModuleIniPath(appIniPath);
+
 	wstring ipString;
-	//DWORD ip;
+	DWORD ip;
 	DWORD port;
-	//ip = GetPrivateProfileInt(L"SET_UDP", L"IP0", 2130706433, filePath);
-	ipString = inet_ntoa((struct in_addr){.s_addr = inet_addr(GetPrivateProfileInt(L"SET_UDP", L"IP0", 2130706433, filePath))});
-	port = GetPrivateProfileInt( L"SET_UDP", L"Port0", 3456, filePath );
 	
 	// MediaPortal TV Serverのデータベースへ登録
 	if (this->dbCtrl.Connect(&this->mysql, MYSQL_HOST, MYSQL_USER, MYSQL_PASSWD, MYSQL_DB) != 0) {
@@ -592,9 +611,18 @@ BOOL CParseChText4::SaveUdpMp(LPCWSTR filePath)
 
 	map<CString, int> lockTable;
 	lockTable[L"tuningdetail"] = 2;
+	lockTable[L"groupmap"] = 2;
 	if (this->dbCtrl.LockTable(&this->mysql, lockTable) != 0) goto ESC;
 
-	sql.Format(_T("UPDATE tuningdetail SET url = 'udp://%s:%d' WHERE idGroup IN(0,1);"), ipString, port);
+	ip = GetPrivateProfileInt(L"SET_UDP", L"IP0", 2130706433, appIniPath.c_str());
+	Format(ipString, L"%d.%d.%d.%d", 
+	(ip&0xFF000000)>>24, 
+	(ip&0x00FF0000)>>16, 
+	(ip&0x0000FF00)>>8, 
+	(ip&0x000000FF) );
+	port = GetPrivateProfileInt( L"SET_UDP", L"Port0", 3456, appIniPath.c_str() );
+
+	sql.Format(_T("UPDATE tuningdetail LEFT JOIN groupmap ON tuningdetail.idChannel = groupmap.idChannel SET tuningdetail.url= 'udp://%s:%d' WHERE groupmap.idGroup IN(0,1);"), ipString.c_str(), port);
 	if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
 
 	this->dbCtrl.Commit(&this->mysql);
@@ -610,5 +638,5 @@ BOOL CParseChText4::SaveUdpMp(LPCWSTR filePath)
 	this->dbCtrl.UnlockTable(&this->mysql);
 	this->dbCtrl.Close(&this->mysql);
 	return FALSE;
-	*/
+
 }
