@@ -407,7 +407,7 @@ BOOL CParseChText4::SaveChText(LPCWSTR filePath)
 				if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
 
 				// 既存のチャンネル登録があってもgroupmap.idGroupが適切な値（0:地上波・BS, 1:CS）になっているかを調べる。
-				sql.Format(_T("SELECT idMap FROM groupmap WHERE idChannel = %d AND idGroup = %d;"), tmpCh, itr->second.ch);
+				sql.Format(_T("SELECT idMap FROM groupmap WHERE idChannel = %d AND idGroup = %d;"), tmpCh, itr->second.space);
 				if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
 				this->dbCtrl.StoreResult(&this->mysql, &this->results);
 				if(!this->dbCtrl.NumRows(&this->results)){
@@ -418,7 +418,7 @@ BOOL CParseChText4::SaveChText(LPCWSTR filePath)
 					maxNum = this->dbCtrl.NumRows(&this->results);
 
 					// groupmap.idGroupに適切な値（0:地上波・BS, 1:CS）の登録を行う。
-					sql.Format(_T("INSERT INTO groupmap VALUES(0, %d, %d, %d);"), itr->second.ch, tmpCh, maxNum);
+					sql.Format(_T("INSERT INTO groupmap VALUES(0, %d, %d, %d);"), itr->second.space, tmpCh, maxNum);
 					if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
 				}
 				this->dbCtrl.FreeResult(&this->results);
@@ -429,8 +429,9 @@ BOOL CParseChText4::SaveChText(LPCWSTR filePath)
 				this->dbCtrl.StoreResult(&this->mysql, &this->results);
 				if(!this->dbCtrl.NumRows(&this->results)){
 					// チャンネルの登録を行う。
-					sql.Format(_T("INSERT INTO channel VALUES(%d,0,1,0,'2000-01-01 00:00:00',0,'2000-01-01 00:00:00',0,1,'','%s',0,%d);"), 
+					sql.Format(_T("INSERT INTO channel VALUES(%d,0,1,0,'2000-01-01 00:00:00',0,'2000-01-01 00:00:00',%d,1,'','%s',0,%d);"), 
 						tmpCh, 
+						(tmpCh + itr->second.space * 1000), 
 						itr->second.serviceName.c_str(),
 						itr->second.ch
 					);
@@ -490,8 +491,9 @@ BOOL CParseChText4::SaveChText(LPCWSTR filePath)
 				this->dbCtrl.StoreResult(&this->mysql, &this->results);
 				if(!this->dbCtrl.NumRows(&this->results)){
 					// チャンネルの登録を行う。
-					sql.Format(_T("INSERT INTO channel VALUES(%d,0,1,0,'2000-01-01 00:00:00',0,'2000-01-01 00:00:00',0,1,'','%s',0,%d);"), 
+					sql.Format(_T("INSERT INTO channel VALUES(%d,0,1,0,'2000-01-01 00:00:00',0,'2000-01-01 00:00:00',%d,1,'','%s',0,%d);"), 
 						tmpCh, 
+						(tmpCh + itr->second.space * 1000), 
 						itr->second.serviceName.c_str(),
 						itr->second.ch
 					);

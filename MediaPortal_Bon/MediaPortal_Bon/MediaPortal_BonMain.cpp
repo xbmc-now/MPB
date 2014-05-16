@@ -1221,3 +1221,10 @@ DWORD CMediaPortal_BonMain::GetMpServiceStatus()
 	return this->bonCtrl.GetMpServiceStatus();
 }
 
+//MediaPortal TVServiceのサービスを再起動する
+//戻り値：
+// エラーコード
+DWORD CMediaPortal_BonMain::RestartMpService()
+{
+	return this->bonCtrl.RestartMpService();
+}

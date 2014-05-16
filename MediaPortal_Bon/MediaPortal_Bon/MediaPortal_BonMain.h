@@ -264,6 +264,7 @@ public:
 
 	void GetMpLogPath(CString&);
 	DWORD GetMpServiceStatus();
+	DWORD RestartMpService();
 /*
 	DWORD ConnectDb(
 		MYSQL *mysql, 

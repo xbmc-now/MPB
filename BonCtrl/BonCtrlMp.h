@@ -497,7 +497,7 @@ public:
 
 	void GetMpLogPath(CString&);
 	DWORD GetMpServiceStatus();
-
+	DWORD RestartMpService();
 protected:
 	CBonDriverUtil bonUtil;
 	CPacketInit packetInit;

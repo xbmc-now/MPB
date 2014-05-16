@@ -81,7 +81,7 @@ void CMediaPortal_BonDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON_CHSCAN, btnChScan);
 	DDX_Control(pDX, IDC_BUTTON_SET, btnSet);
 	DDX_Control(pDX, IDC_BUTTON_CANCEL, btnCancel);
-	DDX_Control(pDX, IDC_BUTTON_RESET, btnReset);
+	DDX_Control(pDX, IDC_BUTTON_CHRESET, btnChReset);
 	DDX_Text(pDX, IDC_EDIT_LOG, log);
 	DDX_Text(pDX, IDC_EDIT_STATUS, statusLog);
 	DDX_Control(pDX, IDC_EDIT_STATUS, editStatus);
@@ -101,6 +101,7 @@ BEGIN_MESSAGE_MAP(CMediaPortal_BonDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_SET, &CMediaPortal_BonDlg::OnBnClickedButtonSet)
 	ON_BN_CLICKED(IDC_BUTTON_CHSCAN, &CMediaPortal_BonDlg::OnBnClickedButtonChscan)
 	ON_BN_CLICKED(IDC_BUTTON_CANCEL, &CMediaPortal_BonDlg::OnBnClickedButtonCancel)
+	ON_BN_CLICKED(IDC_BUTTON_CHRESET, &CMediaPortal_BonDlg::OnBnClickedButtonChreset)
 	ON_WM_QUERYENDSESSION()
 	ON_WM_ENDSESSION()
 END_MESSAGE_MAP()
@@ -858,55 +859,56 @@ void CMediaPortal_BonDlg::BtnUpdate(DWORD guiMode)
 			this->btnChScan.EnableWindow(TRUE);
 			this->btnSet.EnableWindow(TRUE);
 			this->btnCancel.EnableWindow(FALSE);
-			this->btnReset.EnableWindow(TRUE);
+			this->btnChReset.EnableWindow(TRUE);
 			break;
 		case GUI_CANCEL_ONLY:
 			this->combTuner.EnableWindow(FALSE);
 			this->btnChScan.EnableWindow(FALSE);
 			this->btnSet.EnableWindow(FALSE);
 			this->btnCancel.EnableWindow(TRUE);
-			this->btnReset.EnableWindow(FALSE);
+			this->btnChReset.EnableWindow(FALSE);
 			break;
 		case GUI_OPEN_FAIL:
 			this->combTuner.EnableWindow(TRUE);
 			this->btnChScan.EnableWindow(FALSE);
 			this->btnSet.EnableWindow(TRUE);
 			this->btnCancel.EnableWindow(FALSE);
-			this->btnReset.EnableWindow(TRUE);
+			this->btnChReset.EnableWindow(TRUE);
 			break;
 		case GUI_REC:
 			this->combTuner.EnableWindow(FALSE);
 			this->btnChScan.EnableWindow(FALSE);
 			this->btnSet.EnableWindow(FALSE);
 			this->btnCancel.EnableWindow(TRUE);
+			this->btnChReset.EnableWindow(FALSE);
 			break;
 		case GUI_REC_SET_TIME:
 			this->combTuner.EnableWindow(FALSE);
 			this->btnChScan.EnableWindow(FALSE);
 			this->btnSet.EnableWindow(FALSE);
 			this->btnCancel.EnableWindow(TRUE);
-			this->btnReset.EnableWindow(FALSE);
+			this->btnChReset.EnableWindow(FALSE);
 			break;
 		case GUI_OTHER_CTRL:
 			this->combTuner.EnableWindow(FALSE);
 			this->btnChScan.EnableWindow(FALSE);
 			this->btnSet.EnableWindow(FALSE);
 			this->btnCancel.EnableWindow(TRUE);
-			this->btnReset.EnableWindow(FALSE);
+			this->btnChReset.EnableWindow(FALSE);
 			break;
 		case GUI_REC_STANDBY:
 			this->combTuner.EnableWindow(FALSE);
 			this->btnChScan.EnableWindow(FALSE);
 			this->btnSet.EnableWindow(FALSE);
 			this->btnCancel.EnableWindow(FALSE);
-			this->btnReset.EnableWindow(FALSE);
+			this->btnChReset.EnableWindow(FALSE);
 			break;
 		case GUI_DB_FAIL:
 			this->combTuner.EnableWindow(TRUE);
 			this->btnChScan.EnableWindow(FALSE);
 			this->btnSet.EnableWindow(TRUE);
 			this->btnCancel.EnableWindow(FALSE);
-			this->btnReset.EnableWindow(FALSE);
+			this->btnChReset.EnableWindow(FALSE);
 			break;
 		default:
 			break;
@@ -1066,7 +1068,7 @@ void CMediaPortal_BonDlg::OnBnClickedButtonCancel()
 	ChgIconStatus();
 }
 
-void CMediaPortal_BonDlg::OnBnClickedButtonReset()
+void CMediaPortal_BonDlg::OnBnClickedButtonChreset()
 {
 	if( AfxMessageBox( L"MediaPortalのチャンネルを削除しますか", MB_YESNO ) == IDNO ){
 		return ;
@@ -1074,11 +1076,29 @@ void CMediaPortal_BonDlg::OnBnClickedButtonReset()
 
 	// MediaPortal TV Serverのデータベース接続
 	if (this->dbCtrl.Connect(&this->mysql, MYSQL_HOST, MYSQL_USER, MYSQL_PASSWD, MYSQL_DB) == 0){
+		CString sql = L"";
 
+		sql  = L"TRUNCATE TABLE channel;";
+		if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
 
+		sql  = L"TRUNCATE TABLE channelmap;";
+		if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
 
+		sql  = L"TRUNCATE TABLE groupmap;";
+		if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
 
+		sql  = L"TRUNCATE TABLE tuningdetail;";
+		if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
 
+		sql  = L"TRUNCATE TABLE program;";
+		if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
+
+		ESC:
+		this->dbCtrl.Close(&this->mysql);
+
+		this->main.RestartMpService();
+		this->log.Format(L"MediaPortalのチャンネルを削除しました。\r\n");
+	}
 }
 
 BOOL CMediaPortal_BonDlg::OnQueryEndSession()

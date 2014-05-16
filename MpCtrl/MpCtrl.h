@@ -17,6 +17,13 @@ public:
 	
 	void GetMpLogPath(CString& szValue);
 	DWORD GetMpServiceStatus();
+	DWORD RestartMpService();
+
+	DWORD StopThenStartService(SC_HANDLE manager, LPCTSTR serviceName);
+	DWORD StopServiceWithWaiting(SC_HANDLE service);
+	DWORD StartServiceWithWaiting(SC_HANDLE service);
+	DWORD WaitServiceUntilStatus(SC_HANDLE service, DWORD state, int timeout = 30);
+
 protected:
 
 	HANDLE lockEvent;

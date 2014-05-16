@@ -1883,3 +1883,11 @@ DWORD CBonCtrl::GetMpServiceStatus()
 {
 	return this->mpCtrl.GetMpServiceStatus();
 }
+
+//MediaPortal TVServiceのサービスを再起動する
+//戻り値：
+// エラーコード
+DWORD CBonCtrl::RestartMpService()
+{
+	return this->mpCtrl.RestartMpService();
+}
