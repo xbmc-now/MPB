@@ -267,22 +267,15 @@ public:
 	void GetMpLogPath(CString&);
 	DWORD GetMpServiceStatus();
 	DWORD RestartMpService();
-/*
-	DWORD ConnectDb(
-		MYSQL *mysql, 
-		const char *host, 
-		const char *user, 
-		const char *passwd, 
-		const char *db
-	);
-*/
+
+	BOOL ReloadEpgData();
 
 protected:
 	HWND msgWnd;
 
 	CEpgDBManager epgDB;
-	BOOL reloadEpgChkFlag;
-	
+	//BOOL reloadEpgChkFlag;
+
 	CBonCtrl bonCtrl;
 	CPipeServer pipeServer;
 

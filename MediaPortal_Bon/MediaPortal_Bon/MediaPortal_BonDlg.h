@@ -112,6 +112,7 @@ public:
 	CButton btnSet;
 	CButton btnCancel;
 	CButton btnChReset;
+	CButton btnEpg;
 	CString log;
 	CString statusLog;
 	CString pgInfo;
@@ -129,6 +130,7 @@ public:
 	afx_msg void OnBnClickedButtonChscan();
 	afx_msg void OnBnClickedButtonCancel();
 	afx_msg void OnBnClickedButtonChreset();
+	afx_msg void OnBnClickedButtonEpg();
 	CEdit editStatus;
 	afx_msg BOOL OnQueryEndSession();
 	afx_msg void OnEndSession(BOOL bEnding);

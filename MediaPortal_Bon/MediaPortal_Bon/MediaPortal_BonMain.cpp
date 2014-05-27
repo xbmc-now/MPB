@@ -40,7 +40,6 @@ CMediaPortal_BonMain::CMediaPortal_BonMain(void)
 
 	this->openWait = 200;
 
-	this->reloadEpgChkFlag = FALSE;
 }
 
 
@@ -1230,3 +1229,11 @@ DWORD CMediaPortal_BonMain::RestartMpService()
 {
 	return this->bonCtrl.RestartMpService();
 }
+
+// EPG“o˜^
+BOOL CMediaPortal_BonMain::ReloadEpgData()
+{
+	//return this->epgDB.ReloadEpgData();
+	return TRUE;
+}
+

@@ -82,6 +82,7 @@ void CMediaPortal_BonDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON_SET, btnSet);
 	DDX_Control(pDX, IDC_BUTTON_CANCEL, btnCancel);
 	DDX_Control(pDX, IDC_BUTTON_CHRESET, btnChReset);
+	DDX_Control(pDX, IDC_BUTTON_EPG, btnEpg);
 	DDX_Text(pDX, IDC_EDIT_LOG, log);
 	DDX_Text(pDX, IDC_EDIT_STATUS, statusLog);
 	DDX_Control(pDX, IDC_EDIT_STATUS, editStatus);
@@ -102,6 +103,7 @@ BEGIN_MESSAGE_MAP(CMediaPortal_BonDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_CHSCAN, &CMediaPortal_BonDlg::OnBnClickedButtonChscan)
 	ON_BN_CLICKED(IDC_BUTTON_CANCEL, &CMediaPortal_BonDlg::OnBnClickedButtonCancel)
 	ON_BN_CLICKED(IDC_BUTTON_CHRESET, &CMediaPortal_BonDlg::OnBnClickedButtonChreset)
+	ON_BN_CLICKED(IDC_BUTTON_EPG, &CMediaPortal_BonDlg::OnBnClickedButtonEpg)
 	ON_WM_QUERYENDSESSION()
 	ON_WM_ENDSESSION()
 END_MESSAGE_MAP()
@@ -860,6 +862,7 @@ void CMediaPortal_BonDlg::BtnUpdate(DWORD guiMode)
 			this->btnSet.EnableWindow(TRUE);
 			this->btnCancel.EnableWindow(FALSE);
 			this->btnChReset.EnableWindow(TRUE);
+			this->btnEpg.EnableWindow(TRUE);
 			break;
 		case GUI_CANCEL_ONLY:
 			this->combTuner.EnableWindow(FALSE);
@@ -867,6 +870,7 @@ void CMediaPortal_BonDlg::BtnUpdate(DWORD guiMode)
 			this->btnSet.EnableWindow(FALSE);
 			this->btnCancel.EnableWindow(TRUE);
 			this->btnChReset.EnableWindow(FALSE);
+			this->btnEpg.EnableWindow(FALSE);
 			break;
 		case GUI_OPEN_FAIL:
 			this->combTuner.EnableWindow(TRUE);
@@ -874,6 +878,7 @@ void CMediaPortal_BonDlg::BtnUpdate(DWORD guiMode)
 			this->btnSet.EnableWindow(TRUE);
 			this->btnCancel.EnableWindow(FALSE);
 			this->btnChReset.EnableWindow(TRUE);
+			this->btnEpg.EnableWindow(TRUE);
 			break;
 		case GUI_REC:
 			this->combTuner.EnableWindow(FALSE);
@@ -881,6 +886,7 @@ void CMediaPortal_BonDlg::BtnUpdate(DWORD guiMode)
 			this->btnSet.EnableWindow(FALSE);
 			this->btnCancel.EnableWindow(TRUE);
 			this->btnChReset.EnableWindow(FALSE);
+			this->btnEpg.EnableWindow(FALSE);
 			break;
 		case GUI_REC_SET_TIME:
 			this->combTuner.EnableWindow(FALSE);
@@ -888,6 +894,7 @@ void CMediaPortal_BonDlg::BtnUpdate(DWORD guiMode)
 			this->btnSet.EnableWindow(FALSE);
 			this->btnCancel.EnableWindow(TRUE);
 			this->btnChReset.EnableWindow(FALSE);
+			this->btnEpg.EnableWindow(FALSE);
 			break;
 		case GUI_OTHER_CTRL:
 			this->combTuner.EnableWindow(FALSE);
@@ -895,6 +902,7 @@ void CMediaPortal_BonDlg::BtnUpdate(DWORD guiMode)
 			this->btnSet.EnableWindow(FALSE);
 			this->btnCancel.EnableWindow(TRUE);
 			this->btnChReset.EnableWindow(FALSE);
+			this->btnEpg.EnableWindow(FALSE);
 			break;
 		case GUI_REC_STANDBY:
 			this->combTuner.EnableWindow(FALSE);
@@ -902,6 +910,7 @@ void CMediaPortal_BonDlg::BtnUpdate(DWORD guiMode)
 			this->btnSet.EnableWindow(FALSE);
 			this->btnCancel.EnableWindow(FALSE);
 			this->btnChReset.EnableWindow(FALSE);
+			this->btnEpg.EnableWindow(FALSE);
 			break;
 		case GUI_DB_FAIL:
 			this->combTuner.EnableWindow(TRUE);
@@ -909,6 +918,7 @@ void CMediaPortal_BonDlg::BtnUpdate(DWORD guiMode)
 			this->btnSet.EnableWindow(TRUE);
 			this->btnCancel.EnableWindow(FALSE);
 			this->btnChReset.EnableWindow(FALSE);
+			this->btnEpg.EnableWindow(FALSE);
 			break;
 		default:
 			break;
@@ -1099,6 +1109,11 @@ void CMediaPortal_BonDlg::OnBnClickedButtonChreset()
 		this->main.RestartMpService();
 		this->log.Format(L"MediaPortal‚Ìƒ`ƒƒƒ“ƒlƒ‹‚ðíœ‚µ‚Ü‚µ‚½B\r\n");
 	}
+}
+
+void CMediaPortal_BonDlg::OnBnClickedButtonEpg()
+{
+	//this->main.ReloadEpgData();
 }
 
 BOOL CMediaPortal_BonDlg::OnQueryEndSession()

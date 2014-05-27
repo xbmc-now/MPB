@@ -222,6 +222,12 @@
     <ClInclude Include="..\..\Common\ParseChText4Mp.h">
       <Filter>ヘッダー ファイル\Common</Filter>
     </ClInclude>
+    <ClInclude Include="EpgDBManager.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Common\ParseSearchChgText.h">
+      <Filter>ヘッダー ファイル\Common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MediaPortal_Bon.cpp">
@@ -345,6 +351,12 @@
       <Filter>ソース ファイル\BonCtrl</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Common\ParseChText4Mp.cpp">
+      <Filter>ソース ファイル\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="EpgDBManager.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Common\ParseSearchChgText.cpp">
       <Filter>ソース ファイル\Common</Filter>
     </ClCompile>
   </ItemGroup>

@@ -237,6 +237,7 @@
     <ClInclude Include="..\..\Common\ErrDef.h" />
     <ClInclude Include="..\..\Common\ParseChText4Mp.h" />
     <ClInclude Include="..\..\Common\ParseChText5.h" />
+    <ClInclude Include="..\..\Common\ParseSearchChgText.h" />
     <ClInclude Include="..\..\Common\PathUtil.h" />
     <ClInclude Include="..\..\Common\PipeServer.h" />
     <ClInclude Include="..\..\Common\SendCtrlCmd.h" />
@@ -253,6 +254,7 @@
     <ClInclude Include="..\..\MpCtrl\DbCtrlDef.h" />
     <ClInclude Include="..\..\MpCtrl\MpCtrl.h" />
     <ClInclude Include="CmdLineUtil.h" />
+    <ClInclude Include="EpgDBManager.h" />
     <ClInclude Include="MediaPortal_Bon.h" />
     <ClInclude Include="MediaPortal_BonDef.h" />
     <ClInclude Include="MediaPortal_BonDlg.h" />
@@ -286,6 +288,7 @@
     <ClCompile Include="..\..\Common\EpgTimerUtil.cpp" />
     <ClCompile Include="..\..\Common\ParseChText4Mp.cpp" />
     <ClCompile Include="..\..\Common\ParseChText5.cpp" />
+    <ClCompile Include="..\..\Common\ParseSearchChgText.cpp" />
     <ClCompile Include="..\..\Common\PathUtil.cpp" />
     <ClCompile Include="..\..\Common\PipeServer.cpp" />
     <ClCompile Include="..\..\Common\SendCtrlCmd.cpp" />
@@ -299,6 +302,7 @@
     <ClCompile Include="..\..\MpCtrl\DbCtrl.cpp" />
     <ClCompile Include="..\..\MpCtrl\MpCtrl.cpp" />
     <ClCompile Include="CmdLineUtil.cpp" />
+    <ClCompile Include="EpgDBManager.cpp" />
     <ClCompile Include="MediaPortal_Bon.cpp" />
     <ClCompile Include="MediaPortal_BonDlg.cpp" />
     <ClCompile Include="MediaPortal_BonMain.cpp" />
