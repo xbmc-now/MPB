@@ -1,5 +1,7 @@
 #pragma once
 
+#include "EpgDBManager.h"
+
 #include "../../BonCtrl/BonCtrlMp.h"
 #include "../../MpCtrl/MpCtrl.h"
 #include "../../MpCtrl/DbCtrl.h"
@@ -278,6 +280,9 @@ public:
 protected:
 	HWND msgWnd;
 
+	CEpgDBManager epgDB;
+	BOOL reloadEpgChkFlag;
+	
 	CBonCtrl bonCtrl;
 	CPipeServer pipeServer;
 

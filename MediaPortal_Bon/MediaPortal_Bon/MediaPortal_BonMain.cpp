@@ -39,6 +39,8 @@ CMediaPortal_BonMain::CMediaPortal_BonMain(void)
 	this->outCtrlID = -1;
 
 	this->openWait = 200;
+
+	this->reloadEpgChkFlag = FALSE;
 }
 
 
