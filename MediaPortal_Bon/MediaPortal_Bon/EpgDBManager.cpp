@@ -129,6 +129,23 @@ UINT WINAPI CEpgDBManager::LoadThread(LPVOID param)
 		return 0;
 	}
 
+	// MediaPortal TV Serverのデータベースへ登録
+	if (this->dbCtrl.Connect(&this->mysql, MYSQL_HOST, MYSQL_USER, MYSQL_PASSWD, MYSQL_DB) != 0) {
+		return FALSE;
+	}
+
+	this->results = NULL;
+	CString sql = L"";
+	wstring wsql = L"";
+	int chkNum = 0;
+
+	this->dbCtrl.Begin(&this->mysql);
+
+	map<CString, int> lockTable;
+	lockTable[L"program"] = 2;
+	if (this->dbCtrl.LockTable(&this->mysql, lockTable) != 0) goto ESC;
+
+
 	//EPGファイルの検索
 	vector<wstring> epgFileList;
 	wstring epgDataPath = L"";
@@ -244,6 +261,8 @@ UINT WINAPI CEpgDBManager::LoadThread(LPVOID param)
 				EPGDB_EVENT_INFO* itemEvent = new EPGDB_EVENT_INFO;
 				sys->ConvertEpgInfo(item->serviceInfo.ONID, item->serviceInfo.TSID, item->serviceInfo.SID, epgInfoList+j, itemEvent);
 				item->eventMap.insert(pair<WORD, EPGDB_EVENT_INFO*>(itemEvent->event_id, itemEvent));
+
+				
 			}
 		}
 		Sleep(0);

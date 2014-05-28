@@ -11,6 +11,11 @@
 
 #import "RegExp.tlb" no_namespace named_guids
 
+#include "my_global.h"
+#include "mysql.h"
+#include "../../MpCtrl/DbCtrl.h"
+#include "../../MpCtrl/DbCtrlDef.h"
+
 class CEpgDBManager
 {
 public:
@@ -68,6 +73,11 @@ protected:
 
 	HANDLE loadThread;
 	HANDLE loadStopEvent;
+
+	MYSQL mysql;
+	MYSQL_RES *results;
+	MYSQL_ROW record;
+	CDbCtrl dbCtrl;
 
 	CParseSearchChgText chgText;
 
