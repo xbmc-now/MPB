@@ -1233,7 +1233,7 @@ DWORD CMediaPortal_BonMain::RestartMpService()
 // EPG“o˜^
 BOOL CMediaPortal_BonMain::ReloadEpgData()
 {
-	//return this->epgDB.ReloadEpgData();
+	return this->epgDB.ReloadEpgData();
 	return TRUE;
 }
 

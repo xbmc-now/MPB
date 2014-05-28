@@ -1113,7 +1113,7 @@ void CMediaPortal_BonDlg::OnBnClickedButtonChreset()
 
 void CMediaPortal_BonDlg::OnBnClickedButtonEpg()
 {
-	//this->main.ReloadEpgData();
+	this->main.ReloadEpgData();
 }
 
 BOOL CMediaPortal_BonDlg::OnQueryEndSession()
