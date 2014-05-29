@@ -130,23 +130,6 @@ UINT WINAPI CEpgDBManager::LoadThread(LPVOID param)
 		return 0;
 	}
 
-	// MediaPortal TV Serverのデータベースへ登録
-	if (this->dbCtrl.Connect(&this->mysql, MYSQL_HOST, MYSQL_USER, MYSQL_PASSWD, MYSQL_DB) != 0) {
-		return FALSE;
-	}
-
-	this->results = NULL;
-	CString sql = L"";
-	wstring wsql = L"";
-	int chkNum = 0;
-
-	this->dbCtrl.Begin(&this->mysql);
-
-	map<CString, int> lockTable;
-	lockTable[L"program"] = 2;
-	if (this->dbCtrl.LockTable(&this->mysql, lockTable) != 0) goto ESC;
-
-
 	//EPGファイルの検索
 	vector<wstring> epgFileList;
 	wstring epgDataPath = L"";
@@ -158,6 +141,22 @@ UINT WINAPI CEpgDBManager::LoadThread(LPVOID param)
 
 	WIN32_FIND_DATA findData;
 	HANDLE find;
+
+	// MediaPortal TV Serverのデータベースへ登録
+	if (sys->dbCtrl.Connect(&sys->mysql, MYSQL_HOST, MYSQL_USER, MYSQL_PASSWD, MYSQL_DB) != 0) {
+		return FALSE;
+	}
+
+	sys->results = NULL;
+	CString sql = L"";
+	wstring wsql = L"";
+	int chkNum = 0;
+
+	sys->dbCtrl.Begin(&sys->mysql);
+
+	map<CString, int> lockTable;
+	lockTable[L"program"] = 2;
+	if (sys->dbCtrl.LockTable(&sys->mysql, lockTable) != 0) goto ESC;
 
 	//指定フォルダのファイル一覧取得
 	find = FindFirstFile( searchKey.c_str(), &findData);
@@ -277,27 +276,35 @@ UINT WINAPI CEpgDBManager::LoadThread(LPVOID param)
 				item->serviceInfo.TSID,
 				item->serviceInfo.SID
 				);
-			if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
-			this->dbCtrl.StoreResult(&this->mysql, &this->results);
+			if (sys->dbCtrl.Query(&sys->mysql, sql) != 0) goto ESC;
+			sys->dbCtrl.StoreResult(&sys->mysql, &sys->results);
 
-			this->record = this->dbCtrl.FetchRow(&this->results);
-			if(CA2T(this->record[0], CP_UTF8) != L""){
-				tmpCh = atoi(this->record[0]);
-				this->dbCtrl.FreeResult(&this->results);
+			sys->record = sys->dbCtrl.FetchRow(&sys->results);
+			if(CA2T(sys->record[0], CP_UTF8) != L""){
+				tmpCh = atoi(sys->record[0]);
+				sys->dbCtrl.FreeResult(&sys->results);
 
 				// EPGデータを削除
 				sql.Format(L"DELETE FROM program WHERE idChannel = %d;", tmpCh);
-				if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
+				if (sys->dbCtrl.Query(&sys->mysql, sql) != 0) goto ESC;
 
 				for( DWORD j=0; j<epgInfoListSize; j++ ){
 					EPGDB_EVENT_INFO* itemEvent = new EPGDB_EVENT_INFO;
 					sys->ConvertEpgInfo(item->serviceInfo.ONID, item->serviceInfo.TSID, item->serviceInfo.SID, epgInfoList+j, itemEvent);
 					item->eventMap.insert(pair<WORD, EPGDB_EVENT_INFO*>(itemEvent->event_id, itemEvent));
 
+					//'2000-01-01 00:00:00'
+					startTime.Format(L"%04d-%02d-%02d %02d:%02d:%02d", 
+						itemEvent->start_time.wSecond, // 秒(0～)
+						itemEvent->start_time.wMinute, // 分
+						itemEvent->start_time.wHour, // 時
+						itemEvent->start_time.wDay, // 日 (1～31)
+						itemEvent->start_time.wMonth, // 月 (0～11)
+						itemEvent->start_time.wYear // 年 (1900 年からの年数)
+					);
 
 
-
-
+/*
 itemEvent->durationSec
 			shortInfo
 				event_name	"「秘密のケンミンＳＨＯＷ」特別企画！まるごと沖縄県スペシャル！[字][デ]"
@@ -305,8 +312,7 @@ itemEvent->durationSec
 				
 
 
-					//'2000-01-01 00:00:00'
-					startTime.Format(L"%04d-%02d-%02d %02d:%02d:%02d", );
+
 
 					// struct tm → time_t = UNIX 時間(s)
 					struct tm tm = {
@@ -324,12 +330,12 @@ itemEvent->durationSec
 					struct tm *ptml;
 					ptml = localtime(&time);
 
-    /* 現在時刻を取得 */
+    // 現在時刻を取得
     timer = time(NULL);
 
-    local = localtime(&timer); /* 地方時に変換 */
+    local = localtime(&timer); // 地方時に変換
 
-    /* 地方時 変換後表示 */
+    // 地方時 変換後表示
     printf("地方時: ");
     printf("%4d/", local->tm_year + 1900);
     printf("%2d/", local->tm_mon + 1);
@@ -356,12 +362,14 @@ itemEvent->durationSec
 						item->serviceInfo.TSID,
 						item->serviceInfo.SID
 						);
-					if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
-					this->dbCtrl.StoreResult(&this->mysql, &this->results);
+					if (sys->dbCtrl.Query(&sys->mysql, sql) != 0) goto ESC;
+					sys->dbCtrl.StoreResult(&sys->mysql, &sys->results);
+*/
+
 
 				}
 			}
-			this->dbCtrl.FreeResult(&this->results);
+			sys->dbCtrl.FreeResult(&sys->results);
 
 
 
@@ -379,18 +387,18 @@ itemEvent->durationSec
 	epgUtil.UnInitialize();
 
 	
-	this->dbCtrl.Commit(&this->mysql);
-	this->dbCtrl.UnlockTable(&this->mysql);
-	this->dbCtrl.Close(&this->mysql);
+	sys->dbCtrl.Commit(&sys->mysql);
+	sys->dbCtrl.UnlockTable(&sys->mysql);
+	sys->dbCtrl.Close(&sys->mysql);
 	return FALSE;
 
 	ESC: 
 	wstring err = L"";
 	Format(err, L"ERROR SQL:%s", sql);
 	AfxMessageBox(err.c_str(), NULL, MB_OK);
-	this->dbCtrl.Rollback(&this->mysql);
-	this->dbCtrl.UnlockTable(&this->mysql);
-	this->dbCtrl.Close(&this->mysql);
+	sys->dbCtrl.Rollback(&sys->mysql);
+	sys->dbCtrl.UnlockTable(&sys->mysql);
+	sys->dbCtrl.Close(&sys->mysql);
 	return TRUE;
 }
 
