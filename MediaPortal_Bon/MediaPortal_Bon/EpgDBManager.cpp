@@ -293,62 +293,57 @@ UINT WINAPI CEpgDBManager::LoadThread(LPVOID param)
 					sys->ConvertEpgInfo(item->serviceInfo.ONID, item->serviceInfo.TSID, item->serviceInfo.SID, epgInfoList+j, itemEvent);
 					item->eventMap.insert(pair<WORD, EPGDB_EVENT_INFO*>(itemEvent->event_id, itemEvent));
 
-					//'2000-01-01 00:00:00'
+					// 番組開始時間
 					startTime.Format(L"%04d-%02d-%02d %02d:%02d:%02d", 
-						itemEvent->start_time.wSecond, // 秒(0～)
-						itemEvent->start_time.wMinute, // 分
-						itemEvent->start_time.wHour, // 時
-						itemEvent->start_time.wDay, // 日 (1～31)
+						itemEvent->start_time.wYear, // 年 (1900 年からの年数)
 						itemEvent->start_time.wMonth, // 月 (0～11)
-						itemEvent->start_time.wYear // 年 (1900 年からの年数)
+						itemEvent->start_time.wDay, // 日 (1～31)
+						itemEvent->start_time.wHour, // 時
+						itemEvent->start_time.wMinute, // 分
+						itemEvent->start_time.wSecond // 秒(0～)
 					);
 
+					// 番組開始時間をUNIXTIMEへ
+					struct tm tm = {
+						itemEvent->start_time.wSecond,     // 秒(0～)
+						itemEvent->start_time.wMinute,     // 分
+						itemEvent->start_time.wHour,       // 時
+						itemEvent->start_time.wDay,        // 日 (1～31)
+						itemEvent->start_time.wMonth - 1,  // 月 (0～11)
+						itemEvent->start_time.wYear - 1900 // 年 (1900 年からの年数)
+					};
 
+					// 番組開始時間(UNIXTIME)に放送時間追加
+					time_t endSec = mktime(&tm);
+					endSec = endSec + itemEvent->durationSec;
+
+					struct tm *tmEnd;
+					tmEnd = localtime(&endSec);
+					
+					// 番組終了時間
+					endTime.Format(L"%04d-%02d-%02d %02d:%02d:%02d", 
+						tmEnd->tm_year + 1900, // 年 (1900 年からの年数)
+						tmEnd->tm_mon + 1,     // 月 (0～11)
+						tmEnd->tm_mday,        // 日 (1～31)
+						tmEnd->tm_hour,        // 時
+						tmEnd->tm_min,         // 分
+						tmEnd->tm_sec          // 秒(0～)
+					);
+
+					sql.Format(L"INSERT INTO program VALUES(0,%d,'%s','%s','%s','%s','','','','1800-01-01 00:00:00','',0,0,'','',0);", 
+						tmpCh,
+						startTime.c_str(),
+						endTime.c_str(),
+						itemEvent->shortInfo.event_name.c_str(),
+						itemEvent->shortInfo.text_char.c_str()
+						);
 /*
+
 itemEvent->durationSec
 			shortInfo
 				event_name	"「秘密のケンミンＳＨＯＷ」特別企画！まるごと沖縄県スペシャル！[字][デ]"
 				text_char	"沖縄ケンミンスター１３名大集結ＳＰ▽沖縄ケンミン超熱愛謎の「食堂」衝撃ルールとは？▽上京はじめて物語！「お弁当」＆「お風呂」の仰天爆笑エピソードを大告白！"
 				
-
-
-
-
-					// struct tm → time_t = UNIX 時間(s)
-					struct tm tm = {
-						itemEvent->start_time->wSecond.c_str(), // 秒(0～)
-						itemEvent->start_time->wMinute.c_str(), // 分
-						itemEvent->start_time->wHour.c_str(), // 時
-						itemEvent->start_time->wDay.c_str(), // 日 (1～31)
-						itemEvent->start_time->wMonth.c_str(), // 月 (0～11)
-						itemEvent->start_time->wYear.c_str() // 年 (1900 年からの年数)
-					};
-					// Local time
-					time_t time = mktime(&tm);
-					time = time + itemEvent->durationSec;
-					// Local time
-					struct tm *ptml;
-					ptml = localtime(&time);
-
-    // 現在時刻を取得
-    timer = time(NULL);
-
-    local = localtime(&timer); // 地方時に変換
-
-    // 地方時 変換後表示
-    printf("地方時: ");
-    printf("%4d/", local->tm_year + 1900);
-    printf("%2d/", local->tm_mon + 1);
-    printf("%2d ", local->tm_mday);
-    printf("%2d:", local->tm_hour);
-    printf("%2d:", local->tm_min);
-    printf("%2d", local->tm_sec);
-    printf(" %d\n", local->tm_isdst);
-
-					sql.Format(L"INSERT INTO program VALUES(0,%d,'%s','%s','%s','%s','','','','1800-01-01 00:00:00','',0,0,'','',0);", 
-						tmpCh,
-						startTime.c_str(),
-						);
 
 
 					wsql  = L"";
