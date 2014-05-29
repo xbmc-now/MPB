@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "EpgDBManager.h"
 #include <process.h>
+#include <time.h>
 
 #include "../../Common/TimeUtil.h"
 
@@ -255,15 +256,121 @@ UINT WINAPI CEpgDBManager::LoadThread(LPVOID param)
 		sys->epgMap.insert(pair<LONGLONG, EPGDB_SERVICE_DATA*>(key, item));
 
 		DWORD epgInfoListSize = 0;
+		int tmpCh;  // 登録用チャンネル
+		CString startTime = L"";
+		wstring wstartTime = L"";
+		CString endTime = L"";
+		wstring wendTime = L"";
+
 		EPG_EVENT_INFO* epgInfoList = NULL;
 		if( epgUtil.GetEpgInfoList(item->serviceInfo.ONID, item->serviceInfo.TSID, item->serviceInfo.SID, &epgInfoListSize, &epgInfoList) == TRUE ){
-			for( DWORD j=0; j<epgInfoListSize; j++ ){
-				EPGDB_EVENT_INFO* itemEvent = new EPGDB_EVENT_INFO;
-				sys->ConvertEpgInfo(item->serviceInfo.ONID, item->serviceInfo.TSID, item->serviceInfo.SID, epgInfoList+j, itemEvent);
-				item->eventMap.insert(pair<WORD, EPGDB_EVENT_INFO*>(itemEvent->event_id, itemEvent));
 
+			// BONドライバーが違っても同じチャンネルがあるかどうか
+			wsql  = L"";
+			wsql += L"SELECT idChannel FROM tuningdetail WHERE ";
+			wsql += L"networkId     = %d AND ";
+			wsql += L"transportId   = %d AND ";
+			wsql += L"serviceId     = %d ";
+			wsql += L"GROUP BY idChannel;";
+			sql.Format(wsql.c_str(),
+				item->serviceInfo.ONID,
+				item->serviceInfo.TSID,
+				item->serviceInfo.SID
+				);
+			if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
+			this->dbCtrl.StoreResult(&this->mysql, &this->results);
+
+			this->record = this->dbCtrl.FetchRow(&this->results);
+			if(CA2T(this->record[0], CP_UTF8) != L""){
+				tmpCh = atoi(this->record[0]);
+				this->dbCtrl.FreeResult(&this->results);
+
+				// EPGデータを削除
+				sql.Format(L"DELETE FROM program WHERE idChannel = %d;", tmpCh);
+				if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
+
+				for( DWORD j=0; j<epgInfoListSize; j++ ){
+					EPGDB_EVENT_INFO* itemEvent = new EPGDB_EVENT_INFO;
+					sys->ConvertEpgInfo(item->serviceInfo.ONID, item->serviceInfo.TSID, item->serviceInfo.SID, epgInfoList+j, itemEvent);
+					item->eventMap.insert(pair<WORD, EPGDB_EVENT_INFO*>(itemEvent->event_id, itemEvent));
+
+
+
+
+
+itemEvent->durationSec
+			shortInfo
+				event_name	"「秘密のケンミンＳＨＯＷ」特別企画！まるごと沖縄県スペシャル！[字][デ]"
+				text_char	"沖縄ケンミンスター１３名大集結ＳＰ▽沖縄ケンミン超熱愛謎の「食堂」衝撃ルールとは？▽上京はじめて物語！「お弁当」＆「お風呂」の仰天爆笑エピソードを大告白！"
 				
+
+
+					//'2000-01-01 00:00:00'
+					startTime.Format(L"%04d-%02d-%02d %02d:%02d:%02d", );
+
+					// struct tm → time_t = UNIX 時間(s)
+					struct tm tm = {
+						itemEvent->start_time->wSecond.c_str(), // 秒(0～)
+						itemEvent->start_time->wMinute.c_str(), // 分
+						itemEvent->start_time->wHour.c_str(), // 時
+						itemEvent->start_time->wDay.c_str(), // 日 (1～31)
+						itemEvent->start_time->wMonth.c_str(), // 月 (0～11)
+						itemEvent->start_time->wYear.c_str() // 年 (1900 年からの年数)
+					};
+					// Local time
+					time_t time = mktime(&tm);
+					time = time + itemEvent->durationSec;
+					// Local time
+					struct tm *ptml;
+					ptml = localtime(&time);
+
+    /* 現在時刻を取得 */
+    timer = time(NULL);
+
+    local = localtime(&timer); /* 地方時に変換 */
+
+    /* 地方時 変換後表示 */
+    printf("地方時: ");
+    printf("%4d/", local->tm_year + 1900);
+    printf("%2d/", local->tm_mon + 1);
+    printf("%2d ", local->tm_mday);
+    printf("%2d:", local->tm_hour);
+    printf("%2d:", local->tm_min);
+    printf("%2d", local->tm_sec);
+    printf(" %d\n", local->tm_isdst);
+
+					sql.Format(L"INSERT INTO program VALUES(0,%d,'%s','%s','%s','%s','','','','1800-01-01 00:00:00','',0,0,'','',0);", 
+						tmpCh,
+						startTime.c_str(),
+						);
+
+
+					wsql  = L"";
+					wsql += L"SELECT idChannel FROM tuningdetail WHERE ";
+					wsql += L"networkId     = %d AND ";
+					wsql += L"transportId   = %d AND ";
+					wsql += L"serviceId     = %d ";
+					wsql += L"GROUP BY idChannel;";
+					sql.Format(wsql.c_str(),
+						item->serviceInfo.ONID,
+						item->serviceInfo.TSID,
+						item->serviceInfo.SID
+						);
+					if (this->dbCtrl.Query(&this->mysql, sql) != 0) goto ESC;
+					this->dbCtrl.StoreResult(&this->mysql, &this->results);
+
+				}
 			}
+			this->dbCtrl.FreeResult(&this->results);
+
+
+
+
+
+
+
+
+
 		}
 		Sleep(0);
 	}
@@ -271,7 +378,20 @@ UINT WINAPI CEpgDBManager::LoadThread(LPVOID param)
 	_OutputDebugString(L"End Load EpgData %dmsec\r\n", GetTickCount()-time);
 	epgUtil.UnInitialize();
 
-	return 0;
+	
+	this->dbCtrl.Commit(&this->mysql);
+	this->dbCtrl.UnlockTable(&this->mysql);
+	this->dbCtrl.Close(&this->mysql);
+	return FALSE;
+
+	ESC: 
+	wstring err = L"";
+	Format(err, L"ERROR SQL:%s", sql);
+	AfxMessageBox(err.c_str(), NULL, MB_OK);
+	this->dbCtrl.Rollback(&this->mysql);
+	this->dbCtrl.UnlockTable(&this->mysql);
+	this->dbCtrl.Close(&this->mysql);
+	return TRUE;
 }
 
 //EPGデータをコピーする
