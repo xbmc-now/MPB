@@ -238,3 +238,15 @@ DWORD CDbCtrl::Rollback(MYSQL *mysql)
 	return this->ErrNo(mysql);
 }
 
+DWORD CDbCtrl::EscapeString(MYSQL *mysql, CString &csesc, CString cssrc, DWORD size)
+{
+	// CString ¨ const char(utf8)
+	CT2CA src(cssrc, CP_UTF8);
+	
+	char *esc;
+	mysql_real_escape_string(mysql, esc, src, size);
+	CA2CT tmpesc(esc);
+	csesc = tmpesc;
+	return this->ErrNo(mysql);
+}
+

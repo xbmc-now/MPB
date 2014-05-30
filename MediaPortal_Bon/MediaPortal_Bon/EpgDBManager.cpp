@@ -327,14 +327,20 @@ UINT WINAPI CEpgDBManager::LoadThread(LPVOID param)
 						tmEnd->tm_min,         // •ª
 						tmEnd->tm_sec          // •b(0`)
 					);
+					CString escEventName = L"";
+					if (sys->dbCtrl.EscapeString(&sys->mysql, escEventName, itemEvent->shortInfo->event_name.c_str(), 2048000) != 0) goto ESC;
+					CString escTextChar = L"";
+					if (sys->dbCtrl.EscapeString(&sys->mysql, escEventName, itemEvent->shortInfo->event_name.c_str(), 2048000) != 0) goto ESC;
+					
+					
 					if(itemEvent->shortInfo != NULL){
 						if (sys->dbCtrl.LockTable(&sys->mysql, lockTable) != 0) goto ESC;
 						sql.Format(L"INSERT INTO program VALUES(0,%d,'%s','%s',\"%s\",\"%s\",'','','','1800-01-01 00:00:00','',0,0,'','',0);", 
 							tmpCh,
 							startTime,
 							endTime,
-							itemEvent->shortInfo->event_name.c_str(),
-							itemEvent->shortInfo->text_char.c_str()
+							escEventName,
+							escTextChar
 							);
 
 						if (sys->dbCtrl.Query(&sys->mysql, sql) != 0) goto ESC;
