@@ -156,7 +156,6 @@ UINT WINAPI CEpgDBManager::LoadThread(LPVOID param)
 
 	map<CString, int> lockTable;
 	lockTable[L"program"] = 2;
-	if (sys->dbCtrl.LockTable(&sys->mysql, lockTable) != 0) goto ESC;
 
 	//指定フォルダのファイル一覧取得
 	find = FindFirstFile( searchKey.c_str(), &findData);
@@ -257,9 +256,7 @@ UINT WINAPI CEpgDBManager::LoadThread(LPVOID param)
 		DWORD epgInfoListSize = 0;
 		int tmpCh;  // 登録用チャンネル
 		CString startTime = L"";
-		wstring wstartTime = L"";
 		CString endTime = L"";
-		wstring wendTime = L"";
 
 		EPG_EVENT_INFO* epgInfoList = NULL;
 		if( epgUtil.GetEpgInfoList(item->serviceInfo.ONID, item->serviceInfo.TSID, item->serviceInfo.SID, &epgInfoListSize, &epgInfoList) == TRUE ){
@@ -280,7 +277,8 @@ UINT WINAPI CEpgDBManager::LoadThread(LPVOID param)
 			sys->dbCtrl.StoreResult(&sys->mysql, &sys->results);
 
 			sys->record = sys->dbCtrl.FetchRow(&sys->results);
-			if(CA2T(sys->record[0], CP_UTF8) != L""){
+			//if(CA2T(sys->record[0], CP_UTF8) != L""){
+			if(sys->record != 0x00000000){
 				tmpCh = atoi(sys->record[0]);
 				sys->dbCtrl.FreeResult(&sys->results);
 
@@ -329,42 +327,25 @@ UINT WINAPI CEpgDBManager::LoadThread(LPVOID param)
 						tmEnd->tm_min,         // 分
 						tmEnd->tm_sec          // 秒(0～)
 					);
+					if(itemEvent->shortInfo != NULL){
+						if (sys->dbCtrl.LockTable(&sys->mysql, lockTable) != 0) goto ESC;
+						sql.Format(L"INSERT INTO program VALUES(0,%d,'%s','%s',\"%s\",\"%s\",'','','','1800-01-01 00:00:00','',0,0,'','',0);", 
+							tmpCh,
+							startTime,
+							endTime,
+							itemEvent->shortInfo->event_name.c_str(),
+							itemEvent->shortInfo->text_char.c_str()
+							);
 
-					sql.Format(L"INSERT INTO program VALUES(0,%d,'%s','%s','%s','%s','','','','1800-01-01 00:00:00','',0,0,'','',0);", 
-						tmpCh,
-						startTime.c_str(),
-						endTime.c_str(),
-						itemEvent->shortInfo.event_name.c_str(),
-						itemEvent->shortInfo.text_char.c_str()
-						);
-/*
-
-itemEvent->durationSec
-			shortInfo
-				event_name	"「秘密のケンミンＳＨＯＷ」特別企画！まるごと沖縄県スペシャル！[字][デ]"
-				text_char	"沖縄ケンミンスター１３名大集結ＳＰ▽沖縄ケンミン超熱愛謎の「食堂」衝撃ルールとは？▽上京はじめて物語！「お弁当」＆「お風呂」の仰天爆笑エピソードを大告白！"
-				
-
-
-					wsql  = L"";
-					wsql += L"SELECT idChannel FROM tuningdetail WHERE ";
-					wsql += L"networkId     = %d AND ";
-					wsql += L"transportId   = %d AND ";
-					wsql += L"serviceId     = %d ";
-					wsql += L"GROUP BY idChannel;";
-					sql.Format(wsql.c_str(),
-						item->serviceInfo.ONID,
-						item->serviceInfo.TSID,
-						item->serviceInfo.SID
-						);
-					if (sys->dbCtrl.Query(&sys->mysql, sql) != 0) goto ESC;
-					sys->dbCtrl.StoreResult(&sys->mysql, &sys->results);
-*/
+						if (sys->dbCtrl.Query(&sys->mysql, sql) != 0) goto ESC;
+						sys->dbCtrl.StoreResult(&sys->mysql, &sys->results);
+						sys->dbCtrl.UnlockTable(&sys->mysql);
+					}
 
 
 				}
 			}
-			sys->dbCtrl.FreeResult(&sys->results);
+			//sys->dbCtrl.FreeResult(&sys->results);
 
 
 
@@ -383,7 +364,6 @@ itemEvent->durationSec
 
 	
 	sys->dbCtrl.Commit(&sys->mysql);
-	sys->dbCtrl.UnlockTable(&sys->mysql);
 	sys->dbCtrl.Close(&sys->mysql);
 	return FALSE;
 
@@ -392,7 +372,6 @@ itemEvent->durationSec
 	Format(err, L"ERROR SQL:%s", sql);
 	AfxMessageBox(err.c_str(), NULL, MB_OK);
 	sys->dbCtrl.Rollback(&sys->mysql);
-	sys->dbCtrl.UnlockTable(&sys->mysql);
 	sys->dbCtrl.Close(&sys->mysql);
 	return TRUE;
 }
