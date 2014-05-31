@@ -112,7 +112,7 @@ public:
 	//        [OUT]Fƒnƒ“ƒhƒ‹
 	DWORD Rollback(MYSQL *);
 
-	DWORD EscapeString(MYSQL *, CString &, CString, DWORD);
+	void EscapeString(CString&);
 
 protected:
 	HANDLE lockEvent;
