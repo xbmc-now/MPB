@@ -1146,6 +1146,7 @@ DWORD CBonCtrl::StartChScan()
 			ResumeThread(this->chScanThread);
 		}
 	}
+	this->mpCtrl.RestartMpService();
 
 	UnLock();
 	return ret;

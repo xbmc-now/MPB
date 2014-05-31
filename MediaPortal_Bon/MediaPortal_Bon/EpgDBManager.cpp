@@ -333,7 +333,7 @@ UINT WINAPI CEpgDBManager::LoadThread(LPVOID param)
 						CString escEventName = itemEvent->shortInfo->event_name.c_str();
 						sys->dbCtrl.EscapeString(escEventName);
 
-						CString escTextChar = itemEvent->shortInfo->event_name.c_str();
+						CString escTextChar = itemEvent->shortInfo->text_char.c_str();
 						sys->dbCtrl.EscapeString(escTextChar);
 
 						if (sys->dbCtrl.LockTable(&sys->mysql, lockTable) != 0) goto ESC;
