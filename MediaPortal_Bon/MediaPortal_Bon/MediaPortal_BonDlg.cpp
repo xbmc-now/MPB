@@ -1113,7 +1113,10 @@ void CMediaPortal_BonDlg::OnBnClickedButtonChreset()
 
 void CMediaPortal_BonDlg::OnBnClickedButtonEpg()
 {
+	this->btnEpg.EnableWindow(FALSE);
 	this->main.ReloadEpgData();
+	this->btnEpg.EnableWindow(TRUE);
+	this->log.Format(L"EPGをインポートしました。\r\n");
 }
 
 BOOL CMediaPortal_BonDlg::OnQueryEndSession()
