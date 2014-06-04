@@ -12,6 +12,9 @@ CEpgDBManager::CEpgDBManager(void)
     this->loadThread = NULL;
     this->loadStopEvent = _CreateEvent(FALSE, FALSE, NULL);
 
+	this->exportThread = NULL;
+	this->exportStopEvent = _CreateEvent(FALSE, FALSE, NULL);
+
 	wstring textPath;
 	GetModuleFolderPath(textPath);
 	textPath += L"\\ConvertText.txt";
@@ -39,6 +42,20 @@ CEpgDBManager::~CEpgDBManager(void)
 	if( this->loadStopEvent != NULL ){
 		CloseHandle(this->loadStopEvent);
 		this->loadStopEvent = NULL;
+	}
+
+	if( this->exportThread != NULL ){
+		SetEvent(this->exportThread);
+		// スレッド終了待ち
+		if ( WaitForSingleObject(this->exportThread, 15000) == WAIT_TIMEOUT ){
+			TerminateThread(this->exportThread, 0xffffffff);
+		}
+		CloseHandle(this->exportThread);
+		this->exportThread = NULL;
+	}
+	if( this->exportStopEvent != NULL ){
+		CloseHandle(this->exportStopEvent);
+		this->exportStopEvent = NULL;
 	}
 
 	ClearEpgData();
@@ -1224,5 +1241,91 @@ BOOL CEpgDBManager::SearchServiceName(
 
 	UnLock();
 	return ret;
+}
+
+BOOL CEpgDBManager::ReloadEpgTimer()
+{
+	if( Lock() == FALSE ) return FALSE;
+
+	if( this->exportThread != NULL ){ // スレッドが存在するか
+		SetEvent(this->exportStopEvent);
+		// スレッド終了待ち
+		if ( WaitForSingleObject(this->exportThread, 15000) == WAIT_TIMEOUT ){
+			TerminateThread(this->exportThread, 0xffffffff); // スレッド終了
+		}
+		CloseHandle(this->exportThread); // ハンドル終了
+		this->exportThread = NULL; // ハンドルにNULL
+	}
+
+	wstring appIniPath = L"";
+	GetModuleIniPath(appIniPath);
+
+	DWORD chkTimer = GetPrivateProfileInt(L"EPG_TIMER", L"ChkTimer", 1, appIniPath.c_str());
+
+	BOOL ret = TRUE;
+	if(chkTimer){
+		if( this->exportThread == NULL ){
+			ResetEvent(this->exportStopEvent);
+			this->exportThread = (HANDLE)_beginthreadex(NULL, 0, ExportThread, (LPVOID)this, CREATE_SUSPENDED, NULL);
+			SetThreadPriority( this->exportThread, THREAD_PRIORITY_NORMAL );
+			ResumeThread(this->exportThread);
+		}else{
+			ret = FALSE;
+		}
+	}
+
+	UnLock();
+	return ret;
+}
+UINT WINAPI CEpgDBManager::ExportThread(LPVOID param)
+{
+	CEpgDBManager* sys = (CEpgDBManager*)param;
+
+	wstring appIniPath = L"";
+	GetModuleIniPath(appIniPath);
+
+	wstring timeString = GetPrivateProfileInt(L"EPG_TIMER", L"time", 1, appIniPath.c_str());
+
+	// 指定時間を0時からの秒数に変換
+	wstring left = L"";
+	wstring right = L"";
+	Separate(timeString, L":", left, right);
+	DWORD timerSec = _wtoi(left.c_str()) * 60 * 60 + _wtoi(right.c_str()) * 60;
+
+	HANDLE hTimer = CreateWaitableTimer (NULL, TRUE, NULL);
+	while (1) {
+
+		// 現在の時刻(UNIXTIME)
+		time_t nowSec = time(NULL);
+
+		// 今日の0時(UNIXTIME)
+		struct tm *now_tm;
+		now_tm = localtime(&nowSec);
+		struct tm *tdy_tm;
+		*tdy_tm = {0, 0, 0, now_tm->tm_mday, now_tm->tm_mon, now_tm->tm_year};
+		time_t tdySec = mktime(tdy_tm);
+
+		// 指定時間までの秒数
+		DWORD targetSec;
+		if((nowSec - tdySec) < timerSec){
+			targetSec = timerSec - (nowSec - tdySec); // 今日
+		}else{
+			targetSec = (60*60*24) - (nowSec - tdySec) + timerSec; // 明日
+		}
+
+		LARGE_INTEGER li;
+		//li.QuadPart = -10000000*60; // 60秒後、指定時刻までのタイマー時間を100ns単位で取得、負で指定する
+		li.QuadPart = -10000000*targetSec;
+		SetWaitableTimer (hTimer, &li, 0, NULL, NULL, FALSE);
+		WaitForSingleObject(hTimer, INFINITE); // 指定時間までここで待機
+
+		// 指定した日時になった
+		sys->ReloadEpgData();
+		Sleep(1000);
+	}
+
+	OutputDebugString(L"Start Export EpgData\r\n");
+
+	return TRUE;
 }
 

@@ -30,6 +30,8 @@ public:
 
 	BOOL ReloadEpgData();
 
+	BOOL ReloadEpgTimer();
+
 	BOOL IsLoadingData();
 
 	BOOL CancelLoadData();
@@ -74,6 +76,9 @@ protected:
 	HANDLE loadThread;
 	HANDLE loadStopEvent;
 
+	HANDLE exportThread;
+	HANDLE exportStopEvent;
+
 	MYSQL mysql;
 	MYSQL_RES *results;
 	MYSQL_ROW record;
@@ -109,6 +114,8 @@ protected:
 	BOOL ConvertEpgInfo(WORD ONID, WORD TSID, WORD SID, EPG_EVENT_INFO* src, EPGDB_EVENT_INFO* dest);
 	void ClearEpgData();
 	static UINT WINAPI LoadThread(LPVOID param);
+	static UINT WINAPI ExportThread(LPVOID param);
+
 
 	BOOL _IsLoadingData();
 
