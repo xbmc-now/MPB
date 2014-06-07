@@ -1283,8 +1283,8 @@ UINT WINAPI CEpgDBManager::ExportThread(LPVOID param)
 
 	wstring appIniPath = L"";
 	GetModuleIniPath(appIniPath);
-
-	wstring timeString = GetPrivateProfileInt(L"EPG_TIMER", L"time", 1, appIniPath.c_str());
+	WCHAR timeString[512]=L"";
+	GetPrivateProfileString(L"EPG_TIMER", L"time", L"23:30", timeString, 512, appIniPath.c_str());
 
 	// 指定時間を0時からの秒数に変換
 	wstring left = L"";
@@ -1301,9 +1301,15 @@ UINT WINAPI CEpgDBManager::ExportThread(LPVOID param)
 		// 今日の0時(UNIXTIME)
 		struct tm *now_tm;
 		now_tm = localtime(&nowSec);
-		struct tm *tdy_tm;
-		*tdy_tm = {0, 0, 0, now_tm->tm_mday, now_tm->tm_mon, now_tm->tm_year};
-		time_t tdySec = mktime(tdy_tm);
+		struct tm tdy_tm;
+		tdy_tm.tm_sec  = 0;
+		tdy_tm.tm_min  = 0;
+		tdy_tm.tm_hour = 0;
+		tdy_tm.tm_mday = now_tm->tm_mday;
+		tdy_tm.tm_mon  = now_tm->tm_mon;
+		tdy_tm.tm_year = now_tm->tm_year;
+		tdy_tm.tm_isdst = -1; // サマータイムフラグ
+		time_t tdySec = mktime(&tdy_tm);
 
 		// 指定時間までの秒数
 		DWORD targetSec;

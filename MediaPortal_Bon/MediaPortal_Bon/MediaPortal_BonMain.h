@@ -269,6 +269,7 @@ public:
 	DWORD RestartMpService();
 
 	BOOL ReloadEpgData();
+	BOOL ReloadEpgTimer();
 
 protected:
 	HWND msgWnd;
