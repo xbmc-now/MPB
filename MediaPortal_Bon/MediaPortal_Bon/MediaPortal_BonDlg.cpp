@@ -106,6 +106,7 @@ BEGIN_MESSAGE_MAP(CMediaPortal_BonDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_EPG, &CMediaPortal_BonDlg::OnBnClickedButtonEpg)
 	ON_WM_QUERYENDSESSION()
 	ON_WM_ENDSESSION()
+	ON_MESSAGE(WM_APP_SENDDATA, &CMediaPortal_BonDlg::OnReceiveData)
 END_MESSAGE_MAP()
 
 
@@ -1147,4 +1148,9 @@ void CMediaPortal_BonDlg::OnEndSession(BOOL bEnding)
 			this->main.StopRec();
 		}
 	}
+}
+LRESULT CMediaPortal_BonDlg::OnReceiveData(WPARAM, LPARAM)
+{
+	this->log.Format(L"メッセージ\r\n");
+	return 0;
 }

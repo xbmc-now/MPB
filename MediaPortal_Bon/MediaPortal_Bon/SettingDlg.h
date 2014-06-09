@@ -8,6 +8,8 @@
 
 #include "afxcmn.h"
 
+//#include "MediaPortal_BonDef.h"
+
 // CSettingDlg ダイアログ
 
 class CSettingDlg : public CDialog
@@ -17,6 +19,7 @@ class CSettingDlg : public CDialog
 public:
 	CSettingDlg(CWnd* pParent = NULL);   // 標準コンストラクター
 	virtual ~CSettingDlg();
+
 
 // ダイアログ データ
 	enum { IDD = IDD_DIALOG_SETTING };

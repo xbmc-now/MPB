@@ -134,4 +134,5 @@ public:
 	CEdit editStatus;
 	afx_msg BOOL OnQueryEndSession();
 	afx_msg void OnEndSession(BOOL bEnding);
+	afx_msg LRESULT OnReceiveData(WPARAM, LPARAM);
 };
