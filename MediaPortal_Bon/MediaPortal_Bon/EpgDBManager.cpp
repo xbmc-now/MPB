@@ -12,9 +12,6 @@ CEpgDBManager::CEpgDBManager(void)
     this->loadThread = NULL;
     this->loadStopEvent = _CreateEvent(FALSE, FALSE, NULL);
 
-	this->exportThread = NULL;
-	this->exportStopEvent = _CreateEvent(FALSE, FALSE, NULL);
-
 	wstring textPath;
 	GetModuleFolderPath(textPath);
 	textPath += L"\\ConvertText.txt";
@@ -42,20 +39,6 @@ CEpgDBManager::~CEpgDBManager(void)
 	if( this->loadStopEvent != NULL ){
 		CloseHandle(this->loadStopEvent);
 		this->loadStopEvent = NULL;
-	}
-
-	if( this->exportThread != NULL ){
-		SetEvent(this->exportThread);
-		// スレッド終了待ち
-		if ( WaitForSingleObject(this->exportThread, 15000) == WAIT_TIMEOUT ){
-			TerminateThread(this->exportThread, 0xffffffff);
-		}
-		CloseHandle(this->exportThread);
-		this->exportThread = NULL;
-	}
-	if( this->exportStopEvent != NULL ){
-		CloseHandle(this->exportStopEvent);
-		this->exportStopEvent = NULL;
 	}
 
 	ClearEpgData();

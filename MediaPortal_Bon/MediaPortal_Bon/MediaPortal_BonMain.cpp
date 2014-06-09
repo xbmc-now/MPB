@@ -1236,7 +1236,4 @@ BOOL CMediaPortal_BonMain::ReloadEpgData()
 	return this->epgDB.ReloadEpgData();
 }
 
-BOOL CMediaPortal_BonMain::ReloadEpgTimer()
-{
-	return this->epgDB.ReloadEpgTimer();
-}
+
