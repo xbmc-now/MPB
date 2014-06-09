@@ -191,7 +191,7 @@ BOOL CMediaPortal_BonDlg::OnInitDialog()
 	}
 
 	// EPG出力タイマーセット
-	this->main.ReloadEpgTimer();
+
 
 	if( err == NO_ERR ){
 		//チャンネル変更
