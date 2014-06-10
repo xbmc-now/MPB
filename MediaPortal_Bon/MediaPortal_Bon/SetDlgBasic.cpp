@@ -46,6 +46,7 @@ void CSetDlgBasic::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CSetDlgBasic, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON_SET_PATH, &CSetDlgBasic::OnBnClickedButtonSetPath)
 	ON_BN_CLICKED(IDC_BUTTON_SET_EPGPATH, &CSetDlgBasic::OnBnClickedButtonSetEpgPath)
+	ON_BN_CLICKED(IDC_CHECK_EPGTIMER, &CSetDlgBasic::OnBnClickedButtonEpgTimer)
 END_MESSAGE_MAP()
 
 
@@ -79,6 +80,14 @@ BOOL CSetDlgBasic::OnInitDialog()
 	WCHAR timeString[512]=L"";
 	GetPrivateProfileString(L"EPG_TIMER", L"time", L"23:30", timeString, 512, appIniPath);
 
+	if(btnEpgTimer.GetCheck()==0){
+		cmbHour.EnableWindow(FALSE);
+		cmbMin.EnableWindow(FALSE);
+	}else{
+		cmbHour.EnableWindow(TRUE);
+		cmbMin.EnableWindow(TRUE);
+	}
+
 	// éwíËéûä‘Ç0éûÇ©ÇÁÇÃïbêîÇ…ïœä∑
 	wstring left = L"";
 	wstring right = L"";
@@ -99,7 +108,7 @@ void CSetDlgBasic::SaveIni()
 	WritePrivateProfileString(L"SET", L"DataSavePath", settingFolderPath.GetBuffer(0), commonIniPath);
 	_CreateDirectory(settingFolderPath);
 
-	WritePrivateProfileString(L"SET", L"EpgSavePath", epgFolderPath.GetBuffer(0), commonIniPath);
+	WritePrivateProfileString(L"SET", L"EpgSavePath", epgFolderPath.GetBuffer(0), appIniPath);
 	_CreateDirectory(epgFolderPath);
 
 	CString val = L"";
