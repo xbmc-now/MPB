@@ -45,6 +45,7 @@ void CSetDlgBasic::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CSetDlgBasic, CDialog)
 	ON_BN_CLICKED(IDC_BUTTON_SET_PATH, &CSetDlgBasic::OnBnClickedButtonSetPath)
+	ON_BN_CLICKED(IDC_BUTTON_SET_EPGPATH, &CSetDlgBasic::OnBnClickedButtonSetEpgPath)
 END_MESSAGE_MAP()
 
 
@@ -67,6 +68,12 @@ BOOL CSetDlgBasic::OnInitDialog()
 	btnEnableScramble.SetCheck( GetPrivateProfileInt( L"SET", L"Scramble", 1, appIniPath ) );
 	btnEnableEMM.SetCheck( GetPrivateProfileInt( L"SET", L"EMM", 0, appIniPath ) );
 	btnTaskMin.SetCheck( GetPrivateProfileInt( L"SET", L"MinTask", 0, appIniPath ) );
+
+	CString epgpath = L"";
+	epgpath.Format( L"%s%s", path.c_str(), EPG_SAVE_FOLDER );
+	WCHAR epgString[512]=L"";
+	GetPrivateProfileString(L"SET", L"EpgSavePath", epgpath, epgString, 512, appIniPath);
+	epgFolderPath = epgString;
 	btnEpgTimer.SetCheck( GetPrivateProfileInt( L"EPG_TIMER", L"ChkTimer", 1, appIniPath ) );
 
 	WCHAR timeString[512]=L"";
@@ -91,6 +98,9 @@ void CSetDlgBasic::SaveIni()
 	UpdateData(TRUE);
 	WritePrivateProfileString(L"SET", L"DataSavePath", settingFolderPath.GetBuffer(0), commonIniPath);
 	_CreateDirectory(settingFolderPath);
+
+	WritePrivateProfileString(L"SET", L"EpgSavePath", epgFolderPath.GetBuffer(0), commonIniPath);
+	_CreateDirectory(epgFolderPath);
 
 	CString val = L"";
 	DWORD ip = 0;
@@ -191,6 +201,53 @@ void CSetDlgBasic::OnBnClickedButtonSetPath()
 	UpdateData(FALSE);
 }
 
+void CSetDlgBasic::OnBnClickedButtonSetEpgPath()
+{
+	// TODO: ここにコントロール通知ハンドラー コードを追加します。
+	UpdateData(TRUE);
+
+	BROWSEINFO bi;
+	LPWSTR lpBuffer;
+	LPITEMIDLIST pidlRoot = NULL;
+	LPITEMIDLIST pidlBrowse;
+	LPMALLOC lpMalloc = NULL;
+
+	HRESULT hr = SHGetMalloc(&lpMalloc);
+	if(FAILED(hr)) return;
+
+	if ((lpBuffer = (LPWSTR) lpMalloc->Alloc(_MAX_PATH*2)) == NULL) {
+		return;
+	}
+	if( epgFolderPath.IsEmpty() != 0 ){
+		if (!SUCCEEDED(SHGetSpecialFolderLocation( m_hWnd,CSIDL_DESKTOP,&pidlRoot ) )){ 
+			lpMalloc->Free(lpBuffer);
+			return;
+		}
+	}
+
+	bi.hwndOwner = m_hWnd;
+	bi.pidlRoot = pidlRoot;
+	bi.pszDisplayName = lpBuffer;
+	bi.lpszTitle = L"設定関係保存フォルダを選択してください";
+	bi.ulFlags = 0;
+	bi.lpfn = NULL;
+	bi.lParam = (LPARAM)epgFolderPath.GetBuffer(0);
+
+	pidlBrowse = SHBrowseForFolder(&bi);
+	if (pidlBrowse != NULL) {  
+		if (SHGetPathFromIDList(pidlBrowse, lpBuffer)) {
+			epgFolderPath = lpBuffer;
+		}
+		lpMalloc->Free(pidlBrowse);
+	}
+	if( pidlRoot != NULL ){
+		lpMalloc->Free(pidlRoot); 
+	}
+	lpMalloc->Free(lpBuffer);
+	lpMalloc->Release();
+	
+	UpdateData(FALSE);
+}
 
 BOOL CSetDlgBasic::PreTranslateMessage(MSG* pMsg)
 {

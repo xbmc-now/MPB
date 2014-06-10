@@ -192,7 +192,7 @@ BOOL CMediaPortal_BonDlg::OnInitDialog()
 	}
 
 	// EPG出力タイマーセット
-
+	ReloadEpgTimer();
 
 	if( err == NO_ERR ){
 		//チャンネル変更
@@ -1157,7 +1157,8 @@ void CMediaPortal_BonDlg::OnEndSession(BOOL bEnding)
 }
 LRESULT CMediaPortal_BonDlg::OnReceiveData(WPARAM, LPARAM)
 {
-	this->log.Format(L"メッセージ\r\n");
+	ReloadEpgTimer();
+	//this->log.Format(L"メッセージ受信\r\n");
 	return 0;
 }
 void CMediaPortal_BonDlg::ReloadEpgTimer()

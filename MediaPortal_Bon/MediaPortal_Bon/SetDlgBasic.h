@@ -34,6 +34,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	afx_msg void OnBnClickedButtonSetPath();
+	afx_msg void OnBnClickedButtonSetEpgPath();
 	CString settingFolderPath;
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	virtual BOOL OnInitDialog();

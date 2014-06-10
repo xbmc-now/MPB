@@ -132,9 +132,17 @@ UINT WINAPI CEpgDBManager::LoadThread(LPVOID param)
 
 	//EPGÉtÉ@ÉCÉãÇÃåüçı
 	vector<wstring> epgFileList;
+
+	wstring appIniPath = L"";
+	GetModuleIniPath(appIniPath);
+	wstring path;
+	GetSettingPath(path);
+	CString epgpath = L"";
+	epgpath.Format( L"%s%s", path.c_str(), EPG_SAVE_FOLDER );
+	WCHAR epgString[512]=L"";
 	wstring epgDataPath = L"";
-	GetSettingPath(epgDataPath);
-	epgDataPath += EPG_SAVE_FOLDER;
+	GetPrivateProfileString(L"SET", L"EpgSavePath", epgpath, epgString, 512, appIniPath.c_str());
+	epgDataPath = epgString;
 
 	wstring searchKey = epgDataPath;
 	searchKey += L"\\*_epg.dat";
