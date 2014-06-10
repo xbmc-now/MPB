@@ -8,7 +8,7 @@
 
 #include "afxcmn.h"
 
-//#include "MediaPortal_BonDef.h"
+#include "MediaPortal_BonDef.h"
 
 // CSettingDlg ダイアログ
 

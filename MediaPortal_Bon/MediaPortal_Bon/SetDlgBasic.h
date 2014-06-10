@@ -45,4 +45,8 @@ public:
 	CButton btnAllService;
 	CButton btnTaskMin;
 	CButton btnEnableEMM;
+	CButton btnEpgTimer;
+	CString epgFolderPath;
+	CComboBox cmbHour;
+	CComboBox cmbMin;
 };

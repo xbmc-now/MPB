@@ -36,6 +36,10 @@ void CSetDlgBasic::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_CHECK_ALL_SERVICE, btnAllService);
 	DDX_Control(pDX, IDC_CHECK_EMM, btnEnableEMM);
 	DDX_Control(pDX, IDC_CHECK_TASKMIN, btnTaskMin);
+	DDX_Text(pDX, IDC_EDIT_SET_EPGPATH, epgFolderPath);
+	DDX_Control(pDX, IDC_CHECK_EPGTIMER, btnEpgTimer);
+	DDX_Control(pDX, IDC_COMBO_HOUR, cmbHour);
+	DDX_Control(pDX, IDC_COMBO_MIN, cmbMin);
 }
 
 
@@ -63,6 +67,19 @@ BOOL CSetDlgBasic::OnInitDialog()
 	btnEnableScramble.SetCheck( GetPrivateProfileInt( L"SET", L"Scramble", 1, appIniPath ) );
 	btnEnableEMM.SetCheck( GetPrivateProfileInt( L"SET", L"EMM", 0, appIniPath ) );
 	btnTaskMin.SetCheck( GetPrivateProfileInt( L"SET", L"MinTask", 0, appIniPath ) );
+	btnEpgTimer.SetCheck( GetPrivateProfileInt( L"EPG_TIMER", L"ChkTimer", 1, appIniPath ) );
+
+	WCHAR timeString[512]=L"";
+	GetPrivateProfileString(L"EPG_TIMER", L"time", L"23:30", timeString, 512, appIniPath);
+
+	// éwíËéûä‘Ç0éûÇ©ÇÁÇÃïbêîÇ…ïœä∑
+	wstring left = L"";
+	wstring right = L"";
+	Separate(timeString, L":", left, right);
+
+	cmbHour.SetCurSel(cmbHour.FindStringExact(-1,left.c_str()));
+	cmbMin.SetCurSel(cmbMin.FindStringExact(-1,right.c_str()));
+
 	UpdateData(FALSE);
 
 	return TRUE;  // return TRUE unless you set the focus to a control

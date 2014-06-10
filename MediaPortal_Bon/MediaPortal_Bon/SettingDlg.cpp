@@ -83,13 +83,13 @@ BOOL CSettingDlg::OnInitDialog()
 void CSettingDlg::OnBnClickedOk()
 {
 	// TODO: ここにコントロール通知ハンドラー コードを追加します。
-	//basicDlg.SaveIni();
-	//serviceDlg.SaveIni();
+	basicDlg.SaveIni();
+	serviceDlg.SaveIni();
 
 	//CMediaPortal_BonDlg* parent = STATIC_DOWNCAST(CMediaPortal_BonDlg, GetParent());// GetParent(子ダイアログのhwnd)
 	//ASSERT(parent);
 	//parent->SendMessage(WM_APP_SENDDATA, 0, 0);
-	//GetParent()->SendMessage(WM_APP_SENDDATA, 0, 0);
+	GetParent()->SendMessage(WM_APP_SENDDATA, 0, 0);
 	CDialog::OnOK();
 }
 

@@ -135,4 +135,5 @@ public:
 	afx_msg BOOL OnQueryEndSession();
 	afx_msg void OnEndSession(BOOL bEnding);
 	afx_msg LRESULT OnReceiveData(WPARAM, LPARAM);
+	afx_msg void ReloadEpgTimer();
 };

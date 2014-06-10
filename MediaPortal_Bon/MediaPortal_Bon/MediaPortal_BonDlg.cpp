@@ -660,6 +660,12 @@ void CMediaPortal_BonDlg::OnTimer(UINT_PTR nIDEvent)
 				}
 			}
 			break;
+		case TIMER_EXPORT_EPG:
+			{
+				main.ReloadEpgData();
+				ReloadEpgTimer();
+			}
+			break;
 		default:
 			break;
 	}
@@ -1153,4 +1159,48 @@ LRESULT CMediaPortal_BonDlg::OnReceiveData(WPARAM, LPARAM)
 {
 	this->log.Format(L"メッセージ\r\n");
 	return 0;
+}
+void CMediaPortal_BonDlg::ReloadEpgTimer()
+{
+	KillTimer(TIMER_EXPORT_EPG);
+
+	wstring appIniPath = L"";
+	GetModuleIniPath(appIniPath);
+	DWORD chkTimer = GetPrivateProfileInt(L"EPG_TIMER", L"ChkTimer", 1, appIniPath.c_str());
+	if(chkTimer){
+		WCHAR timeString[512]=L"";
+		GetPrivateProfileString(L"EPG_TIMER", L"time", L"23:30", timeString, 512, appIniPath.c_str());
+
+		// 指定時間を0時からの秒数に変換
+		wstring left = L"";
+		wstring right = L"";
+		Separate(timeString, L":", left, right);
+		DWORD timerSec = _wtoi(left.c_str()) * 60 * 60 + _wtoi(right.c_str()) * 60;
+
+		// 現在の時刻(UNIXTIME)
+		time_t nowSec = time(NULL);
+
+		// 今日の0時(UNIXTIME)
+		struct tm *now_tm;
+		now_tm = localtime(&nowSec);
+		struct tm tdy_tm;
+		tdy_tm.tm_sec  = 0;
+		tdy_tm.tm_min  = 0;
+		tdy_tm.tm_hour = 0;
+		tdy_tm.tm_mday = now_tm->tm_mday;
+		tdy_tm.tm_mon  = now_tm->tm_mon;
+		tdy_tm.tm_year = now_tm->tm_year;
+		tdy_tm.tm_isdst = -1; // サマータイムフラグ
+		time_t tdySec = mktime(&tdy_tm);
+
+		// 指定時間までの秒数
+		DWORD targetSec;
+		if((nowSec - tdySec) < timerSec){
+			targetSec = timerSec - (nowSec - tdySec); // 今日
+		}else{
+			targetSec = (60*60*24) - (nowSec - tdySec) + timerSec; // 明日
+		}
+
+		SetTimer(TIMER_EXPORT_EPG, 1000*targetSec, NULL);
+	}
 }
