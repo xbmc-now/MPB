@@ -129,6 +129,14 @@ void CSetDlgBasic::SaveIni()
 	val.Format(L"%d",btnTaskMin.GetCheck());
 	WritePrivateProfileString( L"SET", L"MinTask", val.GetBuffer(0), appIniPath );
 
+	val.Format(L"%d",btnEpgTimer.GetCheck());
+	WritePrivateProfileString( L"EPG_TIMER", L"ChkTimer", val.GetBuffer(0), appIniPath );
+
+	CString left;cmbHour.GetWindowText(left);
+	CString right;cmbMin.GetWindowText(right);
+	val.Format(L"%s:%s",left,right);
+	WritePrivateProfileString( L"EPG_TIMER", L"time", val.GetBuffer(0), appIniPath );
+
 	chSet.SaveUdpMp();
 
 	UpdateData(FALSE);
